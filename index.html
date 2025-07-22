@@ -189,11 +189,23 @@
             cursor: pointer;
             border: 2px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s;
+            /* Added for background image */
+            background-size: cover;
+            background-position: center;
+            overflow: hidden; /* Ensure image doesn't overflow rounded corners */
         }
 
         .profile-btn:hover {
             transform: scale(1.1);
             box-shadow: 0 0 15px var(--neon-pink);
+        }
+
+        .profile-btn img { /* Style for user profile image */
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: none; /* Hidden by default, shown when photoURL exists */
         }
 
         .dropdown {
@@ -736,14 +748,15 @@
                 <i class="fas fa-search"></i>
             </button>
             <div class="profile-container">
-                <div class="profile-btn">
-                    <i class="fas fa-user"></i>
+                <div class="profile-btn" id="profile-btn">
+                    <i class="fas fa-user" id="profile-icon"></i>
+                    <!-- An img tag will be dynamically added here for user photo -->
                 </div>
                 <div class="dropdown">
-                    <!-- User ID Display -->
-                    <div class="dropdown-item" id="user-id-display" style="display: none;">
-                        <i class="fas fa-id-badge"></i>
-                        <span id="current-user-id" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"></span>
+                    <!-- User Name/ID Display -->
+                    <div class="dropdown-item" id="user-display-info" style="display: none;">
+                        <i class="fas fa-user-circle"></i>
+                        <span id="current-user-name"></span>
                     </div>
                     <div class="dropdown-item" id="google-login">
                         <i class="fab fa-google"></i>
@@ -1053,7 +1066,7 @@
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
         import { getFirestore, collection, doc, setDoc, getDocs, query, orderBy, FieldValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         // Your web app's Firebase configuration
@@ -1073,30 +1086,13 @@
         const db = getFirestore(app);
 
         // Initial authentication for the user's application: Sign in anonymously by default.
-        // This avoids conflicts with Canvas's internal __initial_auth_token.
+        // This ensures the app works correctly without relying on Canvas's internal __initial_auth_token.
         (async () => {
             try {
-                // Ensure anonymous sign-in is attempted for the user's app
                 await signInAnonymously(auth);
                 console.log("Signed in anonymously for user's app.");
             } catch (error) {
                 console.error("Failed to sign in anonymously for user's app:", error);
-            }
-
-            // The __initial_auth_token is for Canvas's internal authentication with its own Firebase.
-            // It's not typically used for the user's application logic with their Firebase project.
-            // We'll keep the check for it here, but it won't prevent the user's app from working
-            // if it's mismatched, as signInAnonymously is now the primary initial action.
-            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                try {
-                    // This block is primarily for Canvas's internal authentication handling.
-                    // It will attempt to sign in with the Canvas-provided token, but its failure
-                    // will not stop the user's app from functioning via anonymous sign-in.
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                    console.log("Canvas: Signed in with custom token.");
-                } catch (error) {
-                    console.warn("Canvas: Custom token sign-in failed (expected if not configured for user's project):", error.message);
-                }
             }
         })();
 
@@ -1125,7 +1121,8 @@
         });
 
         // Profile dropdown functionality
-        const profileBtn = document.querySelector('.profile-btn');
+        const profileBtn = document.getElementById('profile-btn');
+        const profileIcon = document.getElementById('profile-icon'); // The <i> tag for default icon
         const dropdown = document.querySelector('.dropdown');
         
         profileBtn.addEventListener('click', () => {
@@ -1307,9 +1304,9 @@
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider)
                 .then((result) => {
-                    const user = result.user;
-                    console.log("Google Login Successful:", user);
-                    showCustomMessage(`Logged in as: ${user.displayName || user.email}`);
+                    // onAuthStateChanged will handle UI updates
+                    console.log("Google Login Successful:", result.user);
+                    showCustomMessage(`Logged in as: ${result.user.displayName || result.user.email}`);
                     dropdown.classList.remove('active');
                 })
                 .catch((error) => {
@@ -1322,8 +1319,8 @@
         document.getElementById('guest-login').addEventListener('click', () => {
             signInAnonymously(auth)
                 .then(() => {
-                    const user = auth.currentUser; // User object will be available immediately after successful sign-in
-                    console.log("Guest Login Successful:", user);
+                    // onAuthStateChanged will handle UI updates
+                    console.log("Guest Login Successful:", auth.currentUser);
                     showCustomMessage('Logged in as Guest');
                     dropdown.classList.remove('active');
                 })
@@ -1622,20 +1619,36 @@
 
         // Listen for authentication state changes (useful for keeping user logged in across sessions)
         onAuthStateChanged(auth, async (user) => {
-            const userIdDisplay = document.getElementById('user-id-display');
-            const currentUserIdSpan = document.getElementById('current-user-id');
+            const userDisplayInfo = document.getElementById('user-display-info');
+            const currentUserNameSpan = document.getElementById('current-user-name');
             const googleLoginBtn = document.getElementById('google-login');
             const guestLoginBtn = document.getElementById('guest-login');
             const logoutBtn = document.getElementById('logout-button');
+            const profileBtnElement = document.getElementById('profile-btn'); // The div
+            const profileIconElement = document.getElementById('profile-icon'); // The <i> tag
 
             if (user) {
                 // User is signed in.
                 console.log("User is signed in:", user.uid);
-                currentUserIdSpan.textContent = `ID: ${user.uid}`;
-                userIdDisplay.style.display = 'flex';
+                
+                // Update profile picture
+                if (user.photoURL) {
+                    profileBtnElement.style.backgroundImage = `url('${user.photoURL}')`;
+                    profileIconElement.style.display = 'none'; // Hide the default icon
+                } else {
+                    profileBtnElement.style.backgroundImage = 'none'; // Remove background image
+                    profileIconElement.style.display = 'block'; // Show default icon
+                }
+
+                // Update display name
+                currentUserNameSpan.textContent = user.displayName || user.email || `Guest User (${user.uid.substring(0, 8)}...)`;
+                userDisplayInfo.style.display = 'flex'; // Show user info
+
+                // Hide login options, show logout
                 googleLoginBtn.style.display = 'none';
                 guestLoginBtn.style.display = 'none';
                 logoutBtn.style.display = 'flex';
+                
                 // If the user is on the favourites tab, refresh it
                 if (document.querySelector('.tab[data-tab="favourite"]').classList.contains('active')) {
                     fetchUserFavorites(user.uid);
@@ -1643,10 +1656,18 @@
             } else {
                 // User is signed out.
                 console.log("User is signed out.");
-                userIdDisplay.style.display = 'none';
+
+                // Reset profile picture and name
+                profileBtnElement.style.backgroundImage = 'none'; // Remove background image
+                profileIconElement.style.display = 'block'; // Show default icon
+                currentUserNameSpan.textContent = '';
+                userDisplayInfo.style.display = 'none'; // Hide user info
+
+                // Show login options, hide logout
                 googleLoginBtn.style.display = 'flex';
                 guestLoginBtn.style.display = 'flex';
                 logoutBtn.style.display = 'none';
+                
                 // Only display "No favorites" if the favourites tab is active and no user is logged in
                 if (document.querySelector('.tab[data-tab="favourite"]').classList.contains('active')) {
                     displayNoFavoritesMessage("Please log in to see your favourites.");

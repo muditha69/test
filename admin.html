@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XXX Git - Admin Host</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Basic styling for the admin page */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0815, #0f0c1d);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: #1a1629;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(176, 38, 255, 0.5);
+            width: 100%;
+            max-width: 700px;
+            margin-top: 50px;
+            border: 1px solid #ff26b2;
+        }
+
+        h1 {
+            color: #ff26b2;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(255, 38, 178, 0.7);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #b0b3c5;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: calc(100% - 20px);
+            padding: 12px 10px;
+            border: 1px solid #b026ff;
+            border-radius: 8px;
+            background-color: #0f0c1d;
+            color: #ffffff;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #ff26b2;
+            box-shadow: 0 0 10px rgba(255, 38, 178, 0.5);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #ff26b2, #b026ff);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 38, 178, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 38, 178, 0.6);
+        }
+
+        .clear-btn {
+            background-color: #555;
+            color: white;
+        }
+
+        .clear-btn:hover {
+            background-color: #777;
+        }
+
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745; /* Green for success */
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .message-box.error {
+            background-color: #dc3545; /* Red for error */
+        }
+        .message-box.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container {
+                margin-top: 20px;
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Add New Video Content</h1>
+        <form id="video-form">
+            <div class="form-group">
+                <label for="videoTitle">Video Title:</label>
+                <input type="text" id="videoTitle" required placeholder="e.g., Passionate Encounter - Late Night Session">
+            </div>
+            <div class="form-group">
+                <label for="thumbnailUrl">Thumbnail Image URL:</label>
+                <input type="text" id="thumbnailUrl" required placeholder="e.g., https://example.com/thumb.jpg">
+            </div>
+            <div class="form-group">
+                <label for="videoUrl">Video Play URL (e.g., YouTube video link):</label>
+                <input type="text" id="videoUrl" required placeholder="e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+            </div>
+            <div class="form-group">
+                <label for="videoDuration">Duration (e.g., 22:15):</label>
+                <input type="text" id="videoDuration" required placeholder="e.g., 22:15">
+            </div>
+            <div class="button-group">
+                <button type="submit" class="submit-btn"><i class="fas fa-plus-circle"></i> Add Video</button>
+                <button type="button" class="clear-btn" id="clear-form-btn"><i class="fas fa-eraser"></i> Clear Form</button>
+            </div>
+        </form>
+    </div>
+
+    <div id="message-box" class="message-box"></div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+
+        // Your Firebase configuration (use your actual project config)
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsZ-nw5UgKRotI2_Kgb9V-BFXS3JoX7UU",
+            authDomain: "xxx-git.firebaseapp.com",
+            projectId: "xxx-git",
+            storageBucket: "xxx-git.firebasestorage.app",
+            messagingSenderId: "1097384679265",
+            appId: "1:1097384679265:web:3969c888f193b42f8bd720",
+            measurementId: "G-TFJW56LFKV"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Sign in anonymously for admin access (for simplicity in this example)
+        // In a real application, you'd implement proper admin authentication (e.g., email/password, custom claims)
+        (async () => {
+            try {
+                await signInAnonymously(auth);
+                console.log("Admin: Signed in anonymously.");
+            } catch (error) {
+                console.error("Admin: Failed to sign in anonymously:", error);
+                showMessage("Failed to initialize admin access. Check console.", 'error');
+            }
+        })();
+
+        const videoForm = document.getElementById('video-form');
+        const clearFormBtn = document.getElementById('clear-form-btn');
+        const messageBox = document.getElementById('message-box');
+
+        // Function to show custom messages
+        function showMessage(message, type = 'success') {
+            messageBox.textContent = message;
+            messageBox.className = 'message-box show'; // Reset classes and add 'show'
+            if (type === 'error') {
+                messageBox.classList.add('error');
+            } else {
+                messageBox.classList.remove('error');
+            }
+            setTimeout(() => {
+                messageBox.classList.remove('show');
+            }, 3000); // Message disappears after 3 seconds
+        }
+
+        // Handle form submission
+        videoForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent default form submission
+
+            // Get form values
+            const videoTitle = document.getElementById('videoTitle').value;
+            const thumbnailUrl = document.getElementById('thumbnailUrl').value;
+            const videoUrl = document.getElementById('videoUrl').value;
+            const videoDuration = document.getElementById('videoDuration').value;
+            
+            // Initial values for views and likes
+            const initialViews = "0"; // Stored as string to match existing format
+            const initialLikes = "0"; // Stored as string to match existing format
+            const initialDescription = "No description available."; // Default description
+
+            // Create a video object
+            const videoData = {
+                title: videoTitle,
+                thumbnail: thumbnailUrl,
+                url: videoUrl, // This will be the direct play URL
+                duration: videoDuration,
+                views: initialViews,
+                likes: initialLikes,
+                description: initialDescription,
+                createdAt: new Date() // Timestamp for ordering
+            };
+
+            try {
+                // Add document to 'public_videos' collection
+                const docRef = await addDoc(collection(db, "public_videos"), videoData);
+                console.log("Document written with ID: ", docRef.id);
+                showMessage("Video added successfully!");
+                videoForm.reset(); // Clear form after successful submission
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showMessage("Error adding video: " + e.message, 'error');
+            }
+        });
+
+        // Handle clear form button
+        clearFormBtn.addEventListener('click', () => {
+            videoForm.reset();
+        });
+    </script>
+</body>
+</html>

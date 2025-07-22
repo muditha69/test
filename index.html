@@ -1641,13 +1641,17 @@
                 }
 
                 // Update display name
-                currentUserNameSpan.textContent = user.displayName || user.email || `Guest User (${user.uid.substring(0, 8)}...)`;
+                if (user.isAnonymous) {
+                    currentUserNameSpan.textContent = `Guest User (${user.uid.substring(0, 8)}...)`;
+                    googleLoginBtn.style.display = 'flex'; // Allow guest to upgrade to Google
+                    guestLoginBtn.style.display = 'none'; // Hide guest login as they are already a guest
+                } else {
+                    currentUserNameSpan.textContent = user.displayName || user.email;
+                    googleLoginBtn.style.display = 'none'; // Hide Google login as they are already logged in
+                    guestLoginBtn.style.display = 'none';
+                }
                 userDisplayInfo.style.display = 'flex'; // Show user info
-
-                // Hide login options, show logout
-                googleLoginBtn.style.display = 'none';
-                guestLoginBtn.style.display = 'none';
-                logoutBtn.style.display = 'flex';
+                logoutBtn.style.display = 'flex'; // Always show logout if any user is signed in
                 
                 // If the user is on the favourites tab, refresh it
                 if (document.querySelector('.tab[data-tab="favourite"]').classList.contains('active')) {

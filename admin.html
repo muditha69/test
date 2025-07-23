@@ -27,14 +27,21 @@
             max-width: 700px;
             margin-top: 50px;
             border: 1px solid #ff26b2;
+            margin-bottom: 30px; /* Added margin-bottom */
         }
 
-        h1 {
+        h1, h2 {
             color: #ff26b2;
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.5rem;
             text-shadow: 0 0 10px rgba(255, 38, 178, 0.7);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-top: 40px;
+            margin-bottom: 20px;
         }
 
         .form-group {
@@ -134,13 +141,151 @@
             visibility: visible;
         }
 
+        /* Video List for Admin */
+        .video-list-container {
+            background-color: #1a1629;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(176, 38, 255, 0.5);
+            width: 100%;
+            max-width: 700px;
+            margin-top: 50px;
+            border: 1px solid #b026ff;
+        }
+
+        .video-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            justify-content: space-between;
+        }
+
+        .video-item:last-child {
+            border-bottom: none;
+        }
+
+        .video-item img {
+            width: 80px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+
+        .video-details {
+            flex-grow: 1;
+        }
+
+        .video-details h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        .video-details p {
+            font-size: 0.9rem;
+            color: #b0b3c5;
+        }
+
+        .delete-btn {
+            background-color: #dc3545; /* Red */
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .no-videos-message {
+            text-align: center;
+            padding: 20px;
+            color: #b0b3c5;
+            font-style: italic;
+        }
+
+        /* Custom Message Box and Prompt Styles (reused from premium.html) */
+        .custom-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .custom-box {
+            background-color: #1a1629;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid #ff26b2;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .custom-box p {
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .custom-box button {
+            background-color: #ff26b2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 600;
+        }
+
+        .custom-box button:hover {
+            background-color: #d81b60;
+        }
+
+        .custom-prompt-buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .custom-prompt-buttons button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 5px;
+        }
+
+        .custom-prompt-buttons .no-btn {
+            background-color: #555;
+        }
+
+        .custom-prompt-buttons .no-btn:hover {
+            background-color: #777;
+        }
+
         /* Responsive adjustments */
         @media (max-width: 600px) {
-            .container {
+            .container, .video-list-container {
                 margin-top: 20px;
                 padding: 20px;
             }
-            h1 {
+            h1, h2 {
                 font-size: 2rem;
             }
             .button-group {
@@ -149,6 +294,18 @@
             }
             button {
                 width: 100%;
+            }
+            .video-item {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+            .video-item img {
+                margin-bottom: 10px;
+            }
+            .delete-btn {
+                width: 100%;
+                margin-top: 10px;
             }
         }
     </style>
@@ -180,12 +337,22 @@
         </form>
     </div>
 
+    <div class="video-list-container">
+        <h2>Manage Existing Videos</h2>
+        <div id="admin-video-list">
+            <!-- Videos will be loaded here by JavaScript -->
+            <div class="no-videos-message" id="no-admin-videos">
+                <i class="fas fa-info-circle"></i> No videos added yet.
+            </div>
+        </div>
+    </div>
+
     <div id="message-box" class="message-box"></div>
 
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
         // Your Firebase configuration (use your actual project config)
@@ -210,6 +377,7 @@
             try {
                 await signInAnonymously(auth);
                 console.log("Admin: Signed in anonymously.");
+                fetchAndDisplayAdminVideos(); // Fetch videos after auth
             } catch (error) {
                 console.error("Admin: Failed to sign in anonymously:", error);
                 showMessage("Failed to initialize admin access. Check console.", 'error');
@@ -219,6 +387,8 @@
         const videoForm = document.getElementById('video-form');
         const clearFormBtn = document.getElementById('clear-form-btn');
         const messageBox = document.getElementById('message-box');
+        const adminVideoList = document.getElementById('admin-video-list');
+        const noAdminVideosMessage = document.getElementById('no-admin-videos');
 
         // Function to show custom messages
         function showMessage(message, type = 'success') {
@@ -232,6 +402,50 @@
             setTimeout(() => {
                 messageBox.classList.remove('show');
             }, 3000); // Message disappears after 3 seconds
+        }
+
+        // Custom UI functions (message box and prompt) - copied from premium.html for consistency
+        function showCustomMessage(message) {
+            const overlay = document.createElement('div');
+            overlay.classList.add('custom-overlay');
+            overlay.innerHTML = `
+                <div class="custom-box">
+                    <p>${message}</p>
+                    <button>OK</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.querySelector('button').addEventListener('click', () => {
+                document.body.removeChild(overlay);
+            });
+        }
+
+        function showCustomPrompt(message, callback) {
+            const overlay = document.createElement('div');
+            overlay.classList.add('custom-overlay');
+            overlay.innerHTML = `
+                <div class="custom-box">
+                    <p>${message}</p>
+                    <div class="custom-prompt-buttons">
+                        <button class="yes-btn">Yes</button>
+                        <button class="no-btn">No</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            const yesBtn = overlay.querySelector('.yes-btn');
+            const noBtn = overlay.querySelector('.no-btn');
+
+            yesBtn.addEventListener('click', () => {
+                document.body.removeChild(overlay);
+                callback(true);
+            });
+
+            noBtn.addEventListener('click', () => {
+                document.body.removeChild(overlay);
+                callback(false);
+            });
         }
 
         // Handle form submission
@@ -267,6 +481,7 @@
                 console.log("Document written with ID: ", docRef.id);
                 showMessage("Video added successfully!");
                 videoForm.reset(); // Clear form after successful submission
+                fetchAndDisplayAdminVideos(); // Refresh the list of videos
             } catch (e) {
                 console.error("Error adding document: ", e);
                 showMessage("Error adding video: " + e.message, 'error');
@@ -277,6 +492,86 @@
         clearFormBtn.addEventListener('click', () => {
             videoForm.reset();
         });
+
+        // Function to fetch and display videos in the admin panel
+        async function fetchAndDisplayAdminVideos() {
+            adminVideoList.innerHTML = ''; // Clear existing list
+            noAdminVideosMessage.style.display = 'none'; // Hide no videos message initially
+
+            try {
+                const publicVideosRef = collection(db, 'public_videos');
+                const querySnapshot = await getDocs(publicVideosRef);
+
+                if (querySnapshot.empty) {
+                    noAdminVideosMessage.style.display = 'block'; // Show no videos message
+                    return;
+                }
+
+                let videos = [];
+                querySnapshot.forEach((doc) => {
+                    videos.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Sort videos by createdAt in JavaScript after fetching
+                videos.sort((a, b) => {
+                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0);
+                    const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
+                    return dateB - dateA; // Descending order (newest first)
+                });
+
+                videos.forEach((video) => {
+                    const videoItem = document.createElement('div');
+                    videoItem.classList.add('video-item');
+                    videoItem.setAttribute('data-video-id', video.id);
+
+                    videoItem.innerHTML = `
+                        <img src="${video.thumbnail}" alt="Thumbnail" onerror="this.onerror=null; this.src='https://placehold.co/80x50/0f0c1d/ffffff?text=No+Image'">
+                        <div class="video-details">
+                            <h3>${video.title}</h3>
+                            <p>Duration: ${video.duration} | Views: ${video.views} | Likes: ${video.likes}</p>
+                        </div>
+                        <button class="delete-btn" data-id="${video.id}"><i class="fas fa-trash"></i> Delete</button>
+                    `;
+                    adminVideoList.appendChild(videoItem);
+                });
+
+                // Add event listeners to delete buttons
+                adminVideoList.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const videoIdToDelete = e.currentTarget.getAttribute('data-id');
+                        showCustomPrompt(`Are you sure you want to delete "${e.currentTarget.previousElementSibling.querySelector('h3').textContent}"? This action cannot be undone.`, (response) => {
+                            if (response) {
+                                deleteVideo(videoIdToDelete);
+                            }
+                        });
+                    });
+                });
+
+            } catch (error) {
+                console.error("Error fetching admin videos: ", error);
+                adminVideoList.innerHTML = `
+                    <div class="no-videos-message" style="color: #dc3545;">
+                        <i class="fas fa-exclamation-circle"></i> Error loading videos.
+                    </div>
+                `;
+            }
+        }
+
+        // Function to delete a video
+        async function deleteVideo(videoId) {
+            try {
+                await deleteDoc(doc(db, "public_videos", videoId));
+                showMessage("Video deleted successfully!");
+                console.log("Document successfully deleted with ID:", videoId);
+                fetchAndDisplayAdminVideos(); // Refresh the list after deletion
+            } catch (error) {
+                console.error("Error deleting document: ", error);
+                showMessage("Error deleting video: " + error.message, 'error');
+            }
+        }
+
+        // Initial fetch of videos when the admin page loads (already called after auth)
+        // document.addEventListener('DOMContentLoaded', fetchAndDisplayAdminVideos);
     </script>
 </body>
 </html>

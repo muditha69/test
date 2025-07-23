@@ -837,7 +837,7 @@
 
     <section class="video-section" id="favourite-content" style="display:none;">
         <h2 class="section-title">Favourites</h2>
-        <div class="video-grid">
+        <div class="video-grid" id="favorite-video-grid">
             <!-- Favourites will be loaded here by JavaScript -->
             <div class="placeholder-message">
                 <i class="fas fa-heart-broken" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
@@ -908,7 +908,7 @@
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, updateDoc, getDocs, query, FieldValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, getDocs, query, orderBy, FieldValue, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         // IMPORTANT: Ensure this matches your Firebase project's configuration exactly.
@@ -1022,8 +1022,7 @@
             });
         });
 
-        // Video Modal Functionality
-        // Note: The modal is now used for displaying video details and a "Play Video" button, not an embedded player.
+        // Video Modal Functionality (for displaying details, not playing)
         const modal = document.getElementById('video-modal');
         const closeModal = document.querySelector('.close-modal');
         const modalVideoTitle = document.getElementById('modal-video-title');
@@ -1032,7 +1031,6 @@
         const modalVideoDuration = document.getElementById('modal-video-duration');
         const modalVideoDescription = document.getElementById('modal-video-description');
         const playVideoBtn = document.getElementById('play-video-btn');
-        // Removed addToFavoritesBtn as it's now handled by double-click prompt
 
         let currentVideoDataForModal = null; // To store data of the video currently displayed in modal
 
@@ -1040,10 +1038,10 @@
         function openVideoModal(data) {
             currentVideoDataForModal = data; // Store the data
             modalVideoTitle.textContent = data.title;
-            modalVideoViews.textContent = data.views;
-            modalVideoLikes.textContent = data.likes;
-            modalVideoDuration.textContent = data.duration;
-            modalVideoDescription.textContent = data.description || "No description available."; // Use description from data
+            modalVideoViews.textContent = `Views: ${formatMetricNumber(parseMetricString(data.views || "0"))}`;
+            modalVideoLikes.textContent = `Likes: ${formatMetricNumber(parseMetricString(data.likes || "0"))}`;
+            modalVideoDuration.textContent = `Duration: ${data.duration}`;
+            modalVideoDescription.textContent = data.description || "No description available.";
 
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -1335,7 +1333,7 @@
 
                     querySnapshot.forEach((doc) => {
                         const favVideo = doc.data();
-                        const videoCard = createVideoCardElement(favVideo);
+                        const videoCard = createVideoCardElement(favVideo, true); // Pass true for isFavorite
                         videoGrid.appendChild(videoCard);
                     });
                 })
@@ -1402,7 +1400,7 @@
         }
 
         // Helper function to create a video card element (reused for both public and favorite videos)
-        function createVideoCardElement(videoData) {
+        function createVideoCardElement(videoData, isFavorite = false) {
             const videoCard = document.createElement('div');
             videoCard.classList.add('video-card');
             videoCard.setAttribute('data-video-id', videoData.id); // Store Firestore document ID
@@ -1443,15 +1441,16 @@
 
                 if (clickTimer === null) {
                     clickTimer = setTimeout(() => {
-                        // Single click action: Open modal (which increments views)
-                        openVideoModal(videoData);
+                        // Single click action: Open video link and increment views
+                        window.open(videoData.url, '_blank'); // Open video URL in new tab
+                        incrementVideoMetric(videoData.id, 'views'); // Increment views
                         clickTimer = null;
                     }, 300); // 300ms to differentiate single from double click
                 } else {
                     // Double click action: Increment likes and prompt for favorite
                     clearTimeout(clickTimer);
                     clickTimer = null;
-                    incrementVideoMetric(videoData.id, 'likes');
+                    incrementVideoMetric(videoData.id, 'likes'); // Increment likes
                     showCustomPrompt('Do you want to add this video to your favorites?', (response) => {
                         if (response) {
                             addVideoToFavorites(videoData);

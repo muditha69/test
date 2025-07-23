@@ -41,7 +41,7 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.95);
             z-index: 10000;
-            display: flex;
+            display: flex; /* Ensure it's flex by default for the gate */
             justify-content: center;
             align-items: center;
             flex-direction: column;
@@ -910,22 +910,27 @@
         const enterBtn = document.getElementById('enter-btn');
         const exitBtn = document.getElementById('exit-btn');
         
-        // Check if user has already verified age
-        if(localStorage.getItem('ageVerified')) {
-            ageGate.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        } else {
-            document.body.style.overflow = 'hidden';
-        }
-        
-        enterBtn.addEventListener('click', () => {
-            ageGate.style.display = 'none';
-            document.body.style.overflow = 'auto';
-            localStorage.setItem('ageVerified', 'true');
-        });
-        
-        exitBtn.addEventListener('click', () => {
-            window.location.href = 'https://www.google.com';
+        // Wrap age gate logic in DOMContentLoaded to ensure elements are ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user has already verified age
+            if(localStorage.getItem('ageVerified')) {
+                ageGate.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            } else {
+                ageGate.style.display = 'flex'; // Explicitly set to flex if not verified
+                document.body.style.overflow = 'hidden';
+            }
+            
+            enterBtn.addEventListener('click', () => {
+                console.log("Enter button clicked!"); // Debugging log
+                ageGate.style.display = 'none';
+                document.body.style.overflow = 'auto';
+                localStorage.setItem('ageVerified', 'true');
+            });
+            
+            exitBtn.addEventListener('click', () => {
+                window.location.href = 'https://www.google.com';
+            });
         });
 
         // Profile dropdown functionality

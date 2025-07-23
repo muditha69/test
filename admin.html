@@ -27,15 +27,21 @@
             max-width: 700px;
             margin-top: 50px;
             border: 1px solid #ff26b2;
-            margin-bottom: 30px; /* Added margin-bottom */
+            margin-bottom: 30px;
         }
 
         h1, h2 {
             color: #ff26b2;
             text-align: center;
-            margin-bottom: 25px;
-            font-size: 2.2em;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
             text-shadow: 0 0 10px rgba(255, 38, 178, 0.7);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-top: 40px;
+            margin-bottom: 20px;
         }
 
         .form-group {
@@ -45,127 +51,118 @@
         label {
             display: block;
             margin-bottom: 8px;
-            font-weight: bold;
-            color: #b026ff;
+            font-weight: 600;
+            color: #b0b3c5;
         }
 
         input[type="text"],
-        input[type="url"],
         input[type="number"],
-        select {
-            width: calc(100% - 20px); /* Adjust for padding */
+        textarea {
+            width: calc(100% - 20px);
             padding: 12px 10px;
             border: 1px solid #b026ff;
             border-radius: 8px;
             background-color: #0f0c1d;
             color: #ffffff;
             font-size: 1rem;
-            box-shadow: inset 0 0 5px rgba(176, 38, 255, 0.3);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         input[type="text"]:focus,
-        input[type="url"]:focus,
         input[type="number"]:focus,
-        select:focus {
-            border-color: #ff26b2;
-            box-shadow: 0 0 8px rgba(255, 38, 178, 0.5);
+        textarea:focus {
             outline: none;
+            border-color: #ff26b2;
+            box-shadow: 0 0 10px rgba(255, 38, 178, 0.5);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
         }
 
         .button-group {
             display: flex;
-            justify-content: center;
+            justify-content: flex-end;
             gap: 15px;
-            margin-top: 25px;
+            margin-top: 30px;
         }
 
-        .submit-btn, .clear-btn, .delete-btn {
+        button {
             padding: 12px 25px;
             border: none;
-            border-radius: 8px;
+            border-radius: 50px;
             font-size: 1.1rem;
-            font-weight: bold;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none; /* For login button */
-            justify-content: center; /* For login button */
+            transition: all 0.3s ease;
         }
 
         .submit-btn {
-            background-color: #ff26b2;
-            color: #ffffff;
-            box-shadow: 0 0 15px rgba(255, 38, 178, 0.5);
+            background: linear-gradient(45deg, #ff26b2, #b026ff);
+            color: white;
+            box-shadow: 0 5px 15px rgba(255, 38, 178, 0.4);
         }
 
         .submit-btn:hover {
-            background-color: #e60099;
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(255, 38, 178, 0.7);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 38, 178, 0.6);
         }
 
         .clear-btn {
-            background-color: #b026ff;
-            color: #ffffff;
-            box-shadow: 0 0 15px rgba(176, 38, 255, 0.5);
+            background-color: #555;
+            color: white;
         }
 
         .clear-btn:hover {
-            background-color: #9900e6;
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(176, 38, 255, 0.7);
+            background-color: #777;
         }
 
-        .delete-btn {
+        .message-box {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #28a745;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .message-box.error {
             background-color: #dc3545;
-            color: #ffffff;
-            box-shadow: 0 0 10px rgba(220, 53, 69, 0.5);
-            padding: 8px 15px; /* Smaller for list items */
-            font-size: 0.9rem;
+        }
+        .message-box.show {
+            opacity: 1;
+            visibility: visible;
         }
 
-        .delete-btn:hover {
-            background-color: #c82333;
-            transform: translateY(-1px);
-            box-shadow: 0 0 15px rgba(220, 53, 69, 0.7);
-        }
-        
-        /* Video List Styling */
         .video-list-container {
             background-color: #1a1629;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 0 30px rgba(255, 38, 178, 0.5);
+            box-shadow: 0 0 30px rgba(176, 38, 255, 0.5);
             width: 100%;
             max-width: 700px;
-            margin-bottom: 30px;
+            margin-top: 50px;
             border: 1px solid #b026ff;
-        }
-
-        #admin-video-list, #admin-category-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
         }
 
         .video-item {
             display: flex;
             align-items: center;
-            background-color: #0f0c1d;
-            border: 1px solid #333;
-            border-radius: 10px;
-            padding: 10px;
             gap: 15px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            transition: transform 0.2s ease;
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            justify-content: space-between;
         }
 
-        .video-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 0 15px rgba(176, 38, 255, 0.3);
+        .video-item:last-child {
+            border-bottom: none;
         }
 
         .video-item img {
@@ -173,7 +170,6 @@
             height: 50px;
             object-fit: cover;
             border-radius: 5px;
-            border: 1px solid #b026ff;
         }
 
         .video-details {
@@ -181,282 +177,306 @@
         }
 
         .video-details h3 {
-            margin: 0;
-            font-size: 1.1em;
-            color: #ff26b2;
-            word-break: break-word; /* Ensure long titles wrap */
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: #ffffff;
         }
 
         .video-details p {
-            margin: 5px 0 0;
-            font-size: 0.85em;
+            font-size: 0.9rem;
             color: #b0b3c5;
+        }
+
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #c82333;
+            transform: translateY(-2px);
         }
 
         .no-videos-message {
             text-align: center;
-            color: #b0b3c5;
             padding: 20px;
+            color: #b0b3c5;
             font-style: italic;
         }
 
-        /* Message Box */
-        .message-box {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #28a745; /* Green for success */
-            color: white;
-            padding: 15px 25px;
-            border-radius: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-            transform: translateY(-20px);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .message-box.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .message-box.error {
-            background-color: #dc3545; /* Red for error */
-        }
-
-        /* Prompt Box */
-        .prompt-overlay {
+        .custom-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 1001;
         }
 
-        .prompt-box {
+        .custom-box {
             background-color: #1a1629;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 0 30px rgba(176, 38, 255, 0.7);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            border: 1px solid #ff26b2;
-        }
-
-        .prompt-box p {
-            margin-bottom: 25px;
-            font-size: 1.1em;
             color: #ffffff;
-        }
-
-        .prompt-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .prompt-buttons button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .prompt-buttons .confirm-btn {
-            background-color: #ff26b2;
-            color: white;
-        }
-
-        .prompt-buttons .confirm-btn:hover {
-            background-color: #e60099;
-        }
-
-        .prompt-buttons .cancel-btn {
-            background-color: #b0b3c5;
-            color: #0f0c1d;
-        }
-
-        .prompt-buttons .cancel-btn:hover {
-            background-color: #9da0af;
-        }
-
-        .login-section {
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            min-height: 80vh; /* Adjust as needed */
+            gap: 15px;
+            border: 1px solid #ff26b2;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .custom-box p {
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .custom-box button {
+            background-color: #ff26b2;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 600;
+        }
+
+        .custom-box button:hover {
+            background-color: #d81b60;
+        }
+
+        .custom-prompt-buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .custom-prompt-buttons button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 5px;
+        }
+
+        .custom-prompt-buttons .no-btn {
+            background-color: #555;
+        }
+
+        .custom-prompt-buttons .no-btn:hover {
+            background-color: #777;
+        }
+
+        /* NEW: Styles for category management */
+        .category-management {
+            background-color: #1a1629;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(176, 38, 255, 0.5);
+            width: 100%;
+            max-width: 700px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            border: 1px solid #ff26b2;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .category-card {
+            position: relative;
+            background: #2a2440;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid rgba(176, 38, 255, 0.3);
+            cursor: pointer;
+            height: 100px;
+        }
+
+        .category-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+        }
+
+        .category-name {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.6);
+            font-size: 0.9rem;
             text-align: center;
         }
 
-        .login-section h2 {
-            margin-bottom: 30px;
-        }
-
-        .login-section .google-login-btn {
-            background-color: #4285F4;
+        .delete-category-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #dc3545;
             color: white;
-            box-shadow: 0 0 15px rgba(66, 133, 244, 0.5);
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2;
         }
 
-        .login-section .google-login-btn:hover {
-            background-color: #357ae8;
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(66, 133, 244, 0.7);
+        .no-categories-message {
+            text-align: center;
+            padding: 20px;
+            color: #b0b3c5;
+            font-style: italic;
+            grid-column: 1 / -1;
+        }
+        
+        /* Category checkboxes */
+        .category-checkboxes {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .category-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* Adjustments for dropdown arrow */
-        select {
-            appearance: none; /* Remove default dropdown arrow */
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="%23b0b3c5" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 20px;
+        @media (max-width: 600px) {
+            .container, .video-list-container, .category-management {
+                margin-top: 20px;
+                padding: 20px;
+            }
+            h1, h2 {
+                font-size: 2rem;
+            }
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            button {
+                width: 100%;
+            }
+            .video-item {
+                flex-direction: column;
+                align-items: flex-start;
+                text-align: left;
+            }
+            .video-item img {
+                margin-bottom: 10px;
+            }
+            .delete-btn {
+                width: 100%;
+                margin-top: 10px;
+            }
         }
-
     </style>
 </head>
 <body>
-    <div class="container" id="login-container">
-        <div class="login-section" id="login-section">
-            <h2>Admin Login</h2>
-            <button class="submit-btn google-login-btn" id="google-login-btn"><i class="fab fa-google"></i> Login with Google</button>
+    <div class="container">
+        <h1>Add New Video Content</h1>
+        <form id="video-form">
+            <div class="form-group">
+                <label for="videoTitle">Video Title:</label>
+                <input type="text" id="videoTitle" required placeholder="e.g., Passionate Encounter - Late Night Session">
+            </div>
+            <div class="form-group">
+                <label for="thumbnailUrl">Thumbnail Image URL:</label>
+                <input type="text" id="thumbnailUrl" required placeholder="e.g., https://example.com/thumb.jpg">
+            </div>
+            <div class="form-group">
+                <label for="videoUrl">Video Play URL (e.g., YouTube video link):</label>
+                <input type="text" id="videoUrl" required placeholder="e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+            </div>
+            <div class="form-group">
+                <label for="videoDuration">Duration (e.g., 22:15):</label>
+                <input type="text" id="videoDuration" required placeholder="e.g., 22:15">
+            </div>
+            <div class="form-group">
+                <label>Categories:</label>
+                <div class="category-checkboxes" id="category-checkboxes">
+                    <!-- Categories will be added here by JavaScript -->
+                </div>
+            </div>
+            <div class="button-group">
+                <button type="submit" class="submit-btn"><i class="fas fa-plus-circle"></i> Add Video</button>
+                <button type="button" class="clear-btn" id="clear-form-btn"><i class="fas fa-eraser"></i> Clear Form</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Category Management Section -->
+    <div class="category-management">
+        <h2>Manage Categories</h2>
+        <form id="category-form">
+            <div class="form-group">
+                <label for="categoryName">Category Name:</label>
+                <input type="text" id="categoryName" required placeholder="e.g., Amateur">
+            </div>
+            <div class="form-group">
+                <label for="categoryImageUrl">Image URL:</label>
+                <input type="text" id="categoryImageUrl" required placeholder="e.g., https://example.com/category.jpg">
+            </div>
+            <div class="button-group">
+                <button type="submit" class="submit-btn"><i class="fas fa-plus"></i> Add Category</button>
+            </div>
+        </form>
+        
+        <div class="categories-grid" id="admin-category-list">
+            <div class="no-categories-message" id="no-admin-categories">
+                <i class="fas fa-info-circle"></i> No categories added yet.
+            </div>
         </div>
     </div>
 
-    <div id="admin-content" style="display:none;">
-        <div class="container">
-            <h1>Admin Panel</h1>
-            <div class="button-group" style="margin-top: -10px; margin-bottom: 20px;">
-                <button class="clear-btn" id="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-            </div>
-        </div>
-
-        <div class="container">
-            <h2>Add New Video Content</h2>
-            <form id="video-form">
-                <div class="form-group">
-                    <label for="videoTitle">Video Title:</label>
-                    <input type="text" id="videoTitle" required placeholder="Enter video title">
-                </div>
-                <div class="form-group">
-                    <label for="thumbnailUrl">Thumbnail URL:</label>
-                    <input type="url" id="thumbnailUrl" required placeholder="e.g., https://example.com/thumbnail.jpg">
-                </div>
-                <div class="form-group">
-                    <label for="videoUrl">Video Play URL:</label>
-                    <input type="url" id="videoUrl" required placeholder="e.g., https://example.com/video.mp4">
-                </div>
-                <div class="form-group">
-                    <label for="videoDuration">Duration (e.g., 05:30):</label>
-                    <input type="text" id="videoDuration" required placeholder="MM:SS">
-                </div>
-                <div class="form-group">
-                    <label for="videoCategory">Select Category:</label>
-                    <select id="videoCategory" class="form-control" required style="
-                        width: calc(100% - 20px);
-                        padding: 12px 10px;
-                        border: 1px solid #b026ff;
-                        border-radius: 8px;
-                        background-color: #0f0c1d;
-                        color: #ffffff;
-                        font-size: 1rem;
-                        appearance: none; /* Remove default dropdown arrow */
-                        -webkit-appearance: none;
-                        -moz-appearance: none;
-                        background-image: url('data:image/svg+xml;utf8,<svg fill="%23b0b3c5" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
-                        background-repeat: no-repeat;
-                        background-position: right 10px center;
-                        background-size: 20px;
-                    ">
-                        <option value="">-- Select a Category --</option>
-                        </select>
-                </div>
-                <div class="button-group">
-                    <button type="submit" class="submit-btn"><i class="fas fa-upload"></i> Upload Video</button>
-                    <button type="button" class="clear-btn" id="clear-form-btn"><i class="fas fa-eraser"></i> Clear Form</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="container" style="margin-top: 30px;">
-            <h2>Add New Category</h2>
-            <form id="category-form">
-                <div class="form-group">
-                    <label for="categoryName">Category Name:</label>
-                    <input type="text" id="categoryName" required placeholder="e.g., Action, Comedy, Horror">
-                </div>
-                <div class="form-group">
-                    <label for="categoryThumbnailUrl">Category Thumbnail URL:</label>
-                    <input type="url" id="categoryThumbnailUrl" required placeholder="e.g., https://example.com/category-thumb.jpg">
-                </div>
-                <div class="button-group">
-                    <button type="submit" class="submit-btn"><i class="fas fa-plus-circle"></i> Add Category</button>
-                    <button type="button" class="clear-btn" id="clear-category-form-btn"><i class="fas fa-eraser"></i> Clear Category Form</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="video-list-container" style="margin-top: 30px;">
-            <h2>Manage Existing Categories</h2>
-            <div id="admin-category-list">
-                <div class="no-videos-message" id="no-admin-categories" style="display:none;">
-                    <i class="fas fa-info-circle"></i> No categories added yet.
-                </div>
-            </div>
-            <div class="button-group" style="justify-content: center; margin-top: 20px;">
-                <button type="button" class="delete-btn" id="clear-all-categories-btn" style="background-color: #dc3545;"><i class="fas fa-trash-alt"></i> Clear All Categories</button>
-            </div>
-        </div>
-
-        <div class="video-list-container" style="margin-top: 30px;">
-            <h2>Manage Existing Videos</h2>
-            <div id="admin-video-list">
-                <div class="no-videos-message" id="no-admin-videos" style="display:none;">
-                    <i class="fas fa-info-circle"></i> No videos uploaded yet.
-                </div>
+    <div class="video-list-container">
+        <h2>Manage Existing Videos</h2>
+        <div id="admin-video-list">
+            <div class="no-videos-message" id="no-admin-videos">
+                <i class="fas fa-info-circle"></i> No videos added yet.
             </div>
         </div>
     </div>
 
     <div id="message-box" class="message-box"></div>
 
-    <div id="prompt-overlay" class="prompt-overlay" style="display:none;">
-        <div class="prompt-box">
-            <p id="prompt-message"></p>
-            <div class="prompt-buttons">
-                <button class="confirm-btn" id="prompt-confirm-btn">Yes</button>
-                <button class="cancel-btn" id="prompt-cancel-btn">No</button>
-            </div>
-        </div>
-    </div>
-
     <script type="module">
         // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, query, orderBy, setDoc, where } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
         // Your Firebase configuration
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyAsZ-nw5UgKRotI2_Kgb9V-BFXS3JoX7UU",
+            authDomain: "xxx-git.firebaseapp.com",
+            projectId: "xxx-git",
+            storageBucket: "xxx-git.firebasestorage.app",
+            messagingSenderId: "1097384679265",
+            appId: "1:1097384679265:web:3969c888f193b42f8bd720",
+            measurementId: "G-TFJW56LFKV"
         };
 
         // Initialize Firebase
@@ -464,150 +484,283 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- DOM Elements ---
-        const loginContainer = document.getElementById('login-container');
-        const adminContent = document.getElementById('admin-content');
-        const googleLoginBtn = document.getElementById('google-login-btn');
-        const logoutBtn = document.getElementById('logout-btn');
+        // Sign in anonymously for admin access
+        (async () => {
+            try {
+                await signInAnonymously(auth);
+                console.log("Admin: Signed in anonymously.");
+                fetchAndDisplayAdminVideos();
+                fetchAndDisplayCategories();
+            } catch (error) {
+                console.error("Admin: Failed to sign in anonymously:", error);
+                showMessage("Failed to initialize admin access. Check console.", 'error');
+            }
+        })();
 
-        // Video Form Elements
         const videoForm = document.getElementById('video-form');
-        const videoTitleInput = document.getElementById('videoTitle');
-        const thumbnailUrlInput = document.getElementById('thumbnailUrl');
-        const videoUrlInput = document.getElementById('videoUrl');
-        const videoDurationInput = document.getElementById('videoDuration');
-        const videoCategorySelect = document.getElementById('videoCategory');
         const clearFormBtn = document.getElementById('clear-form-btn');
+        const messageBox = document.getElementById('message-box');
         const adminVideoList = document.getElementById('admin-video-list');
         const noAdminVideosMessage = document.getElementById('no-admin-videos');
-
-        // Category Form Elements
         const categoryForm = document.getElementById('category-form');
-        const categoryNameInput = document.getElementById('categoryName');
-        const categoryThumbnailUrlInput = document.getElementById('categoryThumbnailUrl');
         const adminCategoryList = document.getElementById('admin-category-list');
         const noAdminCategoriesMessage = document.getElementById('no-admin-categories');
-        const clearCategoryFormBtn = document.getElementById('clear-category-form-btn');
-        const clearAllCategoriesBtn = document.getElementById('clear-all-categories-btn');
+        const categoryCheckboxes = document.getElementById('category-checkboxes');
 
-        // Message and Prompt Box Elements
-        const messageBox = document.getElementById('message-box');
-        const promptOverlay = document.getElementById('prompt-overlay');
-        const promptMessage = document.getElementById('prompt-message');
-        const promptConfirmBtn = document.getElementById('prompt-confirm-btn');
-        const promptCancelBtn = document.getElementById('prompt-cancel-btn');
-
-        let promptCallback = null;
-
-        // --- Utility Functions ---
+        // Function to show custom messages
         function showMessage(message, type = 'success') {
             messageBox.textContent = message;
-            messageBox.className = 'message-box show'; // Reset classes
+            messageBox.className = 'message-box show';
             if (type === 'error') {
                 messageBox.classList.add('error');
             } else {
-                messageBox.classList.add('success');
+                messageBox.classList.remove('error');
             }
             setTimeout(() => {
                 messageBox.classList.remove('show');
             }, 3000);
         }
 
-        function showPrompt(message, callback) {
-            promptMessage.textContent = message;
-            promptOverlay.style.display = 'flex';
-            promptCallback = callback;
+        // Custom UI functions
+        function showCustomMessage(message) {
+            const overlay = document.createElement('div');
+            overlay.classList.add('custom-overlay');
+            overlay.innerHTML = `
+                <div class="custom-box">
+                    <p>${message}</p>
+                    <button>OK</button>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+            overlay.querySelector('button').addEventListener('click', () => {
+                document.body.removeChild(overlay);
+            });
         }
 
-        promptConfirmBtn.addEventListener('click', () => {
-            if (promptCallback) {
-                promptCallback(true);
-            }
-            promptOverlay.style.display = 'none';
-        });
+        function showCustomPrompt(message, callback) {
+            const overlay = document.createElement('div');
+            overlay.classList.add('custom-overlay');
+            overlay.innerHTML = `
+                <div class="custom-box">
+                    <p>${message}</p>
+                    <div class="custom-prompt-buttons">
+                        <button class="yes-btn">Yes</button>
+                        <button class="no-btn">No</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
 
-        promptCancelBtn.addEventListener('click', () => {
-            if (promptCallback) {
-                promptCallback(false);
-            }
-            promptOverlay.style.display = 'none';
-        });
+            const yesBtn = overlay.querySelector('.yes-btn');
+            const noBtn = overlay.querySelector('.no-btn');
 
-        // --- Authentication Functions ---
-        googleLoginBtn.addEventListener('click', async () => {
-            const provider = new GoogleAuthProvider();
+            yesBtn.addEventListener('click', () => {
+                document.body.removeChild(overlay);
+                callback(true);
+            });
+
+            noBtn.addEventListener('click', () => {
+                document.body.removeChild(overlay);
+                callback(false);
+            });
+        }
+
+        // Function to fetch and display categories
+        async function fetchAndDisplayCategories() {
+            adminCategoryList.innerHTML = '';
+            categoryCheckboxes.innerHTML = '';
+            noAdminCategoriesMessage.style.display = 'none';
+
             try {
-                await signInWithPopup(auth, provider);
-                // Handled by onAuthStateChanged
-            } catch (error) {
-                console.error("Google login failed: ", error);
-                showMessage("Login failed: " + error.message, 'error');
-            }
-        });
+                const categoriesRef = collection(db, "categories");
+                const querySnapshot = await getDocs(categoriesRef);
+                
+                if (querySnapshot.empty) {
+                    noAdminCategoriesMessage.style.display = 'block';
+                    return;
+                }
 
-        logoutBtn.addEventListener('click', async () => {
+                querySnapshot.forEach((doc) => {
+                    const category = { id: doc.id, ...doc.data() };
+                    
+                    // Add to category list
+                    const categoryCard = document.createElement('div');
+                    categoryCard.classList.add('category-card');
+                    categoryCard.innerHTML = `
+                        <img src="${category.imageUrl}" alt="${category.name}" class="category-image" onerror="this.onerror=null; this.src='https://placehold.co/300x200/0f0c1d/ffffff?text=No+Image'">
+                        <div class="category-name">${category.name}</div>
+                        <button class="delete-category-btn" data-id="${doc.id}">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                    adminCategoryList.appendChild(categoryCard);
+                    
+                    // Add to checkboxes for video form
+                    const checkboxDiv = document.createElement('div');
+                    checkboxDiv.classList.add('category-option');
+                    checkboxDiv.innerHTML = `
+                        <input type="checkbox" id="cat-${doc.id}" name="categories" value="${doc.id}">
+                        <label for="cat-${doc.id}">${category.name}</label>
+                    `;
+                    categoryCheckboxes.appendChild(checkboxDiv);
+                });
+
+                // Add event listeners to delete buttons
+                adminCategoryList.querySelectorAll('.delete-category-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const categoryId = e.currentTarget.getAttribute('data-id');
+                        const categoryName = e.currentTarget.parentElement.querySelector('.category-name').textContent;
+                        showCustomPrompt(`Delete category "${categoryName}"?`, (response) => {
+                            if (response) {
+                                deleteCategory(categoryId);
+                            }
+                        });
+                    });
+                });
+
+            } catch (error) {
+                console.error("Error fetching categories: ", error);
+                adminCategoryList.innerHTML = `
+                    <div class="no-videos-message" style="color: #dc3545;">
+                        <i class="fas fa-exclamation-circle"></i> Error loading categories.
+                    </div>
+                `;
+            }
+        }
+
+        // Function to delete a category
+        async function deleteCategory(categoryId) {
             try {
-                await signOut(auth);
-                // Handled by onAuthStateChanged
+                await deleteDoc(doc(db, "categories", categoryId));
+                showMessage("Category deleted successfully!");
+                fetchAndDisplayCategories();
             } catch (error) {
-                console.error("Logout failed: ", error);
-                showMessage("Logout failed: " + error.message, 'error');
+                console.error("Error deleting category: ", error);
+                showMessage("Error deleting category: " + error.message, 'error');
+            }
+        }
+
+        // Handle category form submission
+        categoryForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const categoryName = document.getElementById('categoryName').value;
+            const categoryImageUrl = document.getElementById('categoryImageUrl').value;
+            
+            const categoryData = {
+                name: categoryName,
+                imageUrl: categoryImageUrl
+            };
+
+            try {
+                await addDoc(collection(db, "categories"), categoryData);
+                showMessage("Category added successfully!");
+                categoryForm.reset();
+                fetchAndDisplayCategories();
+            } catch (e) {
+                console.error("Error adding category: ", e);
+                showMessage("Error adding category: " + e.message, 'error');
             }
         });
 
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                console.log("Admin user signed in:", user.displayName || user.email);
-                loginContainer.style.display = 'none';
-                adminContent.style.display = 'block';
-                // Fetch and display data
+        // Handle video form submission
+        videoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Get selected categories
+            const selectedCategories = [];
+            document.querySelectorAll('input[name="categories"]:checked').forEach(checkbox => {
+                selectedCategories.push(checkbox.value);
+            });
+
+            // Get form values
+            const videoTitle = document.getElementById('videoTitle').value;
+            const thumbnailUrl = document.getElementById('thumbnailUrl').value;
+            const videoUrl = document.getElementById('videoUrl').value;
+            const videoDuration = document.getElementById('videoDuration').value;
+            
+            const initialViews = "0";
+            const initialLikes = "0";
+            const initialDescription = "No description available.";
+
+            // Create a video object
+            const videoData = {
+                title: videoTitle,
+                thumbnail: thumbnailUrl,
+                url: videoUrl,
+                duration: videoDuration,
+                views: initialViews,
+                likes: initialLikes,
+                description: initialDescription,
+                categories: selectedCategories,
+                createdAt: new Date()
+            };
+
+            try {
+                const docRef = await addDoc(collection(db, "public_videos"), videoData);
+                console.log("Document written with ID: ", docRef.id);
+                showMessage("Video added successfully!");
+                videoForm.reset();
                 fetchAndDisplayAdminVideos();
-                fetchAndDisplayAdminCategories();
-                populateCategoryDropdown(); // Populate dropdown when admin logs in
-            } else {
-                console.log("Admin user signed out or not authenticated.");
-                loginContainer.style.display = 'flex';
-                adminContent.style.display = 'none';
+            } catch (e) {
+                console.error("Error adding document: ", e);
+                showMessage("Error adding video: " + e.message, 'error');
             }
         });
 
-        // --- Video Management Functions ---
-        // Function to fetch and display videos in admin panel
+        // Handle clear form button
+        clearFormBtn.addEventListener('click', () => {
+            videoForm.reset();
+        });
+
+        // Function to fetch and display videos in the admin panel
         async function fetchAndDisplayAdminVideos() {
-            adminVideoList.innerHTML = ''; // Clear existing videos
-            noAdminVideosMessage.style.display = 'none'; // Hide message initially
+            adminVideoList.innerHTML = '';
+            noAdminVideosMessage.style.display = 'none';
 
             try {
-                const q = query(collection(db, "public_videos"), orderBy("timestamp", "desc"));
-                const querySnapshot = await getDocs(q);
+                const publicVideosRef = collection(db, 'public_videos');
+                const querySnapshot = await getDocs(publicVideosRef);
 
                 if (querySnapshot.empty) {
                     noAdminVideosMessage.style.display = 'block';
                     return;
                 }
 
+                let videos = [];
                 querySnapshot.forEach((doc) => {
-                    const video = doc.data();
+                    videos.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Sort videos by createdAt
+                videos.sort((a, b) => {
+                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0);
+                    const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
+                    return dateB - dateA;
+                });
+
+                videos.forEach((video) => {
                     const videoItem = document.createElement('div');
                     videoItem.classList.add('video-item');
+                    videoItem.setAttribute('data-video-id', video.id);
+
                     videoItem.innerHTML = `
-                        <img src="${video.thumbnailUrl}" alt="${video.title}" onerror="this.onerror=null;this.src='https://via.placeholder.com/80x50?text=No+Image';"/>
+                        <img src="${video.thumbnail}" alt="Thumbnail" onerror="this.onerror=null; this.src='https://placehold.co/80x50/0f0c1d/ffffff?text=No+Image'">
                         <div class="video-details">
                             <h3>${video.title}</h3>
-                            <p>URL: <a href="${video.videoUrl}" target="_blank">${video.videoUrl.substring(0, 40)}...</a></p>
-                            <p>Duration: ${video.duration}</p>
-                            <p>Category ID: ${video.category || 'N/A'}</p>
+                            <p>Duration: ${video.duration} | Views: ${video.views} | Likes: ${video.likes}</p>
+                            <p>Categories: ${video.categories ? video.categories.join(', ') : 'None'}</p>
                         </div>
-                        <button class="delete-btn" data-id="${doc.id}">Delete</button>
+                        <button class="delete-btn" data-id="${video.id}"><i class="fas fa-trash"></i> Delete</button>
                     `;
                     adminVideoList.appendChild(videoItem);
                 });
 
-                // Add event listeners for delete buttons
+                // Add event listeners to delete buttons
                 adminVideoList.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const videoIdToDelete = event.target.dataset.id;
-                        showPrompt(`Are you sure you want to delete "${event.target.previousElementSibling.querySelector('h3').textContent}"? This action cannot be undone.`, (response) => {
+                    button.addEventListener('click', (e) => {
+                        const videoIdToDelete = e.currentTarget.getAttribute('data-id');
+                        showCustomPrompt(`Are you sure you want to delete this video?`, (response) => {
                             if (response) {
                                 deleteVideo(videoIdToDelete);
                             }
@@ -625,196 +778,17 @@
             }
         }
 
-        // Function to add a new video
-        videoForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const title = videoTitleInput.value.trim();
-            const thumbnailUrl = thumbnailUrlInput.value.trim();
-            const videoUrl = videoUrlInput.value.trim();
-            const duration = videoDurationInput.value.trim();
-            const categoryId = videoCategorySelect.value; // Get selected category ID
-
-            if (title && thumbnailUrl && videoUrl && duration && categoryId) {
-                try {
-                    // Add a new document with a generated ID to the "public_videos" collection
-                    await addDoc(collection(db, "public_videos"), {
-                        title: title,
-                        thumbnailUrl: thumbnailUrl,
-                        videoUrl: videoUrl,
-                        duration: duration,
-                        views: 0, // Initial views
-                        likes: 0, // Initial likes
-                        timestamp: new Date(), // When the video was added
-                        category: categoryId // Save the category ID
-                    });
-                    showMessage("Video added successfully!");
-                    videoForm.reset();
-                    fetchAndDisplayAdminVideos(); // Refresh the list after adding
-                    populateCategoryDropdown(); // Re-populate to ensure fresh list
-                } catch (error) {
-                    console.error("Error adding document: ", error);
-                    showMessage("Error adding video: " + error.message, 'error');
-                }
-            } else {
-                showMessage("Please fill in all video fields and select a category.", 'error');
-            }
-        });
-
         // Function to delete a video
         async function deleteVideo(videoId) {
             try {
                 await deleteDoc(doc(db, "public_videos", videoId));
                 showMessage("Video deleted successfully!");
-                console.log("Document successfully deleted with ID:", videoId);
-                fetchAndDisplayAdminVideos(); // Refresh the list after deletion
+                fetchAndDisplayAdminVideos();
             } catch (error) {
                 console.error("Error deleting document: ", error);
                 showMessage("Error deleting video: " + error.message, 'error');
             }
         }
-
-        // Clear Form button for video
-        clearFormBtn.addEventListener('click', () => {
-            videoForm.reset();
-        });
-
-
-        // --- Category Management Functions ---
-
-        // Function to populate the category dropdown
-        async function populateCategoryDropdown() {
-            videoCategorySelect.innerHTML = '<option value="">-- Select a Category --</option>'; // Clear and add default option
-            try {
-                const categoriesSnapshot = await getDocs(query(collection(db, "categories"), orderBy("name")));
-                categoriesSnapshot.forEach(doc => {
-                    const category = doc.data();
-                    const option = document.createElement('option');
-                    option.value = doc.id; // Store category ID as value
-                    option.textContent = category.name;
-                    videoCategorySelect.appendChild(option);
-                });
-            } catch (error) {
-                console.error("Error populating categories dropdown: ", error);
-                showMessage("Error loading categories for video form.", 'error');
-            }
-        }
-
-        // Function to display categories in admin panel
-        async function fetchAndDisplayAdminCategories() {
-            adminCategoryList.innerHTML = ''; // Clear existing categories
-            noAdminCategoriesMessage.style.display = 'none'; // Hide message initially
-
-            try {
-                const categoriesCollection = collection(db, "categories");
-                const categoriesSnapshot = await getDocs(query(categoriesCollection, orderBy("name")));
-
-                if (categoriesSnapshot.empty) {
-                    noAdminCategoriesMessage.style.display = 'block';
-                    return;
-                }
-
-                categoriesSnapshot.forEach(doc => {
-                    const category = doc.data();
-                    const categoryItem = document.createElement('div');
-                    categoryItem.classList.add('video-item'); // Reuse video-item style for consistency
-                    categoryItem.innerHTML = `
-                        <img src="${category.thumbnailUrl}" alt="${category.name}" onerror="this.onerror=null;this.src='https://via.placeholder.com/80x50?text=No+Image';"/>
-                        <div class="video-details">
-                            <h3>${category.name}</h3>
-                            <p>ID: ${doc.id}</p>
-                        </div>
-                        <button class="delete-btn" data-id="${doc.id}" data-name="${category.name}">Delete</button>
-                    `;
-                    adminCategoryList.appendChild(categoryItem);
-                });
-
-                // Add event listeners for delete buttons
-                adminCategoryList.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        const categoryIdToDelete = event.target.dataset.id;
-                        const categoryNameToDelete = event.target.dataset.name;
-                        showPrompt(`Are you sure you want to delete the category "${categoryNameToDelete}"? This action cannot be undone.`, (response) => {
-                            if (response) {
-                                deleteCategory(categoryIdToDelete);
-                            }
-                        });
-                    });
-                });
-            } catch (error) {
-                console.error("Error fetching admin categories: ", error);
-                adminCategoryList.innerHTML = `
-                    <div class="no-videos-message" style="color: #dc3545;">
-                        <i class="fas fa-exclamation-circle"></i> Error loading categories.
-                    </div>
-                `;
-            }
-        }
-
-        // Function to add a new category
-        categoryForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const name = categoryNameInput.value.trim();
-            const thumbnailUrl = categoryThumbnailUrlInput.value.trim();
-
-            if (name && thumbnailUrl) {
-                try {
-                    await addDoc(collection(db, "categories"), {
-                        name: name,
-                        thumbnailUrl: thumbnailUrl,
-                        createdAt: new Date()
-                    });
-                    showMessage("Category added successfully!");
-                    categoryForm.reset();
-                    fetchAndDisplayAdminCategories(); // Refresh the list
-                    populateCategoryDropdown(); // Refresh dropdown in video form
-                } catch (error) {
-                    console.error("Error adding category: ", error);
-                    showMessage("Error adding category: " + error.message, 'error');
-                }
-            } else {
-                showMessage("Please fill in all category fields.", 'error');
-            }
-        });
-
-        // Function to delete a category
-        async function deleteCategory(categoryId) {
-            try {
-                // Before deleting the category, consider how to handle videos linked to it.
-                // For simplicity, this example just deletes the category.
-                // You might want to update linked videos to 'uncategorized' or similar.
-                await deleteDoc(doc(db, "categories", categoryId));
-                showMessage("Category deleted successfully!");
-                fetchAndDisplayAdminCategories(); // Refresh the list
-                populateCategoryDropdown(); // Refresh dropdown in video form
-            } catch (error) {
-                console.error("Error deleting category: ", error);
-                showMessage("Error deleting category: " + error.message, 'error');
-            }
-        }
-
-        // Clear Category Form button
-        clearCategoryFormBtn.addEventListener('click', () => {
-            categoryForm.reset();
-        });
-
-        // Clear All Categories button
-        clearAllCategoriesBtn.addEventListener('click', () => {
-            showPrompt("Are you sure you want to delete ALL categories? This action cannot be undone and will affect how videos are displayed on the homepage if they are linked to categories.", async (response) => {
-                if (response) {
-                    try {
-                        const categoriesSnapshot = await getDocs(collection(db, "categories"));
-                        const deletePromises = categoriesSnapshot.docs.map(d => deleteDoc(doc(db, "categories", d.id)));
-                        await Promise.all(deletePromises);
-                        showMessage("All categories cleared successfully!");
-                        fetchAndDisplayAdminCategories(); // Refresh the list
-                        populateCategoryDropdown(); // Refresh dropdown in video form
-                    } catch (error) {
-                        console.error("Error clearing all categories: ", error);
-                        showMessage("Error clearing all categories: " + error.message, 'error');
-                    }
-                }
-            });
-        });
     </script>
 </body>
 </html>

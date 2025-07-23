@@ -1089,11 +1089,15 @@
                     [metricType]: FieldValue.increment(1)
                 });
                 console.log(`${metricType} incremented for video ${videoId}`);
-                // Re-fetch public videos to update the UI
+                // Re-fetch public videos to update the UI (this might cause a slight flicker,
+                // consider updating the specific video card's metric display directly for smoother UX)
+                // For simplicity, we'll re-fetch for now.
                 fetchPublicVideos(); 
             } catch (error) {
                 console.error(`Error incrementing ${metricType}:`, error);
-                showCustomMessage(`Failed to update ${metricType}.`);
+                // The original "Failed to add to favorites" message should now only appear for favorite errors
+                // This message is more general for metric updates
+                showCustomMessage(`Failed to update ${metricType}. Please check console.`);
             }
         }
 
@@ -1131,8 +1135,9 @@
                     fetchUserFavorites(user.uid);
                 }
             } catch (error) {
-                console.error("Error writing document: ", error);
-                showCustomMessage("Failed to add to favorites. Please try again.");
+                console.error("Error writing document to favorites: ", error);
+                // Specific error message for favorite addition
+                showCustomMessage("Failed to add to favorites. Please ensure you are logged in and have permissions.");
             }
         }
 
@@ -1147,8 +1152,7 @@
             }
 
             const userFavoritesRef = collection(db, 'users', userId, 'favorites');
-            // Firestore does not support orderBy on a field that might not exist for all documents
-            // Fetch all and sort in memory if needed.
+            
             getDocs(userFavoritesRef)
                 .then((querySnapshot) => {
                     if (querySnapshot.empty) {
@@ -1269,51 +1273,51 @@
                 </div>
             `;
 
-            // Event listeners for single and double click
-            let clickTimer = null;
-            let lastClickTime = 0;
+            // 🌟 MODIFICATION STARTS HERE 🌟
+            let clickTimeout = null;
+            const DOUBLE_CLICK_THRESHOLD = 300; // milliseconds
+
             videoCard.addEventListener('click', (event) => {
                 // Prevent event from bubbling up to parent if it's a child element click
                 if (event.target.closest('.video-card') !== videoCard) {
                     return;
                 }
 
-                const currentTime = new Date().getTime();
-                const DOUBLE_CLICK_TIME_THRESHOLD = 300; // milliseconds
+                if (clickTimeout === null) {
+                    // This is the first click in a potential double-click sequence
+                    clickTimeout = setTimeout(() => {
+                        // Single click action: Open video URL and increment views
+                        console.log("Single click: Opening video and incrementing views.");
+                        window.open(videoData.url, '_blank');
+                        incrementVideoMetric(videoData.id, 'views');
+                        clickTimeout = null; // Reset timeout
+                    }, DOUBLE_CLICK_THRESHOLD);
+                } else {
+                    // This is the second click, meaning a double-click occurred
+                    clearTimeout(clickTimeout); // Clear the pending single-click timeout
+                    clickTimeout = null; // Reset timeout
 
-                if (currentTime - lastClickTime < DOUBLE_CLICK_TIME_THRESHOLD) {
-                    // Double click action: Trigger heart animation, increment likes, and add to favorites
-                    clearTimeout(clickTimer); // Clear any pending single click
-                    clickTimer = null; // Reset clickTimer
-
+                    console.log("Double click: Playing heart animation, incrementing likes, and adding to favorites.");
+                    
                     // Play heart animation
                     const heartContainer = videoCard.querySelector('.heart-animation-container');
                     const animatedHeart = heartContainer.querySelector('.animated-heart');
                     heartContainer.style.display = 'flex'; // Show container
-                    animatedHeart.classList.remove('animate-heart'); // Reset animation
+                    animatedHeart.classList.remove('animate-heart'); // Reset animation state
                     void animatedHeart.offsetWidth; // Trigger reflow to restart animation
                     animatedHeart.classList.add('animate-heart'); // Start animation
 
-                    // After animation, hide container and remove animation class
+                    // Hide container after animation completes
                     animatedHeart.addEventListener('animationend', () => {
                         heartContainer.style.display = 'none';
                         animatedHeart.classList.remove('animate-heart');
                     }, { once: true }); // Ensure this listener runs only once
 
-
                     incrementVideoMetric(videoData.id, 'likes');
-                    addVideoToFavorites(videoData); // Automatically add to favorites
-                    lastClickTime = 0; // Reset for next potential double-click
-                } else {
-                    // Single click action: Open video URL and increment views
-                    clickTimer = setTimeout(() => {
-                        window.open(videoData.url, '_blank'); // Open video URL in new tab
-                        incrementVideoMetric(videoData.id, 'views');
-                        clickTimer = null;
-                    }, DOUBLE_CLICK_TIME_THRESHOLD);
+                    addVideoToFavorites(videoData);
                 }
-                lastClickTime = currentTime;
             });
+            // 🌟 MODIFICATION ENDS HERE 🌟
 
             return videoCard;
         }

@@ -848,9 +848,10 @@
 
     <script type="module">
         // Import the functions you need from the SDKs you need
+        // Fix: Import `increment` and `serverTimestamp` directly from 'firebase/firestore'
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, updateDoc, getDocs, query, FieldValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, getDocs, query, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         // Your web app's Firebase configuration
         // IMPORTANT: Ensure this matches your Firebase project's configuration exactly.
@@ -973,6 +974,8 @@
                     console.log("Google Login Successful:", result.user);
                     showCustomMessage(`Logged in as: ${result.user.displayName || result.user.email}`);
                     dropdown.classList.remove('active');
+                    // Store that user has logged in with Google for persistence
+                    localStorage.setItem('hasGoogleLoggedIn', 'true'); 
                 })
                 .catch((error) => {
                     const errorMessage = error.message;
@@ -1001,6 +1004,8 @@
             auth.signOut().then(() => {
                 showCustomMessage("Logged out successfully.");
                 dropdown.classList.remove('active');
+                // Clear Google login persistence
+                localStorage.removeItem('hasGoogleLoggedIn'); 
                 // onAuthStateChanged will handle UI updates
             }).catch((error) => {
                 console.error("Logout Error:", error);
@@ -1086,18 +1091,14 @@
             try {
                 const videoRef = doc(db, "public_videos", videoId);
                 await updateDoc(videoRef, {
-                    [metricType]: FieldValue.increment(1)
+                    [metricType]: increment(1) // Use the imported 'increment' function
                 });
                 console.log(`${metricType} incremented for video ${videoId}`);
-                // Re-fetch public videos to update the UI (this might cause a slight flicker,
-                // consider updating the specific video card's metric display directly for smoother UX)
-                // For simplicity, we'll re-fetch for now.
+                // Re-fetch public videos to update the UI
                 fetchPublicVideos(); 
             } catch (error) {
                 console.error(`Error incrementing ${metricType}:`, error);
-                // The original "Failed to add to favorites" message should now only appear for favorite errors
-                // This message is more general for metric updates
-                showCustomMessage(`Failed to update ${metricType}. Please check console.`);
+                showCustomMessage(`Failed to update ${metricType}.`);
             }
         }
 
@@ -1126,7 +1127,7 @@
                     likes: videoDetails.likes,
                     url: videoDetails.url, // This will be the direct play URL
                     description: videoDetails.description,
-                    timestamp: FieldValue.serverTimestamp() // To record when it was added
+                    timestamp: serverTimestamp() // Use the imported 'serverTimestamp' function
                 });
                 showCustomMessage("Video added to favorites! ❤️");
                 console.log("Document successfully written!");
@@ -1135,9 +1136,8 @@
                     fetchUserFavorites(user.uid);
                 }
             } catch (error) {
-                console.error("Error writing document to favorites: ", error);
-                // Specific error message for favorite addition
-                showCustomMessage("Failed to add to favorites. Please ensure you are logged in and have permissions.");
+                console.error("Error writing document: ", error);
+                showCustomMessage("Failed to add to favorites. Please try again.");
             }
         }
 
@@ -1152,7 +1152,8 @@
             }
 
             const userFavoritesRef = collection(db, 'users', userId, 'favorites');
-            
+            // Firestore does not support orderBy on a field that might not exist for all documents
+            // Fetch all and sort in memory if needed.
             getDocs(userFavoritesRef)
                 .then((querySnapshot) => {
                     if (querySnapshot.empty) {
@@ -1273,51 +1274,51 @@
                 </div>
             `;
 
-            // 🌟 MODIFICATION STARTS HERE 🌟
-            let clickTimeout = null;
-            const DOUBLE_CLICK_THRESHOLD = 300; // milliseconds
-
+            // Event listeners for single and double click
+            let clickTimer = null;
+            let lastClickTime = 0;
             videoCard.addEventListener('click', (event) => {
                 // Prevent event from bubbling up to parent if it's a child element click
                 if (event.target.closest('.video-card') !== videoCard) {
                     return;
                 }
 
-                if (clickTimeout === null) {
-                    // This is the first click in a potential double-click sequence
-                    clickTimeout = setTimeout(() => {
-                        // Single click action: Open video URL and increment views
-                        console.log("Single click: Opening video and incrementing views.");
-                        window.open(videoData.url, '_blank');
-                        incrementVideoMetric(videoData.id, 'views');
-                        clickTimeout = null; // Reset timeout
-                    }, DOUBLE_CLICK_THRESHOLD);
-                } else {
-                    // This is the second click, meaning a double-click occurred
-                    clearTimeout(clickTimeout); // Clear the pending single-click timeout
-                    clickTimeout = null; // Reset timeout
+                const currentTime = new Date().getTime();
+                const DOUBLE_CLICK_TIME_THRESHOLD = 300; // milliseconds
 
-                    console.log("Double click: Playing heart animation, incrementing likes, and adding to favorites.");
-                    
+                if (currentTime - lastClickTime < DOUBLE_CLICK_TIME_THRESHOLD) {
+                    // Double click action: Trigger heart animation, increment likes, and add to favorites
+                    clearTimeout(clickTimer); // Clear any pending single click
+                    clickTimer = null; // Reset clickTimer
+
                     // Play heart animation
                     const heartContainer = videoCard.querySelector('.heart-animation-container');
                     const animatedHeart = heartContainer.querySelector('.animated-heart');
                     heartContainer.style.display = 'flex'; // Show container
-                    animatedHeart.classList.remove('animate-heart'); // Reset animation state
+                    animatedHeart.classList.remove('animate-heart'); // Reset animation
                     void animatedHeart.offsetWidth; // Trigger reflow to restart animation
                     animatedHeart.classList.add('animate-heart'); // Start animation
 
-                    // Hide container after animation completes
+                    // After animation, hide container and remove animation class
                     animatedHeart.addEventListener('animationend', () => {
                         heartContainer.style.display = 'none';
                         animatedHeart.classList.remove('animate-heart');
                     }, { once: true }); // Ensure this listener runs only once
 
+
                     incrementVideoMetric(videoData.id, 'likes');
-                    addVideoToFavorites(videoData);
+                    addVideoToFavorites(videoData); // Automatically add to favorites
+                    lastClickTime = 0; // Reset for next potential double-click
+                } else {
+                    // Single click action: Open video URL and increment views
+                    clickTimer = setTimeout(() => {
+                        window.open(videoData.url, '_blank'); // Open video URL in new tab
+                        incrementVideoMetric(videoData.id, 'views');
+                        clickTimer = null;
+                    }, DOUBLE_CLICK_TIME_THRESHOLD);
                 }
+                lastClickTime = currentTime;
             });
-            // 🌟 MODIFICATION ENDS HERE 🌟
 
             return videoCard;
         }

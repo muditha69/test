@@ -660,10 +660,51 @@
         .custom-prompt-buttons .no-btn:hover {
             background-color: #777;
         }
+
+        /* Heart Animation Styles */
+        .heart-animation-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none; /* Make it non-interactive */
+            z-index: 5; /* Above thumbnail, below play button perhaps */
+            display: none; /* Hidden by default */
+        }
+
+        .animated-heart {
+            font-size: 5rem; /* Larger heart */
+            color: var(--neon-pink);
+            opacity: 0;
+            transform: scale(0);
+            filter: drop-shadow(0 0 15px var(--neon-pink));
+        }
+
+        .animated-heart.animate-heart {
+            animation: heartPopFade 0.7s ease-out forwards;
+        }
+
+        @keyframes heartPopFade {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(1);
+            }
+        }
     </style>
 </head>
 <body>
-    <!-- Age Verification Gate -->
     <div class="age-gate" id="age-gate">
         <div class="age-gate-content">
             <h1><i class="fas fa-exclamation-triangle"></i> ADULTS ONLY</h1>
@@ -691,7 +732,6 @@
                     <i class="fas fa-user" id="profile-icon"></i>
                 </div>
                 <div class="dropdown">
-                    <!-- User Name/ID Display -->
                     <div class="dropdown-item" id="user-display-info" style="display: none;">
                         <i class="fas fa-user-circle"></i>
                         <span id="current-user-name"></span>
@@ -704,7 +744,6 @@
                         <i class="fas fa-user-clock"></i>
                         <span>Log in with Guest Account</span>
                     </div>
-                    <!-- Logout Button -->
                     <div class="dropdown-item" id="logout-button" style="display: none;">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Logout</span>
@@ -762,7 +801,6 @@
     <section class="video-section" id="home-content">
         <h2 class="section-title">Featured Videos</h2>
         <div class="video-grid" id="public-video-grid">
-            <!-- Public videos will be loaded here by JavaScript from Firestore -->
             <div class="placeholder-message" id="loading-public-videos">
                 <i class="fas fa-spinner fa-spin" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
                 <h3>Loading Videos...</h3>
@@ -774,7 +812,6 @@
     <section class="video-section" id="favourite-content" style="display:none;">
         <h2 class="section-title">Favourites</h2>
         <div class="video-grid" id="favourite-video-grid">
-            <!-- Favourites will be loaded here by JavaScript -->
             <div class="placeholder-message">
                 <i class="fas fa-heart-broken" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
                 <h3>No favourites yet</h3>
@@ -1227,34 +1264,55 @@
                         </div>
                     </div>
                 </div>
+                <div class="heart-animation-container">
+                    <i class="fas fa-heart animated-heart"></i>
+                </div>
             `;
 
             // Event listeners for single and double click
             let clickTimer = null;
+            let lastClickTime = 0;
             videoCard.addEventListener('click', (event) => {
                 // Prevent event from bubbling up to parent if it's a child element click
                 if (event.target.closest('.video-card') !== videoCard) {
                     return;
                 }
 
-                if (clickTimer === null) {
+                const currentTime = new Date().getTime();
+                const DOUBLE_CLICK_TIME_THRESHOLD = 300; // milliseconds
+
+                if (currentTime - lastClickTime < DOUBLE_CLICK_TIME_THRESHOLD) {
+                    // Double click action: Trigger heart animation, increment likes, and add to favorites
+                    clearTimeout(clickTimer); // Clear any pending single click
+                    clickTimer = null; // Reset clickTimer
+
+                    // Play heart animation
+                    const heartContainer = videoCard.querySelector('.heart-animation-container');
+                    const animatedHeart = heartContainer.querySelector('.animated-heart');
+                    heartContainer.style.display = 'flex'; // Show container
+                    animatedHeart.classList.remove('animate-heart'); // Reset animation
+                    void animatedHeart.offsetWidth; // Trigger reflow to restart animation
+                    animatedHeart.classList.add('animate-heart'); // Start animation
+
+                    // After animation, hide container and remove animation class
+                    animatedHeart.addEventListener('animationend', () => {
+                        heartContainer.style.display = 'none';
+                        animatedHeart.classList.remove('animate-heart');
+                    }, { once: true }); // Ensure this listener runs only once
+
+
+                    incrementVideoMetric(videoData.id, 'likes');
+                    addVideoToFavorites(videoData); // Automatically add to favorites
+                    lastClickTime = 0; // Reset for next potential double-click
+                } else {
+                    // Single click action: Open video URL and increment views
                     clickTimer = setTimeout(() => {
-                        // Single click action: Open video URL and increment views
                         window.open(videoData.url, '_blank'); // Open video URL in new tab
                         incrementVideoMetric(videoData.id, 'views');
                         clickTimer = null;
-                    }, 300); // 300ms to differentiate single from double click
-                } else {
-                    // Double click action: Increment likes and prompt for favorite
-                    clearTimeout(clickTimer);
-                    clickTimer = null;
-                    incrementVideoMetric(videoData.id, 'likes');
-                    showCustomPrompt('Do you want to add this video to your favorites?', (response) => {
-                        if (response) {
-                            addVideoToFavorites(videoData);
-                        }
-                    });
+                    }, DOUBLE_CLICK_TIME_THRESHOLD);
                 }
+                lastClickTime = currentTime;
             });
 
             return videoCard;

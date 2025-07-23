@@ -6,6 +6,7 @@
     <title>XXX Git - Adult Video Streaming</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* General Styles */
         * {
             margin: 0;
             padding: 0;
@@ -189,10 +190,9 @@
             cursor: pointer;
             border: 2px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s;
-            /* Added for background image */
             background-size: cover;
             background-position: center;
-            overflow: hidden; /* Ensure image doesn't overflow rounded corners */
+            overflow: hidden;
         }
 
         .profile-btn:hover {
@@ -200,12 +200,12 @@
             box-shadow: 0 0 15px var(--neon-pink);
         }
 
-        .profile-btn img { /* Style for user profile image */
+        .profile-btn img {
             width: 100%;
             height: 100%;
             border-radius: 50%;
             object-fit: cover;
-            display: none; /* Hidden by default, shown when photoURL exists */
+            display: none;
         }
 
         .dropdown {
@@ -239,7 +239,7 @@
             cursor: pointer;
             transition: all 0.3s;
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.95rem; /* Slightly smaller font for dropdown items */
+            font-size: 0.95rem;
         }
 
         .dropdown-item:last-child {
@@ -424,7 +424,7 @@
             z-index: 2;
         }
 
-        .play-btn {
+        .play-btn { /* This will now be a visual indicator, not directly clickable for play */
             position: absolute;
             top: 50%;
             left: 50%;
@@ -439,6 +439,7 @@
             opacity: 0;
             transition: opacity 0.3s;
             z-index: 2;
+            pointer-events: none; /* Make it non-interactive */
         }
 
         .video-card:hover .play-btn {
@@ -483,137 +484,6 @@
             display: flex;
             align-items: center;
             gap: 0.3rem;
-            color: var(--neon-pink);
-        }
-
-        /* Video Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-        }
-
-        .modal.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            width: 90%;
-            max-width: 1000px;
-            background: var(--dark-bg);
-            border-radius: 15px;
-            overflow: hidden;
-            position: relative;
-            transform: scale(0.8);
-            transition: transform 0.4s;
-            border: 1px solid var(--neon-pink);
-            box-shadow: 0 0 30px rgba(255, 38, 178, 0.5);
-        }
-
-        .modal.active .modal-content {
-            transform: scale(1);
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 10;
-            transition: background 0.3s;
-        }
-
-        .close-modal:hover {
-            background: var(--neon-pink);
-        }
-
-        .close-modal i {
-            color: white;
-            font-size: 1.5rem;
-        }
-
-        /* Responsive video container */
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
-            overflow: hidden;
-        }
-
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .video-details {
-            padding: 1.5rem;
-        }
-
-        .video-title {
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .video-stats {
-            display: flex;
-            gap: 1.5rem;
-            margin-bottom: 1rem;
-            color: var(--text-secondary);
-        }
-
-        .video-description {
-            margin-top: 1rem;
-            line-height: 1.6;
-            color: var(--text-secondary);
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .action-btn {
-            padding: 0.7rem 1.5rem;
-            border-radius: 30px;
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s;
-        }
-
-        .action-btn:hover {
-            background: rgba(255, 38, 178, 0.1);
-            border-color: var(--neon-pink);
-        }
-
-        .action-btn i {
             color: var(--neon-pink);
         }
 
@@ -721,6 +591,75 @@
                 width: 100%;
             }
         }
+
+        /* Custom Message Box and Prompt Styles */
+        .custom-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .custom-box {
+            background-color: var(--card-bg);
+            color: var(--text);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            border: 1px solid var(--neon-pink);
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .custom-box p {
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .custom-box button {
+            background-color: var(--neon-pink);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: 600;
+        }
+
+        .custom-box button:hover {
+            background-color: #d81b60;
+        }
+
+        .custom-prompt-buttons {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .custom-prompt-buttons button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 5px;
+        }
+
+        .custom-prompt-buttons .no-btn {
+            background-color: #555;
+        }
+
+        .custom-prompt-buttons .no-btn:hover {
+            background-color: #777;
+        }
     </style>
 </head>
 <body>
@@ -740,7 +679,7 @@
 
     <header>
         <div class="logo">
-            <i class="fas fa-fire"></i> XXX Git
+            <i class="fas fa-fire"></i> <a href = "admin.html">XXX Git</a>
             <span class="warning-badge">18+</span>
         </div>
         <div class="header-right">
@@ -750,7 +689,6 @@
             <div class="profile-container">
                 <div class="profile-btn" id="profile-btn">
                     <i class="fas fa-user" id="profile-icon"></i>
-                    <!-- An img tag will be dynamically added here for user photo -->
                 </div>
                 <div class="dropdown">
                     <!-- User Name/ID Display -->
@@ -823,180 +761,19 @@
 
     <section class="video-section" id="home-content">
         <h2 class="section-title">Featured Videos</h2>
-        <div class="video-grid">
-            <div class="video-card" data-video-url="https://www.youtube.com/embed/dQw4w9WgXcQ">
-                <div class="video-thumb">
-                    <img src="https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Video Thumbnail">
-                    <div class="video-duration">22:15</div>
-                    <div class="play-btn">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-                <div class="video-info">
-                    <h3>Passionate Encounter - Late Night Session</h3>
-                    <div class="video-meta">
-                        <div class="video-views">
-                            <i class="fas fa-eye"></i> 2.4M
-                        </div>
-                        <div class="video-likes">
-                            <i class="fas fa-heart"></i> 120K
-                        </div>
-                    </div>
-                </div>
+        <div class="video-grid" id="public-video-grid">
+            <!-- Public videos will be loaded here by JavaScript from Firestore -->
+            <div class="placeholder-message" id="loading-public-videos">
+                <i class="fas fa-spinner fa-spin" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
+                <h3>Loading Videos...</h3>
+                <p>Please wait while we fetch the latest content.</p>
             </div>
-            
-            <div class="video-card" data-video-url="https://www.youtube.com/embed/jNQXAC9IVRw">
-                <div class="video-thumb">
-                    <img src="https://images.pexels.com/photos/3757946/pexels-photo-3757946.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Video Thumbnail">
-                    <div class="video-duration">15:47</div>
-                    <div class="play-btn">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-                <div class="video-info">
-                    <h3>Intimate Lesbian Affection - Sensual Moments</h3>
-                    <div class="video-meta">
-                        <div class="video-views">
-                            <i class="fas fa-eye"></i> 1.8M
-                        </div>
-                        <div class="video-likes">
-                            <i class="fas fa-heart"></i> 98K
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="video-card" data-video-url="https://www.youtube.com/embed/oHg5SJYRHA0">
-                <div class="video-thumb">
-                    <img src="https://images.pexels.com/photos/3760259/pexels-photo-3760259.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Video Thumbnail">
-                    <div class="video-duration">18:33</div>
-                    <div class="play-btn">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-                <div class="video-info">
-                    <h3>Hardcore Action - Intense Session</h3>
-                    <div class="video-meta">
-                        <div class="video-views">
-                            <i class="fas fa-eye"></i> 3.1M
-                        </div>
-                        <div class="video-likes">
-                            <i class="fas fa-heart"></i> 210K
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="video-card" data-video-url="https://www.youtube.com/embed/DLzxrzFCyOs">
-                <div class="video-thumb">
-                    <img src="https://images.pexels.com/photos/3760908/pexels-photo-3760908.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Video Thumbnail">
-                    <div class="video-duration">25:42</div>
-                    <div class="play-btn">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-                <div class="video-info">
-                    <h3>Amateur Couple - First Time Recording</h3>
-                    <div class="video-meta">
-                        <div class="video-views">
-                            <i class="fas fa-eye"></i> 4.7M
-                        </div>
-                        <div class="video-likes">
-                            <i class="fas fa-heart"></i> 320K
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="video-card" data-video-url="https://www.youtube.com/embed/9bZkp7q19f0">
-                <div class="video-thumb">
-                    <img src="https://images.pexels.com/photos/3758294/pexels-photo-3758294.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Video Thumbnail">
-                    <div class="video-duration">19:15</div>
-                    <div class="play-btn">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-                <div class="video-info">
-                    <h3>Roleplay Fantasy - Nurse & Patient</h3>
-                    <div class="video-meta">
-                        <div class="video-views">
-                            <i class="fas fa-eye"></i> 12.4M
-                        </div>
-                        <div class="video-likes">
-                            <i class="fas fa-heart"></i> 890K
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="video-card" data-video-url="https://www.youtube.com/embed/VYOjWnS4cMY">
-                <div class="video-thumb">
-                    <img src="https://images.pexels.com/photos/3757942/pexels-photo-3757942.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Video Thumbnail">
-                    <div class="video-duration">28:05</div>
-                    <div class="play-btn">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-                <div class="video-info">
-                    <h3>Anal Exploration - Deep Penetration</h3>
-                    <div class="video-meta">
-                        <div class="video-views">
-                            <i class="fas fa-eye"></i> 3.6M
-                        </div>
-                        <div class="video-likes">
-                            <i class="fas fa-heart"></i> 240K
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="video-card" data-video-url="https://www.youtube.com/embed/5dsGWM5XGdg">
-                <div class="video-thumb">
-                    <img src="https://images.pexels.com/photos/3757953/pexels-photo-3757953.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Video Thumbnail">
-                    <div class="video-duration">17:30</div>
-                    <div class="play-btn">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-                <div class="video-info">
-                    <h3>Blowjob Techniques - Expert Tutorial</h3>
-                    <div class="video-meta">
-                        <div class="video-views">
-                            <i class="fas fa-eye"></i> 2.1M
-                        </div>
-                        <div class="video-likes">
-                            <i class="fas fa-heart"></i> 150K
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="video-card" data-video-url="https://www.youtube.com/embed/4Tr0otuiQuU">
-                <div class="video-thumb">
-                    <img src="https://images.pexels.com/photos/3757943/pexels-photo-3757943.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Video Thumbnail">
-                    <div class="video-duration">24:18</div>
-                    <div class="play-btn">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-                <div class="video-info">
-                    <h3>Threesome Adventure - Wild Night</h3>
-                    <div class="video-meta">
-                        <div class="video-views">
-                            <i class="fas fa-eye"></i> 5.2M
-                        </div>
-                        <div class="video-likes">
-                            <i class="fas fa-heart"></i> 420K
-                        </div>
-                    </div>
-                </div>
-            </div> 
         </div>
     </section>
 
     <section class="video-section" id="favourite-content" style="display:none;">
         <h2 class="section-title">Favourites</h2>
-        <div class="video-grid">
+        <div class="video-grid" id="favourite-video-grid">
             <!-- Favourites will be loaded here by JavaScript -->
             <div class="placeholder-message">
                 <i class="fas fa-heart-broken" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
@@ -1032,44 +809,14 @@
         </div>
     </footer>
 
-    <div class="modal" id="video-modal">
-        <div class="modal-content">
-            <div class="close-modal">
-                <i class="fas fa-times"></i>
-            </div>
-            <div class="video-container">
-                <iframe id="videoFrame" src="" frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
-            </div>
-            <div class="video-details">
-                <h3 class="video-title" id="modal-video-title"></h3>
-                <div class="video-stats">
-                    <span id="modal-video-views"></span>
-                    <span id="modal-video-likes"></span>
-                    <span id="modal-video-duration"></span>
-                </div>
-                <p class="video-description" id="modal-video-description"></p>
-                <div class="action-buttons">
-                    <button class="action-btn">
-                        <i class="fas fa-heart"></i> Add to Favorites
-                    </button>
-                    <button class="action-btn">
-                        <i class="fas fa-share-alt"></i> Share
-                    </button>
-                    <button class="action-btn">
-                        <i class="fas fa-flag"></i> Report
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, getDocs, query, orderBy, FieldValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, getDocs, query, FieldValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         // Your web app's Firebase configuration
+        // IMPORTANT: Ensure this matches your Firebase project's configuration exactly.
         const firebaseConfig = {
             apiKey: "AIzaSyAsZ-nw5UgKRotI2_Kgb9V-BFXS3JoX7UU",
             authDomain: "xxx-git.firebaseapp.com",
@@ -1085,12 +832,14 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
+        // Log Firebase config for debugging permissions
+        console.log("Firebase Config:", firebaseConfig);
+
         // Initial authentication for the user's application: Sign in anonymously by default.
-        // This ensures the app works correctly without relying on Canvas's internal __initial_auth_token.
         (async () => {
             try {
                 await signInAnonymously(auth);
-                console.log("Signed in anonymously for user's app.");
+                console.log("Signed in anonymously for user's app. Current user:", auth.currentUser); 
             } catch (error) {
                 console.error("Failed to sign in anonymously for user's app:", error);
             }
@@ -1162,8 +911,12 @@
                 const tabName = tab.getAttribute('data-tab');
                 contents[tabName].style.display = 'block';
 
+                // If the 'Home' tab is selected, refresh public videos
+                if (tabName === 'home') {
+                    fetchPublicVideos();
+                }
                 // If the 'Favourite' tab is selected, refresh favorites
-                if (tabName === 'favourite') {
+                else if (tabName === 'favourite') {
                     const user = auth.currentUser;
                     if (user) {
                         fetchUserFavorites(user.uid);
@@ -1172,131 +925,6 @@
                     }
                 }
             });
-        });
-
-        // Video Modal Functionality
-        const videoCards = document.querySelectorAll('.video-card');
-        const modal = document.getElementById('video-modal');
-        const closeModal = document.querySelector('.close-modal');
-        const videoFrame = document.getElementById('videoFrame');
-        const modalVideoTitle = document.getElementById('modal-video-title');
-        const modalVideoViews = document.getElementById('modal-video-views');
-        const modalVideoLikes = document.getElementById('modal-video-likes');
-        const modalVideoDuration = document.getElementById('modal-video-duration');
-        const modalVideoDescription = document.getElementById('modal-video-description');
-        
-        // Sample video data for modal (can be extended or fetched from a backend)
-        const videoData = {
-            "https://www.youtube.com/embed/dQw4w9WgXcQ": {
-                title: "Passionate Encounter - Late Night Session",
-                views: "2.4M views",
-                likes: "120K likes",
-                duration: "22:15",
-                description: "Amateur couple shares their intimate moments in this passionate late night session. Real chemistry and genuine reactions make this video special.",
-                thumbnail: "https://images.pexels.com/photos/3757954/pexels-photo-3757954.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            },
-            "https://www.youtube.com/embed/jNQXAC9IVRw": {
-                title: "Intimate Lesbian Affection - Sensual Moments",
-                views: "1.8M views",
-                likes: "98K likes",
-                duration: "15:47",
-                description: "Two beautiful women explore each other's bodies in this sensual lesbian encounter. Focus on intimacy and connection.",
-                thumbnail: "https://images.pexels.com/photos/3757946/pexels-photo-3757946.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            },
-            "https://www.youtube.com/embed/oHg5SJYRHA0": {
-                title: "Hardcore Action - Intense Session",
-                views: "3.1M views",
-                likes: "210K likes",
-                duration: "18:33",
-                description: "Hardcore action featuring professional performers. Intense scenes with multiple positions and explosive finish.",
-                thumbnail: "https://images.pexels.com/photos/3760259/pexels-photo-3760259.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            },
-            "https://www.youtube.com/embed/DLzxrzFCyOs": {
-                title: "Amateur Couple - First Time Recording",
-                views: "4.7M views",
-                likes: "320K likes",
-                duration: "25:42",
-                description: "Real amateur couple shares their first time recording themselves. Nervous excitement turns into passionate lovemaking.",
-                thumbnail: "https://images.pexels.com/photos/3760908/pexels-photo-3760908.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            },
-            "https://www.youtube.com/embed/9bZkp7q19f0": {
-                title: "Roleplay Fantasy - Nurse & Patient",
-                views: "12.4M views",
-                likes: "890K likes",
-                duration: "19:15",
-                description: "Popular roleplay scenario featuring a sexy nurse taking care of her patient in the most pleasurable way.",
-                thumbnail: "https://images.pexels.com/photos/3758294/pexels-photo-3758294.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            },
-            "https://www.youtube.com/embed/VYOjWnS4cMY": {
-                title: "Anal Exploration - Deep Penetration",
-                views: "3.6M views",
-                likes: "240K likes",
-                duration: "28:05",
-                description: "Anal adventure featuring deep penetration and multiple positions. Not for the faint of heart!",
-                thumbnail: "https://images.pexels.com/photos/3757942/pexels-photo-3757942.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            },
-            "https://www.youtube.com/embed/5dsGWM5XGdg": {
-                title: "Blowjob Techniques - Expert Tutorial",
-                views: "2.1M views",
-                likes: "150K likes",
-                duration: "17:30",
-                description: "Step-by-step tutorial on advanced blowjob techniques. Educational content for couples looking to improve their skills.",
-                thumbnail: "https://images.pexels.com/photos/3757953/pexels-photo-3757953.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            },
-            "https://www.youtube.com/embed/4Tr0otuiQuU": {
-                title: "Threesome Adventure - Wild Night",
-                views: "5.2M views",
-                likes: "420K likes",
-                duration: "24:18",
-                description: "Wild threesome adventure with two women and one man. Double the pleasure in this extended scene.",
-                thumbnail: "https://images.pexels.com/photos/3757943/pexels-photo-3757943.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-            }
-        };
-        
-        // Function to handle opening and populating the video modal
-        function openVideoModal(data) {
-            videoFrame.src = `${data.url}?autoplay=1`;
-            modalVideoTitle.textContent = data.title;
-            modalVideoViews.textContent = data.views;
-            modalVideoLikes.textContent = data.likes;
-            modalVideoDuration.textContent = data.duration;
-            modalVideoDescription.textContent = data.description || "No description available for this video.";
-
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        videoCards.forEach(card => {
-            card.addEventListener('click', () => {
-                const videoUrl = card.getAttribute('data-video-url');
-                if (videoUrl) {
-                    const data = videoData[videoUrl] || {}; // Get video data from your local object
-                    // Fallback for data if not explicitly defined in videoData object
-                    if (!data.title) data.title = card.querySelector('h3').textContent;
-                    if (!data.views) data.views = card.querySelector('.video-views').textContent;
-                    if (!data.likes) data.likes = card.querySelector('.video-likes').textContent;
-                    if (!data.duration) data.duration = card.querySelector('.video-duration').textContent;
-                    if (!data.thumbnail) data.thumbnail = card.querySelector('.video-thumb img').src;
-                    data.url = videoUrl; // Ensure URL is part of data
-
-                    openVideoModal(data); // Call a dedicated function to open and populate the modal
-                }
-            });
-        });
-        
-        closeModal.addEventListener('click', () => {
-            modal.classList.remove('active');
-            videoFrame.src = '';
-            document.body.style.overflow = 'auto';
-        });
-        
-        // Close modal when clicking outside
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.remove('active');
-                videoFrame.src = '';
-                document.body.style.overflow = 'auto';
-            }
         });
         
         // Login functionality
@@ -1346,132 +974,94 @@
         // Search functionality
         const searchBtn = document.querySelector('.search-btn');
         searchBtn.addEventListener('click', () => {
-            showCustomPrompt('Enter search term:', (searchTerm) => {
-                if (searchTerm) {
-                    showCustomMessage(`Searching for: "${searchTerm}"`);
-                }
-            });
+            showCustomMessage('Search functionality coming soon!');
         });
         
         // Custom UI functions (message box and prompt)
         function showCustomMessage(message) {
-            const messageBox = document.createElement('div');
-            messageBox.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background-color: var(--card-bg);
-                color: var(--text);
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-                z-index: 1001;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-                border: 1px solid var(--neon-pink);
+            const overlay = document.createElement('div');
+            overlay.classList.add('custom-overlay');
+            overlay.innerHTML = `
+                <div class="custom-box">
+                    <p>${message}</p>
+                    <button>OK</button>
+                </div>
             `;
-            messageBox.innerHTML = `
-                <p>${message}</p>
-                <button style="
-                    background-color: var(--neon-pink);
-                    color: white;
-                    border: none;
-                    padding: 10px 20px;
-                    border-radius: 5px;
-                    cursor: pointer;
-                    transition: background-color 0.3s;
-                " onmouseover="this.style.backgroundColor='#d81b60'" onmouseout="this.style.backgroundColor='var(--neon-pink)'">OK</button>
-            `;
-            document.body.appendChild(messageBox);
-            messageBox.querySelector('button').addEventListener('click', () => {
-                document.body.removeChild(messageBox);
+            document.body.appendChild(overlay);
+            overlay.querySelector('button').addEventListener('click', () => {
+                document.body.removeChild(overlay);
             });
         }
 
         function showCustomPrompt(message, callback) {
-            const promptBox = document.createElement('div');
-            promptBox.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background-color: var(--card-bg);
-                color: var(--text);
-                padding: 20px;
-                border-radius: 10px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-                z-index: 1001;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-                border: 1px solid var(--neon-pink);
-                width: 90%;
-                max-width: 400px;
-            `;
-            promptBox.innerHTML = `
-                <p>${message}</p>
-                <input type="text" id="promptInput" style="
-                    width: 100%;
-                    padding: 12px;
-                    border-radius: 5px;
-                    border: 1px solid var(--text-secondary);
-                    background-color: var(--darker-bg);
-                    color: var(--text);
-                    font-size: 1rem;
-                " placeholder="Type here...">
-                <div style="display: flex; gap: 10px; width: 100%;">
-                    <button id="promptOk" style="
-                        flex: 1;
-                        background-color: var(--neon-pink);
-                        color: white;
-                        border: none;
-                        padding: 12px;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        transition: background-color 0.3s;
-                        font-weight: 600;
-                    " onmouseover="this.style.backgroundColor='#d81b60'" onmouseout="this.style.backgroundColor='var(--neon-pink)'">Search</button>
-                    <button id="promptCancel" style="
-                        flex: 1;
-                        background-color: #555;
-                        color: white;
-                        border: none;
-                        padding: 12px;
-                        border-radius: 5px;
-                        cursor: pointer;
-                        transition: background-color 0.3s;
-                        font-weight: 600;
-                    " onmouseover="this.style.backgroundColor='#777'" onmouseout="this.style.backgroundColor='#555'">Cancel</button>
+            const overlay = document.createElement('div');
+            overlay.classList.add('custom-overlay');
+            overlay.innerHTML = `
+                <div class="custom-box">
+                    <p>${message}</p>
+                    <div class="custom-prompt-buttons">
+                        <button class="yes-btn">Yes</button>
+                        <button class="no-btn">No</button>
+                    </div>
                 </div>
             `;
-            document.body.appendChild(promptBox);
+            document.body.appendChild(overlay);
 
-            const promptInput = document.getElementById('promptInput');
-            const promptOk = document.getElementById('promptOk');
-            const promptCancel = document.getElementById('promptCancel');
+            const yesBtn = overlay.querySelector('.yes-btn');
+            const noBtn = overlay.querySelector('.no-btn');
 
-            // Focus input field
-            setTimeout(() => promptInput.focus(), 100);
-
-            promptOk.addEventListener('click', () => {
-                const value = promptInput.value;
-                document.body.removeChild(promptBox);
-                callback(value);
+            yesBtn.addEventListener('click', () => {
+                document.body.removeChild(overlay);
+                callback(true);
             });
 
-            promptCancel.addEventListener('click', () => {
-                document.body.removeChild(promptBox);
-                callback(null);
+            noBtn.addEventListener('click', () => {
+                document.body.removeChild(overlay);
+                callback(false);
             });
         }
 
+        // Helper function to convert string numbers (e.g., "2.4M") to actual numbers
+        function parseMetricString(metricString) {
+            if (typeof metricString !== 'string') return metricString; // Already a number
+            const value = parseFloat(metricString);
+            if (metricString.includes('K')) {
+                return value * 1000;
+            } else if (metricString.includes('M')) {
+                return value * 1000000;
+            }
+            return value;
+        }
+
+        // Helper function to format numbers back to "K" or "M" strings
+        function formatMetricNumber(num) {
+            if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M';
+            }
+            if (num >= 1000) {
+                return (num / 1000).toFixed(1) + 'K';
+            }
+            return num.toString();
+        }
+
+        // Function to increment views or likes
+        async function incrementVideoMetric(videoId, metricType) {
+            try {
+                const videoRef = doc(db, "public_videos", videoId);
+                await updateDoc(videoRef, {
+                    [metricType]: FieldValue.increment(1)
+                });
+                console.log(`${metricType} incremented for video ${videoId}`);
+                // Re-fetch public videos to update the UI
+                fetchPublicVideos(); 
+            } catch (error) {
+                console.error(`Error incrementing ${metricType}:`, error);
+                showCustomMessage(`Failed to update ${metricType}.`);
+            }
+        }
+
         // Firebase Firestore Functions for Favorites
-        // Function to add a video to favorites
-        function addVideoToFavorites(videoDetails) {
+        async function addVideoToFavorites(videoDetails) {
             const user = auth.currentUser;
             if (!user) {
                 showCustomMessage("Please log in to add favorites.");
@@ -1483,37 +1073,36 @@
             const userFavoritesRef = collection(db, 'users', user.uid, 'favorites');
 
             // Encode URL to be a valid Firestore document ID (Firestore IDs cannot contain '/', '#', etc.)
-            const videoId = btoa(videoDetails.url).replace(/=/g, ''); // Remove padding characters
+            // Using video ID directly if available, otherwise URL
+            const docId = videoDetails.id || btoa(videoDetails.url).replace(/=/g, '');
 
-            setDoc(doc(userFavoritesRef, videoId), {
-                title: videoDetails.title,
-                thumbnail: videoDetails.thumbnail,
-                duration: videoDetails.duration,
-                views: videoDetails.views,
-                likes: videoDetails.likes,
-                url: videoDetails.url,
-                timestamp: FieldValue.serverTimestamp() // To record when it was added
-            })
-            .then(() => {
+            try {
+                await setDoc(doc(userFavoritesRef, docId), {
+                    title: videoDetails.title,
+                    thumbnail: videoDetails.thumbnail,
+                    duration: videoDetails.duration,
+                    views: videoDetails.views,
+                    likes: videoDetails.likes,
+                    url: videoDetails.url, // This will be the direct play URL
+                    description: videoDetails.description,
+                    timestamp: FieldValue.serverTimestamp() // To record when it was added
+                });
                 showCustomMessage("Video added to favorites! ❤️");
                 console.log("Document successfully written!");
-                // No need to refresh immediately if onAuthStateChanged handles it,
-                // but if user is on 'Favourite' tab, refresh it.
+                // If user is on 'Favourite' tab, refresh it.
                 if (document.querySelector('.tab[data-tab="favourite"]').classList.contains('active')) {
                     fetchUserFavorites(user.uid);
                 }
-            })
-            .catch((error) => {
+            } catch (error) {
                 console.error("Error writing document: ", error);
                 showCustomMessage("Failed to add to favorites. Please try again.");
-            });
+            }
         }
 
         // Function to fetch user favorites and display them
         function fetchUserFavorites(userId) {
-            const favouriteContent = document.getElementById('favourite-content');
-            const videoGrid = favouriteContent.querySelector('.video-grid');
-            videoGrid.innerHTML = ''; // Clear existing content
+            const favouriteVideoGrid = document.getElementById('favourite-video-grid');
+            favouriteVideoGrid.innerHTML = ''; // Clear existing content
 
             if (!userId) {
                 displayNoFavoritesMessage("Please log in to see your favourites.");
@@ -1521,19 +1110,30 @@
             }
 
             const userFavoritesRef = collection(db, 'users', userId, 'favorites');
-            const q = query(userFavoritesRef, orderBy('timestamp', 'desc')); // Order by timestamp
-
-            getDocs(q)
+            // Firestore does not support orderBy on a field that might not exist for all documents
+            // Fetch all and sort in memory if needed.
+            getDocs(userFavoritesRef)
                 .then((querySnapshot) => {
                     if (querySnapshot.empty) {
                         displayNoFavoritesMessage();
                         return;
                     }
 
+                    let favVideos = [];
                     querySnapshot.forEach((doc) => {
-                        const favVideo = doc.data();
+                        favVideos.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    // Sort by timestamp in descending order (newest first)
+                    favVideos.sort((a, b) => {
+                        const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
+                        const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
+                        return dateB - dateA;
+                    });
+
+                    favVideos.forEach((favVideo) => {
                         const videoCard = createVideoCardElement(favVideo);
-                        videoGrid.appendChild(videoCard);
+                        favouriteVideoGrid.appendChild(videoCard);
                     });
                 })
                 .catch((error) => {
@@ -1542,11 +1142,71 @@
                 });
         }
 
-        // Helper function to create a video card element
+        // Function to fetch public videos and display them
+        const publicVideoGrid = document.getElementById('public-video-grid');
+        const loadingPublicVideos = document.getElementById('loading-public-videos');
+
+        async function fetchPublicVideos() {
+            publicVideoGrid.innerHTML = ''; // Clear existing content
+            loadingPublicVideos.style.display = 'flex'; // Show loading indicator
+
+            try {
+                const publicVideosRef = collection(db, 'public_videos');
+                const querySnapshot = await getDocs(publicVideosRef); 
+
+                loadingPublicVideos.style.display = 'none'; // Hide loading indicator
+
+                if (querySnapshot.empty) {
+                    publicVideoGrid.innerHTML = `
+                        <div class="placeholder-message">
+                            <i class="fas fa-video-slash" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
+                            <h3>No videos available yet</h3>
+                            <p>Check back later or add some from the admin panel!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let videos = [];
+                querySnapshot.forEach((doc) => {
+                    videos.push({ id: doc.id, ...doc.data() }); // Include doc.id
+                });
+
+                // Sort videos by createdAt in JavaScript after fetching
+                videos.sort((a, b) => {
+                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0); // Handle potential missing createdAt
+                    const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
+                    return dateB - dateA; // Descending order (newest first)
+                });
+
+                videos.forEach((video) => {
+                    const videoCard = createVideoCardElement(video);
+                    publicVideoGrid.appendChild(videoCard);
+                });
+
+            } catch (error) {
+                console.error("Error fetching public videos: ", error);
+                loadingPublicVideos.style.display = 'none';
+                publicVideoGrid.innerHTML = `
+                    <div class="placeholder-message">
+                        <i class="fas fa-exclamation-circle" style="font-size: 4rem; color: var(--warning); margin-bottom: 1rem;"></i>
+                        <h3>Error loading videos</h3>
+                        <p>Please try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Helper function to create a video card element (reused for both public and favorite videos)
         function createVideoCardElement(videoData) {
             const videoCard = document.createElement('div');
             videoCard.classList.add('video-card');
-            videoCard.setAttribute('data-video-url', videoData.url); // Use the actual video URL
+            videoCard.setAttribute('data-video-id', videoData.id); // Store Firestore document ID
+            videoCard.setAttribute('data-video-url', videoData.url); 
+
+            // Format views and likes for display
+            const displayViews = formatMetricNumber(parseMetricString(videoData.views || "0"));
+            const displayLikes = formatMetricNumber(parseMetricString(videoData.likes || "0"));
 
             videoCard.innerHTML = `
                 <div class="video-thumb">
@@ -1560,18 +1220,41 @@
                     <h3>${videoData.title}</h3>
                     <div class="video-meta">
                         <div class="video-views">
-                            <i class="fas fa-eye"></i> ${videoData.views}
+                            <i class="fas fa-eye"></i> ${displayViews}
                         </div>
                         <div class="video-likes">
-                            <i class="fas fa-heart"></i> ${videoData.likes}
+                            <i class="fas fa-heart"></i> ${displayLikes}
                         </div>
                     </div>
                 </div>
             `;
 
-            // Add event listener to open modal when clicking the created card
-            videoCard.addEventListener('click', () => {
-                openVideoModal(videoData); // Re-use the existing modal opening logic
+            // Event listeners for single and double click
+            let clickTimer = null;
+            videoCard.addEventListener('click', (event) => {
+                // Prevent event from bubbling up to parent if it's a child element click
+                if (event.target.closest('.video-card') !== videoCard) {
+                    return;
+                }
+
+                if (clickTimer === null) {
+                    clickTimer = setTimeout(() => {
+                        // Single click action: Open video URL and increment views
+                        window.open(videoData.url, '_blank'); // Open video URL in new tab
+                        incrementVideoMetric(videoData.id, 'views');
+                        clickTimer = null;
+                    }, 300); // 300ms to differentiate single from double click
+                } else {
+                    // Double click action: Increment likes and prompt for favorite
+                    clearTimeout(clickTimer);
+                    clickTimer = null;
+                    incrementVideoMetric(videoData.id, 'likes');
+                    showCustomPrompt('Do you want to add this video to your favorites?', (response) => {
+                        if (response) {
+                            addVideoToFavorites(videoData);
+                        }
+                    });
+                }
             });
 
             return videoCard;
@@ -1579,9 +1262,8 @@
 
         // Function to display the "No favorites yet" message
         function displayNoFavoritesMessage(message = "No favourites yet") {
-            const favouriteContent = document.getElementById('favourite-content');
-            const videoGrid = favouriteContent.querySelector('.video-grid');
-            videoGrid.innerHTML = `
+            const favouriteVideoGrid = document.getElementById('favourite-video-grid');
+            favouriteVideoGrid.innerHTML = `
                 <div class="placeholder-message">
                     <i class="fas fa-heart-broken" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
                     <h3>${message}</h3>
@@ -1589,32 +1271,10 @@
                 </div>
             `;
         }
-
-        // Modify the existing "Add to Favorites" button in the modal
-        const addToFavoritesBtn = document.querySelector('.action-buttons .action-btn:first-child'); 
-
-        addToFavoritesBtn.addEventListener('click', () => {
-            // Get current video details from the modal
-            const currentVideoUrl = videoFrame.src.split('?')[0]; // Extract base URL
-            const currentVideoTitle = modalVideoTitle.textContent;
-            const currentVideoViews = modalVideoViews.textContent;
-            const currentVideoLikes = modalVideoLikes.textContent;
-            const currentVideoDuration = modalVideoDuration.textContent;
-
-            // Find the original video data from the videoData object
-            const originalVideoData = videoData[currentVideoUrl];
-            let currentVideoThumbnail = originalVideoData ? originalVideoData.thumbnail : 'https://placehold.co/1260x750/0f0c1d/ffffff?text=No+Image';
-
-            const videoDetailsToSave = {
-                title: currentVideoTitle,
-                url: currentVideoUrl,
-                views: currentVideoViews,
-                likes: currentVideoLikes,
-                duration: currentVideoDuration,
-                thumbnail: currentVideoThumbnail 
-            };
-
-            addVideoToFavorites(videoDetailsToSave);
+        
+        // Initial load of public videos when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchPublicVideos();
         });
 
         // Listen for authentication state changes (useful for keeping user logged in across sessions)
@@ -1640,7 +1300,7 @@
                     profileIconElement.style.display = 'block'; // Show default icon
                 }
 
-                // Update display name
+                // Update display name and manage login/logout buttons
                 if (user.isAnonymous) {
                     currentUserNameSpan.textContent = `Guest User (${user.uid.substring(0, 8)}...)`;
                     googleLoginBtn.style.display = 'flex'; // Allow guest to upgrade to Google

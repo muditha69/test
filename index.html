@@ -15,13 +15,14 @@
         }
 
         :root {
-            --neon-pink: #ff26b2;
-            --neon-purple: #b026ff;
-            --dark-bg: #0f0c1d;
-            --darker-bg: #0a0815;
-            --card-bg: #1a1629;
+            /* Changed to more purple/blueish neon shades */
+            --neon-pink: #a020f0; /* Adjusted for a purpler hue */
+            --neon-purple: #8a2be2; /* Deep purple */
+            --dark-bg: #0d0a1b; /* Slightly adjusted dark background */
+            --darker-bg: #080610; /* Even darker background */
+            --card-bg: #151125; /* Adjusted card background */
             --text: #ffffff;
-            --text-secondary: #b0b3c5;
+            --text-secondary: #c0c3d5; /* Slightly lighter secondary text */
             --warning: #ff5722;
         }
 
@@ -32,87 +33,9 @@
             overflow-x: hidden;
         }
 
-        /* Age Gate */
-        .age-gate {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 10000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .age-gate-content {
-            background: var(--darker-bg);
-            border-radius: 15px;
-            padding: 3rem;
-            max-width: 600px;
-            width: 90%;
-            box-shadow: 0 0 40px rgba(176, 38, 255, 0.5);
-            border: 2px solid var(--neon-purple);
-        }
-
-        .age-gate h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1.5rem;
-            color: var(--neon-pink);
-            text-shadow: 0 0 15px rgba(255, 38, 178, 0.7);
-        }
-
-        .age-gate p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .age-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .age-btn {
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s ease;
-        }
-
-        .enter-btn {
-            background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple));
-            color: white;
-        }
-
-        .exit-btn {
-            background: transparent;
-            color: var(--text-secondary);
-            border: 2px solid var(--text-secondary);
-        }
-
-        .enter-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(255, 38, 178, 0.6);
-        }
-
-        .exit-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-
         /* Header Styles */
         header {
-            background: rgba(10, 8, 21, 0.95);
+            background: rgba(8, 6, 16, 0.95); /* Adjusted header background based on darker-bg */
             backdrop-filter: blur(10px);
             padding: 1.2rem 5%;
             display: flex;
@@ -122,7 +45,7 @@
             top: 0;
             z-index: 100;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            border-bottom: 1px solid rgba(176, 38, 255, 0.2);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2); /* Adjusted border color */
         }
 
         .logo {
@@ -130,22 +53,26 @@
             font-weight: 800;
             color: var(--text);
             text-decoration: none;
-            text-shadow: 
-                0 0 10px var(--neon-pink),
-                0 0 20px var(--neon-pink),
-                0 0 30px rgba(176, 38, 255, 0.7);
-            letter-spacing: 1px;
+            /* Enhanced neon glow for the logo */
+            text-shadow:
+                0 0 15px var(--neon-pink),
+                0 0 30px var(--neon-purple),
+                0 0 45px rgba(138, 43, 226, 0.8), /* Deeper purple glow */
+                0 0 60px rgba(160, 32, 240, 0.6); /* More intense pink-purple glow */
+            letter-spacing: 1.5px; /* Slightly increased for better visual */
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
 
         .logo i {
-            color: var(--neon-pink);
+            color: var(--neon-pink); /* Icon color */
+            font-size: 2.5rem; /* Larger icon */
+            text-shadow: 0 0 10px var(--neon-pink); /* Icon specific glow */
         }
 
         .warning-badge {
-            background-color: var(--warning);
+            background-color: red;
             color: white;
             font-size: 0.7rem;
             padding: 0.2rem 0.5rem;
@@ -161,6 +88,33 @@
             margin-left: auto;
         }
 
+        .search-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            background: var(--card-bg);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 20px;
+            padding: 0.7rem 1.2rem;
+            padding-right: 2.8rem; /* Make space for the icon */
+            color: var(--text);
+            font-size: 1rem;
+            width: 0; /* Start hidden */
+            opacity: 0;
+            visibility: hidden;
+            transition: width 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+            box-shadow: 0 0 10px rgba(160, 32, 240, 0.2);
+        }
+
+        .search-input.active {
+            width: 200px; /* Expand on active */
+            opacity: 1;
+            visibility: visible;
+        }
+
         .search-btn {
             background: transparent;
             border: none;
@@ -168,11 +122,18 @@
             cursor: pointer;
             font-size: 1.4rem;
             transition: all 0.3s;
+            position: absolute;
+            right: 10px;
+            z-index: 1; /* Ensure button is clickable over input */
         }
 
         .search-btn:hover {
             color: var(--neon-pink);
             transform: scale(1.1);
+        }
+
+        .search-input.active + .search-btn {
+            color: var(--neon-pink); /* Change icon color when input is active */
         }
 
         .profile-container {
@@ -222,7 +183,7 @@
             transform: translateY(10px);
             transition: all 0.3s ease;
             z-index: 10;
-            border: 1px solid rgba(176, 38, 255, 0.3);
+            border: 1px solid rgba(138, 43, 226, 0.3); /* Adjusted border color */
         }
 
         .dropdown.active {
@@ -247,7 +208,7 @@
         }
 
         .dropdown-item:hover {
-            background: rgba(176, 38, 255, 0.1);
+            background: rgba(138, 43, 226, 0.1); /* Adjusted hover background */
         }
 
         .dropdown-item i {
@@ -258,16 +219,16 @@
 
         /* Navigation Tabs */
         .tabs {
-            display: flex;
-            justify-content: center;
+            display: flex; /* Added for flexbox layout */
+            justify-content: space-around; /* Distribute space evenly */
             padding: 1.5rem 5%;
-            background: rgba(10, 8, 21, 0.7);
-            border-bottom: 1px solid rgba(176, 38, 255, 0.1);
+            background: rgba(8, 6, 16, 0.7); /* Adjusted background */
+            border-bottom: 1px solid rgba(138, 43, 226, 0.1); /* Adjusted border color */
         }
 
         .tab {
-            padding: 0.8rem 2rem;
-            margin: 0 0.5rem;
+            flex-grow: 1; /* Make tabs grow to fill available space */
+            padding: 0.8rem 1rem; /* Adjusted padding */
             border-radius: 30px;
             font-weight: 600;
             cursor: pointer;
@@ -278,11 +239,29 @@
             border: none;
             color: var(--text-secondary);
             font-size: 1.1rem;
+            display: flex; /* For icon and text alignment */
+            align-items: center;
+            justify-content: center; /* Center content horizontally */
+            gap: 0.5rem; /* Space between icon and text */
+            text-align: center; /* Center content if it wraps */
+            white-space: nowrap; /* Prevent text from wrapping by default */
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Add ellipsis for overflow */
+        }
+
+        .tab i {
+            font-size: 1.1rem; /* Ensure icon size matches text */
+            color: var(--text-secondary); /* Default icon color */
+            transition: color 0.3s;
         }
 
         .tab.active, .tab:hover {
             color: var(--text);
-            background: rgba(176, 38, 255, 0.15);
+            background: rgba(138, 43, 226, 0.15); /* Adjusted active/hover background */
+        }
+
+        .tab.active i, .tab:hover i {
+            color: var(--neon-pink); /* Active/hover icon color */
         }
 
         .tab.active::after {
@@ -306,6 +285,7 @@
         .section-title {
             font-size: 1.8rem;
             margin-bottom: 1.5rem;
+            margin-top: -30px;
             display: flex;
             align-items: center;
             gap: 1rem;
@@ -331,7 +311,7 @@
             transition: transform 0.3s, box-shadow 0.3s;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
             position: relative;
-            border: 1px solid rgba(176, 38, 255, 0.1);
+            border: 1px solid rgba(138, 43, 226, 0.1); /* Adjusted border color */
             cursor: pointer;
             height: 160px;
             display: flex;
@@ -386,7 +366,7 @@
             transition: transform 0.3s, box-shadow 0.3s;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
             position: relative;
-            border: 1px solid rgba(176, 38, 255, 0.1);
+            border: 1px solid rgba(138, 43, 226, 0.1); /* Adjusted border color */
             cursor: pointer;
         }
 
@@ -396,7 +376,7 @@
         }
 
         .video-thumb {
-            height: 180px;
+            height: 200px;
             width: 100%;
             position: relative;
             overflow: hidden;
@@ -431,7 +411,7 @@
             transform: translate(-50%, -50%);
             width: 50px;
             height: 50px;
-            background: rgba(255, 38, 178, 0.8);
+            background: rgba(160, 32, 240, 0.8); /* Adjusted play button background */
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -493,7 +473,7 @@
             padding: 2rem 5%;
             text-align: center;
             margin-top: 3rem;
-            border-top: 1px solid rgba(176, 38, 255, 0.1);
+            border-top: 1px solid rgba(138, 43, 226, 0.1); /* Adjusted border color */
         }
 
         .footer-logo {
@@ -501,7 +481,7 @@
             font-weight: 700;
             margin-bottom: 1rem;
             color: var(--text);
-            text-shadow: 
+            text-shadow:
                 0 0 10px var(--neon-pink),
                 0 0 20px var(--neon-pink);
         }
@@ -540,15 +520,19 @@
             }
             
             .tabs {
-                overflow-x: auto;
-                justify-content: flex-start;
+                justify-content: space-around;
                 padding: 1rem 5%;
             }
             
             .tab {
-                padding: 0.7rem 1.5rem;
-                font-size: 1rem;
-                flex-shrink: 0;
+                padding: 0.7rem 0.5rem;
+                font-size: 0.9rem;
+                flex-shrink: 1;
+                gap: 0.3rem;
+            }
+
+            .tab i {
+                font-size: 0.9rem;
             }
             
             .video-grid, .categories-grid {
@@ -557,7 +541,12 @@
             }
             
             .video-thumb {
-                height: 150px;
+                height: 219px;
+                width: 100%;
+            }
+
+            .search-input.active {
+                width: 150px;
             }
         }
 
@@ -589,6 +578,20 @@
             
             .age-btn {
                 width: 100%;
+            }
+
+            .tab {
+                font-size: 0.8rem;
+                padding: 0.6rem 0.2rem;
+                gap: 0.2rem;
+            }
+
+            .tab i {
+                font-size: 0.8rem;
+            }
+
+            .search-input.active {
+                width: 120px;
             }
         }
 
@@ -705,28 +708,18 @@
     </style>
 </head>
 <body>
-    <div class="age-gate" id="age-gate">
-        <div class="age-gate-content">
-            <h1><i class="fas fa-exclamation-triangle"></i> ADULTS ONLY</h1>
-            <p>This website contains explicit adult material intended for individuals 18 years of age or older.</p>
-            <p>By entering this site, you certify that you are at least 18 years old and that you want to view sexually explicit material for your own personal enjoyment.</p>
-            <div class="age-buttons">
-                <button class="age-btn enter-btn" id="enter-btn">Enter Site</button>
-                <button class="age-btn exit-btn" id="exit-btn">Exit</button>
-            </div>
-            <p class="disclaimer">XXX Git is a video aggregator that embeds content from external sources. We do not host any videos on our servers.</p>
-        </div>
-    </div>
-
     <header>
         <div class="logo">
-            <i class="fas fa-fire"></i> <a href = "admin.html">XXX Git</a>
+            <a href="admin.html" style="text-decoration: none; color: inherit;"> <i class="fas fa-fire"></i> XXX Git </a>
             <span class="warning-badge">18+</span>
         </div>
         <div class="header-right">
-            <button class="search-btn">
-                <i class="fas fa-search"></i>
-            </button>
+            <div class="search-container">
+                <input type="text" class="search-input" id="search-input" placeholder="Search videos or categories...">
+                <button class="search-btn" id="search-toggle-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
             <div class="profile-container">
                 <div class="profile-btn" id="profile-btn">
                     <i class="fas fa-user" id="profile-icon"></i>
@@ -754,57 +747,40 @@
     </header>
 
     <div class="tabs">
-        <button class="tab active" data-tab="home">Home</button>
-        <button class="tab" data-tab="categories">Categories</button>
-        <button class="tab" data-tab="favourite">Favourite</button>
-        <button class="tab" data-tab="premium">Premium</button>
+        <button class="tab active" data-tab="home"><i class="fas fa-home"></i> Home</button>
+        <button class="tab" data-tab="categories"><i class="fas fa-tags"></i> Categories</button>
+        <button class="tab" data-tab="favourite"><i class="fas fa-heart"></i> Favourite</button>
+        <button class="tab" data-tab="premium"><i class="fas fa-crown"></i> Premium</button>
     </div>
 
     <section class="categories-section" id="categories-content" style="display:none;">
         <h2 class="section-title">Categories</h2>
-        <div class="categories-grid">
-            <div class="category-card" data-category="amateur">
-                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80" alt="Amateur" class="category-image">
-                <div class="category-name">Amateur</div>
+        <div class="categories-grid" id="dynamic-categories-grid">
+            <div class="placeholder-message" id="loading-categories">
+                <i class="fas fa-spinner fa-spin" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
+                <h3>Loading Categories...</h3>
+                <p>Please wait while we fetch the categories.</p>
             </div>
-            <div class="category-card" data-category="anal">
-                <img src="https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=600&q=80" alt="Anal" class="category-image">
-                <div class="category-name">Anal</div>
-            </div>
-            <div class="category-card" data-category="blowjob">
-                <img src="https://images.unsplash.com/photo-1589156280159-27698a70f29e?auto=format&fit=crop&w=600&q=80" alt="Blowjob" class="category-image">
-                <div class="category-name">Blowjob</div>
-            </div>
-            <div class="category-card" data-category="cosplay">
-                <img src="https://images.unsplash.com/photo-1570612861542-284f4c12e75f?auto=format&fit=crop&w=600&q=80" alt="Cosplay" class="category-image">
-                <div class="category-name">Cosplay</div>
-            </div>
-            <div class="category-card" data-category="creampie">
-                <img src="https://images.unsplash.com/photo-1583524505974-6facd53f4592?auto=format&fit=crop&w=600&q=80" alt="Creampie" class="category-image">
-                <div class="category-name">Creampie</div>
-            </div>
-            <div class="category-card" data-category="gangbang">
-                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=600&q=80" alt="Gangbang" class="category-image">
-                <div class="category-name">Gangbang</div>
-            </div>
-            <div class="category-card" data-category="hardcore">
-                <img src="https://images.unsplash.com/photo-1567532939604-b6b5b0e16019?auto=format&fit=crop&w=600&q=80" alt="Hardcore" class="category-image">
-                <div class="category-name">Hardcore</div>
-            </div>
-            <div class="category-card" data-category="lesbian">
-                <img src="https://images.unsplash.com/photo-1491349174775-aaafddd81942?auto=format&fit=crop&w=600&q=80" alt="Lesbian" class="category-image">
-                <div class="category-name">Lesbian</div>
+             <div class="placeholder-message" id="no-categories" style="display:none;">
+                <i class="fas fa-tags" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
+                <h3>No categories added yet.</h3>
+                <p>Visit the admin panel to add some categories.</p>
             </div>
         </div>
     </section>
 
     <section class="video-section" id="home-content">
-        <h2 class="section-title">Featured Videos</h2>
+        <h2 class="section-title" id="video-section-title">Featured Videos</h2>
         <div class="video-grid" id="public-video-grid">
             <div class="placeholder-message" id="loading-public-videos">
                 <i class="fas fa-spinner fa-spin" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
                 <h3>Loading Videos...</h3>
                 <p>Please wait while we fetch the latest content.</p>
+            </div>
+             <div class="placeholder-message" id="no-public-videos" style="display:none;">
+                <i class="fas fa-video-slash" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
+                <h3>No videos available yet</h3>
+                <p>Check back later or add some from the admin panel!</p>
             </div>
         </div>
     </section>
@@ -812,7 +788,7 @@
     <section class="video-section" id="favourite-content" style="display:none;">
         <h2 class="section-title">Favourites</h2>
         <div class="video-grid" id="favourite-video-grid">
-            <div class="placeholder-message">
+            <div class="placeholder-message" id="no-favourite-videos">
                 <i class="fas fa-heart-broken" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
                 <h3>No favourites yet</h3>
                 <p>Add videos to your favourites to see them here</p>
@@ -837,7 +813,7 @@
     <footer>
         <div class="footer-logo">XXX Git</div>
         <div class="copyright">
-            © 2023 XXX Git Video Streaming. All rights reserved.
+            © 2023 XXX Git. All rights reserved.
             <div class="disclaimer">
                 <strong>Disclaimer:</strong> XXX Git is an adult content aggregator that embeds videos from external sources. 
                 We do not host, produce, or own any of the videos displayed on this site. 
@@ -848,13 +824,11 @@
 
     <script type="module">
         // Import the functions you need from the SDKs you need
-        // Fix: Import `increment` and `serverTimestamp` directly from 'firebase/firestore'
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, updateDoc, getDocs, query, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, getDocs, query, where, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         // Your web app's Firebase configuration
-        // IMPORTANT: Ensure this matches your Firebase project's configuration exactly.
         const firebaseConfig = {
             apiKey: "AIzaSyAsZ-nw5UgKRotI2_Kgb9V-BFXS3JoX7UU",
             authDomain: "xxx-git.firebaseapp.com",
@@ -870,7 +844,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Log Firebase config for debugging permissions
         console.log("Firebase Config:", firebaseConfig);
 
         // Initial authentication for the user's application: Sign in anonymously by default.
@@ -883,33 +856,9 @@
             }
         })();
 
-
-        // Age Gate Functionality
-        const ageGate = document.getElementById('age-gate');
-        const enterBtn = document.getElementById('enter-btn');
-        const exitBtn = document.getElementById('exit-btn');
-        
-        // Check if user has already verified age
-        if(localStorage.getItem('ageVerified')) {
-            ageGate.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        } else {
-            document.body.style.overflow = 'hidden';
-        }
-        
-        enterBtn.addEventListener('click', () => {
-            ageGate.style.display = 'none';
-            document.body.style.overflow = 'auto';
-            localStorage.setItem('ageVerified', 'true');
-        });
-        
-        exitBtn.addEventListener('click', () => {
-            window.location.href = 'https://www.google.com';
-        });
-
         // Profile dropdown functionality
         const profileBtn = document.getElementById('profile-btn');
-        const profileIcon = document.getElementById('profile-icon'); // The <i> tag for default icon
+        const profileIcon = document.getElementById('profile-icon');
         const dropdown = document.querySelector('.dropdown');
         
         profileBtn.addEventListener('click', () => {
@@ -931,30 +880,27 @@
             favourite: document.getElementById('favourite-content'),
             premium: document.getElementById('premium-content')
         };
-        
+        const videoSectionTitle = document.getElementById('video-section-title');
+
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
-                // Remove active class from all tabs
                 tabs.forEach(t => t.classList.remove('active'));
                 
-                // Hide all content sections
                 Object.values(contents).forEach(content => {
                     content.style.display = 'none';
                 });
                 
-                // Add active class to clicked tab
                 tab.classList.add('active');
                 
-                // Show corresponding content
                 const tabName = tab.getAttribute('data-tab');
                 contents[tabName].style.display = 'block';
 
-                // If the 'Home' tab is selected, refresh public videos
                 if (tabName === 'home') {
+                    videoSectionTitle.textContent = 'Featured Videos';
                     fetchPublicVideos();
-                }
-                // If the 'Favourite' tab is selected, refresh favorites
-                else if (tabName === 'favourite') {
+                } else if (tabName === 'categories') {
+                    fetchCategories();
+                } else if (tabName === 'favourite') {
                     const user = auth.currentUser;
                     if (user) {
                         fetchUserFavorites(user.uid);
@@ -962,6 +908,9 @@
                         displayNoFavoritesMessage("Please log in to see your favourites.");
                     }
                 }
+                // Clear search input and hide it when switching tabs
+                searchInput.value = '';
+                searchInput.classList.remove('active');
             });
         });
         
@@ -970,11 +919,9 @@
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider)
                 .then((result) => {
-                    // onAuthStateChanged will handle UI updates
                     console.log("Google Login Successful:", result.user);
                     showCustomMessage(`Logged in as: ${result.user.displayName || result.user.email}`);
                     dropdown.classList.remove('active');
-                    // Store that user has logged in with Google for persistence
                     localStorage.setItem('hasGoogleLoggedIn', 'true'); 
                 })
                 .catch((error) => {
@@ -987,7 +934,6 @@
         document.getElementById('guest-login').addEventListener('click', () => {
             signInAnonymously(auth)
                 .then(() => {
-                    // onAuthStateChanged will handle UI updates
                     console.log("Guest Login Successful:", auth.currentUser);
                     showCustomMessage('Logged in as Guest');
                     dropdown.classList.remove('active');
@@ -1004,9 +950,7 @@
             auth.signOut().then(() => {
                 showCustomMessage("Logged out successfully.");
                 dropdown.classList.remove('active');
-                // Clear Google login persistence
                 localStorage.removeItem('hasGoogleLoggedIn'); 
-                // onAuthStateChanged will handle UI updates
             }).catch((error) => {
                 console.error("Logout Error:", error);
                 showCustomMessage("Logout failed. Please try again.");
@@ -1014,11 +958,87 @@
         });
         
         // Search functionality
-        const searchBtn = document.querySelector('.search-btn');
-        searchBtn.addEventListener('click', () => {
-            showCustomMessage('Search functionality coming soon!');
+        const searchToggleBtn = document.getElementById('search-toggle-btn');
+        const searchInput = document.getElementById('search-input');
+        let allVideos = []; // Store all videos for filtering
+        let allCategories = []; // Store all categories for filtering
+
+        searchToggleBtn.addEventListener('click', () => {
+            searchInput.classList.toggle('active');
+            if (searchInput.classList.contains('active')) {
+                searchInput.focus();
+            } else {
+                searchInput.value = ''; // Clear search when hiding
+                // If search input is hidden, reset content display based on active tab
+                const currentActiveTab = document.querySelector('.tab.active').getAttribute('data-tab');
+                if (currentActiveTab === 'home') {
+                    fetchPublicVideos();
+                } else if (currentActiveTab === 'categories') {
+                    fetchCategories();
+                }
+            }
         });
-        
+
+        searchInput.addEventListener('input', () => {
+            const query = searchInput.value.toLowerCase().trim();
+            filterContent(query);
+        });
+
+        function filterContent(query) {
+            const currentActiveTab = document.querySelector('.tab.active').getAttribute('data-tab');
+
+            if (currentActiveTab === 'home') {
+                displayFilteredVideos(query);
+            } else if (currentActiveTab === 'categories') {
+                displayFilteredCategories(query);
+            }
+        }
+
+        function displayFilteredVideos(query) {
+            const filteredVideos = allVideos.filter(video => 
+                video.title.toLowerCase().includes(query) ||
+                (video.description && video.description.toLowerCase().includes(query)) ||
+                (video.category && video.category.toLowerCase().includes(query))
+            );
+
+            publicVideoGrid.innerHTML = '';
+            if (filteredVideos.length === 0) {
+                noPublicVideosMessage.style.display = 'block';
+                noPublicVideosMessage.innerHTML = `
+                    <i class="fas fa-video-slash" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
+                    <h3>No videos found for "${query}"</h3>
+                    <p>Try a different search term.</p>
+                `;
+            } else {
+                noPublicVideosMessage.style.display = 'none';
+                filteredVideos.forEach(video => {
+                    publicVideoGrid.appendChild(createVideoCardElement(video));
+                });
+            }
+        }
+
+        function displayFilteredCategories(query) {
+            const filteredCategories = allCategories.filter(category => 
+                category.name.toLowerCase().includes(query)
+            );
+
+            dynamicCategoriesGrid.innerHTML = '';
+            if (filteredCategories.length === 0) {
+                noCategoriesMessage.style.display = 'block';
+                noCategoriesMessage.innerHTML = `
+                    <i class="fas fa-tags" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
+                    <h3>No categories found for "${query}"</h3>
+                    <p>Try a different search term.</p>
+                `;
+            } else {
+                noCategoriesMessage.style.display = 'none';
+                filteredCategories.forEach(category => {
+                    const categoryCard = createCategoryCardElement(category); // Re-use helper
+                    dynamicCategoriesGrid.appendChild(categoryCard);
+                });
+            }
+        }
+
         // Custom UI functions (message box and prompt)
         function showCustomMessage(message) {
             const overlay = document.createElement('div');
@@ -1063,9 +1083,8 @@
             });
         }
 
-        // Helper function to convert string numbers (e.g., "2.4M") to actual numbers
         function parseMetricString(metricString) {
-            if (typeof metricString !== 'string') return metricString; // Already a number
+            if (typeof metricString !== 'string') return metricString;
             const value = parseFloat(metricString);
             if (metricString.includes('K')) {
                 return value * 1000;
@@ -1075,7 +1094,6 @@
             return value;
         }
 
-        // Helper function to format numbers back to "K" or "M" strings
         function formatMetricNumber(num) {
             if (num >= 1000000) {
                 return (num / 1000000).toFixed(1) + 'M';
@@ -1086,23 +1104,48 @@
             return num.toString();
         }
 
-        // Function to increment views or likes
         async function incrementVideoMetric(videoId, metricType) {
             try {
                 const videoRef = doc(db, "public_videos", videoId);
                 await updateDoc(videoRef, {
-                    [metricType]: increment(1) // Use the imported 'increment' function
+                    [metricType]: increment(1)
                 });
                 console.log(`${metricType} incremented for video ${videoId}`);
-                // Re-fetch public videos to update the UI
-                fetchPublicVideos(); 
+                
+                // Update the 'allVideos' array and re-render if needed
+                const updatedVideoIndex = allVideos.findIndex(v => v.id === videoId);
+                if (updatedVideoIndex !== -1) {
+                    const currentMetricValue = parseMetricString(allVideos[updatedVideoIndex][metricType]);
+                    allVideos[updatedVideoIndex][metricType] = formatMetricNumber(currentMetricValue + 1);
+                }
+
+                const currentActiveTab = document.querySelector('.tab.active').getAttribute('data-tab');
+                if (currentActiveTab === 'home') {
+                    const query = searchInput.value.toLowerCase().trim();
+                    if (query) {
+                        displayFilteredVideos(query);
+                    } else {
+                        fetchPublicVideos(false); // Fetch silently to update numbers, don't clear allVideos
+                    }
+                } else if (currentActiveTab === 'categories') {
+                    const currentCategory = videoSectionTitle.textContent;
+                    if (currentCategory && currentCategory !== 'Featured Videos') {
+                         fetchVideosByCategory(currentCategory, false);
+                    } else {
+                        const query = searchInput.value.toLowerCase().trim();
+                        if (query) {
+                            displayFilteredVideos(query); // If search is active in categories view
+                        } else {
+                            fetchPublicVideos(false); 
+                        }
+                    }
+                }
             } catch (error) {
                 console.error(`Error incrementing ${metricType}:`, error);
                 showCustomMessage(`Failed to update ${metricType}.`);
             }
         }
 
-        // Firebase Firestore Functions for Favorites
         async function addVideoToFavorites(videoDetails) {
             const user = auth.currentUser;
             if (!user) {
@@ -1110,28 +1153,32 @@
                 return;
             }
 
-            // Reference to the user's favorites subcollection
-            // Path: /users/{userId}/favorites/{videoId_base64encoded}
             const userFavoritesRef = collection(db, 'users', user.uid, 'favorites');
-
-            // Encode URL to be a valid Firestore document ID (Firestore IDs cannot contain '/', '#', etc.)
-            // Using video ID directly if available, otherwise URL
-            const docId = videoDetails.id || btoa(videoDetails.url).replace(/=/g, '');
+            const docId = videoDetails.id; 
 
             try {
-                await setDoc(doc(userFavoritesRef, docId), {
+                const favDocRef = doc(userFavoritesRef, docId);
+                const favDocSnap = await getDocs(query(userFavoritesRef, where('id', '==', docId))); 
+
+                if (!favDocSnap.empty) {
+                    showCustomMessage("This video is already in your favorites!");
+                    return;
+                }
+
+                await setDoc(favDocRef, {
+                    id: videoDetails.id,
                     title: videoDetails.title,
                     thumbnail: videoDetails.thumbnail,
                     duration: videoDetails.duration,
                     views: videoDetails.views,
                     likes: videoDetails.likes,
-                    url: videoDetails.url, // This will be the direct play URL
+                    url: videoDetails.url, 
                     description: videoDetails.description,
-                    timestamp: serverTimestamp() // Use the imported 'serverTimestamp' function
+                    category: videoDetails.category || 'N/A', 
+                    timestamp: serverTimestamp() 
                 });
                 showCustomMessage("Video added to favorites! ❤️");
                 console.log("Document successfully written!");
-                // If user is on 'Favourite' tab, refresh it.
                 if (document.querySelector('.tab[data-tab="favourite"]').classList.contains('active')) {
                     fetchUserFavorites(user.uid);
                 }
@@ -1141,10 +1188,11 @@
             }
         }
 
-        // Function to fetch user favorites and display them
         function fetchUserFavorites(userId) {
             const favouriteVideoGrid = document.getElementById('favourite-video-grid');
-            favouriteVideoGrid.innerHTML = ''; // Clear existing content
+            favouriteVideoGrid.innerHTML = '';
+            const noFavouriteVideosMessage = document.getElementById('no-favourite-videos');
+            noFavouriteVideosMessage.style.display = 'none';
 
             if (!userId) {
                 displayNoFavoritesMessage("Please log in to see your favourites.");
@@ -1152,12 +1200,10 @@
             }
 
             const userFavoritesRef = collection(db, 'users', userId, 'favorites');
-            // Firestore does not support orderBy on a field that might not exist for all documents
-            // Fetch all and sort in memory if needed.
             getDocs(userFavoritesRef)
                 .then((querySnapshot) => {
                     if (querySnapshot.empty) {
-                        displayNoFavoritesMessage();
+                        noFavouriteVideosMessage.style.display = 'block';
                         return;
                     }
 
@@ -1166,7 +1212,6 @@
                         favVideos.push({ id: doc.id, ...doc.data() });
                     });
 
-                    // Sort by timestamp in descending order (newest first)
                     favVideos.sort((a, b) => {
                         const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
                         const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
@@ -1184,69 +1229,231 @@
                 });
         }
 
-        // Function to fetch public videos and display them
         const publicVideoGrid = document.getElementById('public-video-grid');
         const loadingPublicVideos = document.getElementById('loading-public-videos');
+        const noPublicVideosMessage = document.getElementById('no-public-videos');
 
-        async function fetchPublicVideos() {
-            publicVideoGrid.innerHTML = ''; // Clear existing content
-            loadingPublicVideos.style.display = 'flex'; // Show loading indicator
+        async function fetchPublicVideos(clearAndLoad = true) {
+            if (clearAndLoad) {
+                publicVideoGrid.innerHTML = '';
+                loadingPublicVideos.style.display = 'flex';
+                noPublicVideosMessage.style.display = 'none';
+            }
 
             try {
                 const publicVideosRef = collection(db, 'public_videos');
-                const querySnapshot = await getDocs(publicVideosRef); 
+                const q = query(publicVideosRef);
+                const querySnapshot = await getDocs(q); 
 
-                loadingPublicVideos.style.display = 'none'; // Hide loading indicator
+                loadingPublicVideos.style.display = 'none';
 
                 if (querySnapshot.empty) {
-                    publicVideoGrid.innerHTML = `
-                        <div class="placeholder-message">
-                            <i class="fas fa-video-slash" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
-                            <h3>No videos available yet</h3>
-                            <p>Check back later or add some from the admin panel!</p>
-                        </div>
+                    noPublicVideosMessage.style.display = 'block'; 
+                    return;
+                }
+
+                let videos = [];
+                querySnapshot.forEach((doc) => {
+                    videos.push({ id: doc.id, ...doc.data() });
+                });
+
+                videos.sort((a, b) => {
+                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0); 
+                    const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
+                    return dateB - dateA;
+                });
+
+                allVideos = videos; // Store all fetched videos for search
+
+                if (clearAndLoad) {
+                    videos.forEach((video) => {
+                        const videoCard = createVideoCardElement(video);
+                        publicVideoGrid.appendChild(videoCard);
+                    });
+                } else {
+                    // If not clearing and loading, update existing cards or re-render
+                    // A more efficient way would be to only update the specific card that changed,
+                    // but for simplicity, we'll re-render all for now if not on search.
+                    const currentQuery = searchInput.value.toLowerCase().trim();
+                    if (!currentQuery) { // Only re-render if no search is active
+                        publicVideoGrid.innerHTML = '';
+                        videos.forEach((video) => {
+                            const videoCard = createVideoCardElement(video);
+                            publicVideoGrid.appendChild(videoCard);
+                        });
+                    }
+                }
+
+            } catch (error) {
+                console.error("Error fetching public videos: ", error);
+                loadingPublicVideos.style.display = 'none';
+                noPublicVideosMessage.style.display = 'block';
+                noPublicVideosMessage.innerHTML = `
+                    <i class="fas fa-exclamation-circle" style="font-size: 4rem; color: var(--warning); margin-bottom: 1rem;"></i>
+                    <h3>Error loading videos</h3>
+                    <p>Please try again later.</p>
+                `;
+            }
+        }
+
+        async function fetchVideosByCategory(categoryName, clearAndLoad = true) {
+            if (clearAndLoad) {
+                publicVideoGrid.innerHTML = ''; 
+                loadingPublicVideos.style.display = 'flex';
+                noPublicVideosMessage.style.display = 'none';
+            }
+            videoSectionTitle.textContent = categoryName;
+
+            try {
+                const publicVideosRef = collection(db, 'public_videos');
+                const q = query(publicVideosRef, where('category', '==', categoryName.toLowerCase()));
+                const querySnapshot = await getDocs(q);
+
+                loadingPublicVideos.style.display = 'none';
+
+                if (querySnapshot.empty) {
+                    noPublicVideosMessage.style.display = 'block';
+                    noPublicVideosMessage.innerHTML = `
+                        <i class="fas fa-video-slash" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
+                        <h3>No videos found for "${categoryName}" category yet.</h3>
+                        <p>Check back later or add some in the admin panel.</p>
                     `;
                     return;
                 }
 
                 let videos = [];
                 querySnapshot.forEach((doc) => {
-                    videos.push({ id: doc.id, ...doc.data() }); // Include doc.id
+                    videos.push({ id: doc.id, ...doc.data() });
                 });
 
-                // Sort videos by createdAt in JavaScript after fetching
                 videos.sort((a, b) => {
-                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0); // Handle potential missing createdAt
+                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0);
                     const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
-                    return dateB - dateA; // Descending order (newest first)
+                    return dateB - dateA; 
                 });
 
-                videos.forEach((video) => {
-                    const videoCard = createVideoCardElement(video);
-                    publicVideoGrid.appendChild(videoCard);
-                });
+                allVideos = videos; // Update allVideos for filtering in this context
+
+                if (clearAndLoad) {
+                    videos.forEach((video) => {
+                        const videoCard = createVideoCardElement(video);
+                        publicVideoGrid.appendChild(videoCard);
+                    });
+                } else {
+                     const currentQuery = searchInput.value.toLowerCase().trim();
+                    if (!currentQuery) {
+                        publicVideoGrid.innerHTML = '';
+                        videos.forEach((video) => {
+                            const videoCard = createVideoCardElement(video);
+                            publicVideoGrid.appendChild(videoCard);
+                        });
+                    }
+                }
+
 
             } catch (error) {
-                console.error("Error fetching public videos: ", error);
+                console.error("Error fetching videos by category: ", error);
                 loadingPublicVideos.style.display = 'none';
-                publicVideoGrid.innerHTML = `
-                    <div class="placeholder-message">
-                        <i class="fas fa-exclamation-circle" style="font-size: 4rem; color: var(--warning); margin-bottom: 1rem;"></i>
-                        <h3>Error loading videos</h3>
-                        <p>Please try again later.</p>
-                    </div>
+                noPublicVideosMessage.style.display = 'block';
+                noPublicVideosMessage.innerHTML = `
+                    <i class="fas fa-exclamation-circle" style="font-size: 4rem; color: var(--warning); margin-bottom: 1rem;"></i>
+                    <h3>Error loading videos for "${categoryName}".</h3>
+                    <p>Please try again later.</p>
                 `;
             }
         }
 
-        // Helper function to create a video card element (reused for both public and favorite videos)
+        const dynamicCategoriesGrid = document.getElementById('dynamic-categories-grid');
+        const loadingCategories = document.getElementById('loading-categories');
+        const noCategoriesMessage = document.getElementById('no-categories');
+
+        async function fetchCategories(clearAndLoad = true) {
+            if (clearAndLoad) {
+                dynamicCategoriesGrid.innerHTML = '';
+                dynamicCategoriesGrid.appendChild(loadingCategories);
+                loadingCategories.style.display = 'flex';
+                noCategoriesMessage.style.display = 'none';
+            }
+
+            try {
+                const categoriesRef = collection(db, 'categories');
+                const querySnapshot = await getDocs(categoriesRef);
+
+                loadingCategories.style.display = 'none';
+
+                if (querySnapshot.empty) {
+                    noCategoriesMessage.style.display = 'block';
+                    dynamicCategoriesGrid.appendChild(noCategoriesMessage);
+                    return;
+                }
+
+                let categories = [];
+                querySnapshot.forEach((doc) => {
+                    categories.push({ id: doc.id, ...doc.data() });
+                });
+
+                categories.sort((a, b) => a.name.localeCompare(b.name));
+
+                allCategories = categories; // Store all fetched categories for search
+
+                if (clearAndLoad) {
+                    categories.forEach((category) => {
+                        dynamicCategoriesGrid.appendChild(createCategoryCardElement(category));
+                    });
+                } else {
+                    const currentQuery = searchInput.value.toLowerCase().trim();
+                    if (!currentQuery) {
+                        dynamicCategoriesGrid.innerHTML = '';
+                        categories.forEach((category) => {
+                            dynamicCategoriesGrid.appendChild(createCategoryCardElement(category));
+                        });
+                    }
+                }
+
+
+            } catch (error) {
+                console.error("Error fetching categories: ", error);
+                loadingCategories.style.display = 'none';
+                noCategoriesMessage.style.display = 'block';
+                noCategoriesMessage.innerHTML = `
+                    <i class="fas fa-exclamation-circle" style="font-size: 4rem; color: var(--warning); margin-bottom: 1rem;"></i>
+                    <h3>Error loading categories.</h3>
+                    <p>Please try again later.</p>
+                `;
+            }
+        }
+
+        // Helper function to create a category card element
+        function createCategoryCardElement(category) {
+            const categoryCard = document.createElement('div');
+            categoryCard.classList.add('category-card');
+            categoryCard.setAttribute('data-category-name', category.name);
+
+            categoryCard.innerHTML = `
+                <img src="${category.thumbnail}" alt="${category.name} Thumbnail" class="category-image" onerror="this.onerror=null; this.src='https://placehold.co/220x160/0f0c1d/ffffff?text=No+Image'">
+                <div class="category-name">${category.name}</div>
+            `;
+            categoryCard.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                document.querySelector('.tab[data-tab="home"]').classList.add('active');
+                Object.values(contents).forEach(content => {
+                    content.style.display = 'none';
+                });
+                contents['home'].style.display = 'block';
+                fetchVideosByCategory(category.name);
+                // Clear search input when a category is clicked
+                searchInput.value = '';
+                searchInput.classList.remove('active');
+            });
+            return categoryCard;
+        }
+
         function createVideoCardElement(videoData) {
             const videoCard = document.createElement('div');
             videoCard.classList.add('video-card');
-            videoCard.setAttribute('data-video-id', videoData.id); // Store Firestore document ID
+            videoCard.setAttribute('data-video-id', videoData.id);
             videoCard.setAttribute('data-video-url', videoData.url); 
 
-            // Format views and likes for display
             const displayViews = formatMetricNumber(parseMetricString(videoData.views || "0"));
             const displayLikes = formatMetricNumber(parseMetricString(videoData.likes || "0"));
 
@@ -1274,45 +1481,38 @@
                 </div>
             `;
 
-            // Event listeners for single and double click
             let clickTimer = null;
             let lastClickTime = 0;
             videoCard.addEventListener('click', (event) => {
-                // Prevent event from bubbling up to parent if it's a child element click
                 if (event.target.closest('.video-card') !== videoCard) {
                     return;
                 }
 
                 const currentTime = new Date().getTime();
-                const DOUBLE_CLICK_TIME_THRESHOLD = 300; // milliseconds
+                const DOUBLE_CLICK_TIME_THRESHOLD = 300;
 
                 if (currentTime - lastClickTime < DOUBLE_CLICK_TIME_THRESHOLD) {
-                    // Double click action: Trigger heart animation, increment likes, and add to favorites
-                    clearTimeout(clickTimer); // Clear any pending single click
-                    clickTimer = null; // Reset clickTimer
+                    clearTimeout(clickTimer);
+                    clickTimer = null;
 
-                    // Play heart animation
                     const heartContainer = videoCard.querySelector('.heart-animation-container');
                     const animatedHeart = heartContainer.querySelector('.animated-heart');
-                    heartContainer.style.display = 'flex'; // Show container
-                    animatedHeart.classList.remove('animate-heart'); // Reset animation
-                    void animatedHeart.offsetWidth; // Trigger reflow to restart animation
-                    animatedHeart.classList.add('animate-heart'); // Start animation
+                    heartContainer.style.display = 'flex';
+                    animatedHeart.classList.remove('animate-heart');
+                    void animatedHeart.offsetWidth;
+                    animatedHeart.classList.add('animate-heart');
 
-                    // After animation, hide container and remove animation class
                     animatedHeart.addEventListener('animationend', () => {
                         heartContainer.style.display = 'none';
                         animatedHeart.classList.remove('animate-heart');
-                    }, { once: true }); // Ensure this listener runs only once
-
+                    }, { once: true });
 
                     incrementVideoMetric(videoData.id, 'likes');
-                    addVideoToFavorites(videoData); // Automatically add to favorites
-                    lastClickTime = 0; // Reset for next potential double-click
+                    addVideoToFavorites(videoData);
+                    lastClickTime = 0;
                 } else {
-                    // Single click action: Open video URL and increment views
                     clickTimer = setTimeout(() => {
-                        window.open(videoData.url, '_blank'); // Open video URL in new tab
+                        window.open(videoData.url, '_blank');
                         incrementVideoMetric(videoData.id, 'views');
                         clickTimer = null;
                     }, DOUBLE_CLICK_TIME_THRESHOLD);
@@ -1323,79 +1523,66 @@
             return videoCard;
         }
 
-        // Function to display the "No favorites yet" message
         function displayNoFavoritesMessage(message = "No favourites yet") {
             const favouriteVideoGrid = document.getElementById('favourite-video-grid');
-            favouriteVideoGrid.innerHTML = `
-                <div class="placeholder-message">
-                    <i class="fas fa-heart-broken" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
-                    <h3>${message}</h3>
-                    <p>Add videos to your favourites to see them here</p>
-                </div>
-            `;
+            favouriteVideoGrid.innerHTML = '';
+            const noFavouriteVideosMessage = document.getElementById('no-favourite-videos');
+            noFavouriteVideosMessage.style.display = 'block';
+            noFavouriteVideosMessage.querySelector('h3').textContent = message;
         }
         
-        // Initial load of public videos when the page loads
         document.addEventListener('DOMContentLoaded', () => {
             fetchPublicVideos();
+            fetchCategories(); // Also fetch categories on load to populate allCategories for search
         });
 
-        // Listen for authentication state changes (useful for keeping user logged in across sessions)
         onAuthStateChanged(auth, async (user) => {
             const userDisplayInfo = document.getElementById('user-display-info');
             const currentUserNameSpan = document.getElementById('current-user-name');
             const googleLoginBtn = document.getElementById('google-login');
             const guestLoginBtn = document.getElementById('guest-login');
             const logoutBtn = document.getElementById('logout-button');
-            const profileBtnElement = document.getElementById('profile-btn'); // The div
-            const profileIconElement = document.getElementById('profile-icon'); // The <i> tag
+            const profileBtnElement = document.getElementById('profile-btn');
+            const profileIconElement = document.getElementById('profile-icon');
 
             if (user) {
-                // User is signed in.
                 console.log("User is signed in:", user.uid);
                 
-                // Update profile picture
                 if (user.photoURL) {
                     profileBtnElement.style.backgroundImage = `url('${user.photoURL}')`;
-                    profileIconElement.style.display = 'none'; // Hide the default icon
+                    profileIconElement.style.display = 'none';
                 } else {
-                    profileBtnElement.style.backgroundImage = 'none'; // Remove background image
-                    profileIconElement.style.display = 'block'; // Show default icon
+                    profileBtnElement.style.backgroundImage = 'none';
+                    profileIconElement.style.display = 'block';
                 }
 
-                // Update display name and manage login/logout buttons
                 if (user.isAnonymous) {
                     currentUserNameSpan.textContent = `Guest User (${user.uid.substring(0, 8)}...)`;
-                    googleLoginBtn.style.display = 'flex'; // Allow guest to upgrade to Google
-                    guestLoginBtn.style.display = 'none'; // Hide guest login as they are already a guest
+                    googleLoginBtn.style.display = 'flex';
+                    guestLoginBtn.style.display = 'none';
                 } else {
                     currentUserNameSpan.textContent = user.displayName || user.email;
-                    googleLoginBtn.style.display = 'none'; // Hide Google login as they are already logged in
+                    googleLoginBtn.style.display = 'none';
                     guestLoginBtn.style.display = 'none';
                 }
-                userDisplayInfo.style.display = 'flex'; // Show user info
-                logoutBtn.style.display = 'flex'; // Always show logout if any user is signed in
+                userDisplayInfo.style.display = 'flex';
+                logoutBtn.style.display = 'flex';
                 
-                // If the user is on the favourites tab, refresh it
                 if (document.querySelector('.tab[data-tab="favourite"]').classList.contains('active')) {
                     fetchUserFavorites(user.uid);
                 }
             } else {
-                // User is signed out.
                 console.log("User is signed out.");
 
-                // Reset profile picture and name
-                profileBtnElement.style.backgroundImage = 'none'; // Remove background image
-                profileIconElement.style.display = 'block'; // Show default icon
+                profileBtnElement.style.backgroundImage = 'none';
+                profileIconElement.style.display = 'block';
                 currentUserNameSpan.textContent = '';
-                userDisplayInfo.style.display = 'none'; // Hide user info
+                userDisplayInfo.style.display = 'none';
 
-                // Show login options, hide logout
                 googleLoginBtn.style.display = 'flex';
                 guestLoginBtn.style.display = 'flex';
                 logoutBtn.style.display = 'none';
                 
-                // Only display "No favorites" if the favourites tab is active and no user is logged in
                 if (document.querySelector('.tab[data-tab="favourite"]').classList.contains('active')) {
                     displayNoFavoritesMessage("Please log in to see your favourites.");
                 }

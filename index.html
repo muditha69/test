@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XXX Git - Adult Video Streaming</title>
+    <title>XXX Git</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* General Styles */
@@ -29,7 +29,7 @@
         body {
             background: linear-gradient(135deg, var(--darker-bg), var(--dark-bg));
             color: var(--text);
-            min-height: 100vh;
+            min-height: 10vh;
             overflow-x: hidden;
         }
 
@@ -975,6 +975,13 @@
                     fetchPublicVideos();
                 } else if (currentActiveTab === 'categories') {
                     fetchCategories();
+                } else if (currentActiveTab === 'favourite') { // Added for favorites tab search context
+                    const user = auth.currentUser;
+                    if (user) {
+                        fetchUserFavorites(user.uid);
+                    } else {
+                        displayNoFavoritesMessage("Please log in to see your favourites.");
+                    }
                 }
             }
         });
@@ -988,34 +995,53 @@
             const currentActiveTab = document.querySelector('.tab.active').getAttribute('data-tab');
 
             if (currentActiveTab === 'home') {
-                displayFilteredVideos(query);
+                displayFilteredVideos(query, publicVideoGrid, allVideos, noPublicVideosMessage);
             } else if (currentActiveTab === 'categories') {
                 displayFilteredCategories(query);
+            } else if (currentActiveTab === 'favourite') {
+                const user = auth.currentUser;
+                if (user) {
+                    const favouriteVideoGrid = document.getElementById('favourite-video-grid');
+                    const noFavouriteVideosMessage = document.getElementById('no-favourite-videos');
+                    // We need to fetch favorites first to have `allVideos` in the context of favorites
+                    // This is a simplified approach, a more robust solution might cache favorites separately
+                    getDocs(collection(db, 'users', user.uid, 'favorites')).then(querySnapshot => {
+                        const favVideos = [];
+                        querySnapshot.forEach(doc => favVideos.push({ id: doc.id, ...doc.data() }));
+                        displayFilteredVideos(query, favouriteVideoGrid, favVideos, noFavouriteVideosMessage, "No favourites found for");
+                    }).catch(error => {
+                        console.error("Error fetching favorites for search:", error);
+                        displayNoFavoritesMessage("Error searching favourites.");
+                    });
+                } else {
+                    displayNoFavoritesMessage("Please log in to search your favourites.");
+                }
             }
         }
 
-        function displayFilteredVideos(query) {
-            const filteredVideos = allVideos.filter(video => 
+        function displayFilteredVideos(query, targetGrid, videoList, noResultMessageElement, noResultText = "No videos found for") {
+            const filteredVideos = videoList.filter(video => 
                 video.title.toLowerCase().includes(query) ||
                 (video.description && video.description.toLowerCase().includes(query)) ||
                 (video.category && video.category.toLowerCase().includes(query))
             );
 
-            publicVideoGrid.innerHTML = '';
+            targetGrid.innerHTML = '';
             if (filteredVideos.length === 0) {
-                noPublicVideosMessage.style.display = 'block';
-                noPublicVideosMessage.innerHTML = `
+                noResultMessageElement.style.display = 'block';
+                noResultMessageElement.innerHTML = `
                     <i class="fas fa-video-slash" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
-                    <h3>No videos found for "${query}"</h3>
+                    <h3>${noResultText} "${query}"</h3>
                     <p>Try a different search term.</p>
                 `;
             } else {
-                noPublicVideosMessage.style.display = 'none';
+                noResultMessageElement.style.display = 'none';
                 filteredVideos.forEach(video => {
-                    publicVideoGrid.appendChild(createVideoCardElement(video));
+                    targetGrid.appendChild(createVideoCardElement(video));
                 });
             }
         }
+
 
         function displayFilteredCategories(query) {
             const filteredCategories = allCategories.filter(category => 
@@ -1123,7 +1149,7 @@
                 if (currentActiveTab === 'home') {
                     const query = searchInput.value.toLowerCase().trim();
                     if (query) {
-                        displayFilteredVideos(query);
+                        displayFilteredVideos(query, publicVideoGrid, allVideos, noPublicVideosMessage);
                     } else {
                         fetchPublicVideos(false); // Fetch silently to update numbers, don't clear allVideos
                     }
@@ -1134,7 +1160,7 @@
                     } else {
                         const query = searchInput.value.toLowerCase().trim();
                         if (query) {
-                            displayFilteredVideos(query); // If search is active in categories view
+                            displayFilteredVideos(query, publicVideoGrid, allVideos, noPublicVideosMessage); // If search is active in categories view
                         } else {
                             fetchPublicVideos(false); 
                         }
@@ -1158,9 +1184,9 @@
 
             try {
                 const favDocRef = doc(userFavoritesRef, docId);
-                const favDocSnap = await getDocs(query(userFavoritesRef, where('id', '==', docId))); 
-
-                if (!favDocSnap.empty) {
+                // Check if the video already exists in favorites to prevent duplicates
+                const existingFavDoc = await getDocs(query(userFavoritesRef, where('id', '==', docId)));
+                if (!existingFavDoc.empty) {
                     showCustomMessage("This video is already in your favorites!");
                     return;
                 }
@@ -1179,20 +1205,25 @@
                 });
                 showCustomMessage("Video added to favorites! ❤️");
                 console.log("Document successfully written!");
-                if (document.querySelector('.tab[data-tab="favourite"]').classList.contains('active')) {
+
+                // IMPORTANT: Re-fetch and display favorites if the favourite tab is active
+                const favouriteTab = document.querySelector('.tab[data-tab="favourite"]');
+                if (favouriteTab.classList.contains('active') && user) {
                     fetchUserFavorites(user.uid);
                 }
+
             } catch (error) {
                 console.error("Error writing document: ", error);
                 showCustomMessage("Failed to add to favorites. Please try again.");
             }
         }
 
-        function fetchUserFavorites(userId) {
-            const favouriteVideoGrid = document.getElementById('favourite-video-grid');
-            favouriteVideoGrid.innerHTML = '';
-            const noFavouriteVideosMessage = document.getElementById('no-favourite-videos');
-            noFavouriteVideosMessage.style.display = 'none';
+        const favouriteVideoGrid = document.getElementById('favourite-video-grid');
+        const noFavouriteVideosMessage = document.getElementById('no-favourite-videos');
+
+        async function fetchUserFavorites(userId) {
+            favouriteVideoGrid.innerHTML = ''; // Clear existing content
+            noFavouriteVideosMessage.style.display = 'none'; // Hide initial message
 
             if (!userId) {
                 displayNoFavoritesMessage("Please log in to see your favourites.");
@@ -1200,33 +1231,34 @@
             }
 
             const userFavoritesRef = collection(db, 'users', userId, 'favorites');
-            getDocs(userFavoritesRef)
-                .then((querySnapshot) => {
-                    if (querySnapshot.empty) {
-                        noFavouriteVideosMessage.style.display = 'block';
-                        return;
-                    }
+            try {
+                const querySnapshot = await getDocs(userFavoritesRef); 
 
-                    let favVideos = [];
-                    querySnapshot.forEach((doc) => {
-                        favVideos.push({ id: doc.id, ...doc.data() });
-                    });
+                if (querySnapshot.empty) {
+                    displayNoFavoritesMessage("No favourites yet");
+                    return;
+                }
 
-                    favVideos.sort((a, b) => {
-                        const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
-                        const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
-                        return dateB - dateA;
-                    });
-
-                    favVideos.forEach((favVideo) => {
-                        const videoCard = createVideoCardElement(favVideo);
-                        favouriteVideoGrid.appendChild(videoCard);
-                    });
-                })
-                .catch((error) => {
-                    console.error("Error getting favorites: ", error);
-                    displayNoFavoritesMessage("Error loading favorites.");
+                let favVideos = [];
+                querySnapshot.forEach((doc) => {
+                    favVideos.push({ id: doc.id, ...doc.data() });
                 });
+
+                // Sort by timestamp if available, otherwise no specific order
+                favVideos.sort((a, b) => {
+                    const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
+                    const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
+                    return dateB - dateA; // Newest first
+                });
+
+                favVideos.forEach((favVideo) => {
+                    const videoCard = createVideoCardElement(favVideo);
+                    favouriteVideoGrid.appendChild(videoCard);
+                });
+            } catch (error) {
+                console.error("Error getting favorites: ", error);
+                displayNoFavoritesMessage("Error loading favorites.");
+            }
         }
 
         const publicVideoGrid = document.getElementById('public-video-grid');
@@ -1266,14 +1298,13 @@
                 allVideos = videos; // Store all fetched videos for search
 
                 if (clearAndLoad) {
+                    publicVideoGrid.innerHTML = ''; // Ensure clear before adding
                     videos.forEach((video) => {
                         const videoCard = createVideoCardElement(video);
                         publicVideoGrid.appendChild(videoCard);
                     });
                 } else {
                     // If not clearing and loading, update existing cards or re-render
-                    // A more efficient way would be to only update the specific card that changed,
-                    // but for simplicity, we'll re-render all for now if not on search.
                     const currentQuery = searchInput.value.toLowerCase().trim();
                     if (!currentQuery) { // Only re-render if no search is active
                         publicVideoGrid.innerHTML = '';
@@ -1335,6 +1366,7 @@
                 allVideos = videos; // Update allVideos for filtering in this context
 
                 if (clearAndLoad) {
+                    publicVideoGrid.innerHTML = ''; // Ensure clear before adding
                     videos.forEach((video) => {
                         const videoCard = createVideoCardElement(video);
                         publicVideoGrid.appendChild(videoCard);
@@ -1397,6 +1429,7 @@
                 allCategories = categories; // Store all fetched categories for search
 
                 if (clearAndLoad) {
+                    dynamicCategoriesGrid.innerHTML = ''; // Ensure clear before adding
                     categories.forEach((category) => {
                         dynamicCategoriesGrid.appendChild(createCategoryCardElement(category));
                     });
@@ -1484,7 +1517,8 @@
             let clickTimer = null;
             let lastClickTime = 0;
             videoCard.addEventListener('click', (event) => {
-                if (event.target.closest('.video-card') !== videoCard) {
+                // Check if the click was directly on the video card or a child that isn't the heart animation
+                if (event.target.closest('.video-card') !== videoCard && !event.target.closest('.animated-heart')) {
                     return;
                 }
 
@@ -1499,7 +1533,7 @@
                     const animatedHeart = heartContainer.querySelector('.animated-heart');
                     heartContainer.style.display = 'flex';
                     animatedHeart.classList.remove('animate-heart');
-                    void animatedHeart.offsetWidth;
+                    void animatedHeart.offsetWidth; // Trigger reflow
                     animatedHeart.classList.add('animate-heart');
 
                     animatedHeart.addEventListener('animationend', () => {
@@ -1509,8 +1543,9 @@
 
                     incrementVideoMetric(videoData.id, 'likes');
                     addVideoToFavorites(videoData);
-                    lastClickTime = 0;
+                    lastClickTime = 0; // Reset last click time after double click
                 } else {
+                    // Single click logic (open video URL)
                     clickTimer = setTimeout(() => {
                         window.open(videoData.url, '_blank');
                         incrementVideoMetric(videoData.id, 'views');
@@ -1568,6 +1603,7 @@
                 userDisplayInfo.style.display = 'flex';
                 logoutBtn.style.display = 'flex';
                 
+                // If the favourite tab is currently active, re-fetch favourites on auth state change
                 if (document.querySelector('.tab[data-tab="favourite"]').classList.contains('active')) {
                     fetchUserFavorites(user.uid);
                 }
@@ -1583,6 +1619,7 @@
                 guestLoginBtn.style.display = 'flex';
                 logoutBtn.style.display = 'none';
                 
+                // If the favourite tab is currently active, display "Please log in" message
                 if (document.querySelector('.tab[data-tab="favourite"]').classList.contains('active')) {
                     displayNoFavoritesMessage("Please log in to see your favourites.");
                 }

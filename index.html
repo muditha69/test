@@ -1430,7 +1430,7 @@
             categoryCard.setAttribute('data-category-name', category.name);
 
             categoryCard.innerHTML = `
-                <img src="${category.thumbnail}" alt="${category.name} Thumbnail" onerror="this.onerror=null; this.src='https://placehold.co/220x160/0f0c1d/ffffff?text=No+Image'">
+                <img src="${category.thumbnail}" alt="${category.name} Thumbnail" class="category-image" onerror="this.onerror=null; this.src='https://placehold.co/220x160/0f0c1d/ffffff?text=No+Image'">
                 <div class="category-name">${category.name}</div>
             `;
             categoryCard.addEventListener('click', () => {
@@ -1586,7 +1586,7 @@
                 if (document.querySelector('.tab[data-tab="favourite"]').classList.contains('active')) {
                     displayNoFavoritesMessage("Please log in to see your favourites.");
                 }
-            }\
+            }
         });
 
     </script>

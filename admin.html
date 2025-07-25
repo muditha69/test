@@ -111,12 +111,12 @@
             box-shadow: 0 8px 20px rgba(255, 38, 178, 0.6);
         }
 
-        .clear-btn {
+        .clear-btn, .cancel-edit-btn { /* Added cancel-edit-btn */
             background-color: #555;
             color: white;
         }
 
-        .clear-btn:hover {
+        .clear-btn:hover, .cancel-edit-btn:hover { /* Added cancel-edit-btn */
             background-color: #777;
         }
 
@@ -190,7 +190,12 @@
             color: #b0b3c5;
         }
 
-        .delete-btn {
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .delete-btn, .edit-btn { /* Added edit-btn */
             background-color: #dc3545; /* Red */
             color: white;
             padding: 8px 15px;
@@ -200,8 +205,17 @@
             transition: background-color 0.3s;
         }
 
+        .edit-btn {
+            background-color: #007bff; /* Blue for edit */
+        }
+
         .delete-btn:hover {
             background-color: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .edit-btn:hover {
+            background-color: #0056b3;
             transform: translateY(-2px);
         }
 
@@ -305,16 +319,20 @@
             .video-item img, .category-item img {
                 margin-bottom: 10px;
             }
-            .delete-btn {
+            .action-buttons {
+                flex-direction: column;
                 width: 100%;
-                margin-top: 10px;
+            }
+            .delete-btn, .edit-btn {
+                width: 100%;
+                margin-top: 5px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Add New Video Content</h1>
+        <h1 id="video-form-title">Add New Video Content</h1>
         <form id="video-form">
             <div class="form-group">
                 <label for="videoTitle">Video Title:</label>
@@ -326,7 +344,7 @@
             </div>
             <div class="form-group">
                 <label for="videoUrl">Video Play URL (e.g., YouTube video link):</label>
-                <input type="text" id="videoUrl" required placeholder="e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                <input type="text" id="videoUrl" required placeholder="e.e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ">
             </div>
             <div class="form-group">
                 <label for="videoDuration">Duration (e.g., 22:15):</label>
@@ -336,18 +354,18 @@
                 <label for="videoCategory">Category:</label>
                 <select id="videoCategory" required>
                     <option value="">-- Select a Category --</option>
-                    <!-- Categories will be dynamically loaded here by JavaScript -->
-                </select>
+                    </select>
             </div>
             <div class="button-group">
-                <button type="submit" class="submit-btn"><i class="fas fa-plus-circle"></i> Add Video</button>
+                <button type="submit" class="submit-btn" id="video-submit-btn"><i class="fas fa-plus-circle"></i> Add Video</button>
                 <button type="button" class="clear-btn" id="clear-video-form-btn"><i class="fas fa-eraser"></i> Clear Form</button>
+                <button type="button" class="cancel-edit-btn" id="cancel-video-edit-btn" style="display:none;"><i class="fas fa-times-circle"></i> Cancel Edit</button>
             </div>
         </form>
     </div>
 
     <div class="container">
-        <h1>Add New Category</h1>
+        <h1 id="category-form-title">Add New Category</h1>
         <form id="category-form">
             <div class="form-group">
                 <label for="categoryName">Category Name:</label>
@@ -358,8 +376,9 @@
                 <input type="text" id="categoryThumbnailUrl" required placeholder="e.g., https://example.com/category_thumb.jpg">
             </div>
             <div class="button-group">
-                <button type="submit" class="submit-btn"><i class="fas fa-plus-circle"></i> Add Category</button>
+                <button type="submit" class="submit-btn" id="category-submit-btn"><i class="fas fa-plus-circle"></i> Add Category</button>
                 <button type="button" class="clear-btn" id="clear-category-form-btn"><i class="fas fa-eraser"></i> Clear Form</button>
+                <button type="button" class="cancel-edit-btn" id="cancel-category-edit-btn" style="display:none;"><i class="fas fa-times-circle"></i> Cancel Edit</button>
             </div>
         </form>
     </div>
@@ -367,7 +386,6 @@
     <div class="category-list-container">
         <h2>Manage Existing Categories</h2>
         <div id="admin-category-list">
-            <!-- Categories will be loaded here by JavaScript -->
             <div class="no-categories-message" id="no-admin-categories">
                 <i class="fas fa-info-circle"></i> No categories added yet.
             </div>
@@ -377,7 +395,6 @@
     <div class="video-list-container">
         <h2>Manage Existing Videos</h2>
         <div id="admin-video-list">
-            <!-- Videos will be loaded here by JavaScript -->
             <div class="no-videos-message" id="no-admin-videos">
                 <i class="fas fa-info-circle"></i> No videos added yet.
             </div>
@@ -389,7 +406,7 @@
     <script type="module">
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
         // Your Firebase configuration (use your actual project config)
@@ -424,16 +441,25 @@
         })();
 
         const videoForm = document.getElementById('video-form');
+        const videoFormTitle = document.getElementById('video-form-title');
+        const videoSubmitBtn = document.getElementById('video-submit-btn');
         const clearVideoFormBtn = document.getElementById('clear-video-form-btn');
+        const cancelVideoEditBtn = document.getElementById('cancel-video-edit-btn'); // New
         const messageBox = document.getElementById('message-box');
         const adminVideoList = document.getElementById('admin-video-list');
         const noAdminVideosMessage = document.getElementById('no-admin-videos');
-        const videoCategorySelect = document.getElementById('videoCategory'); // New
+        const videoCategorySelect = document.getElementById('videoCategory');
 
-        const categoryForm = document.getElementById('category-form'); // New
-        const clearCategoryFormBtn = document.getElementById('clear-category-form-btn'); // New
-        const adminCategoryList = document.getElementById('admin-category-list'); // New
-        const noAdminCategoriesMessage = document.getElementById('no-admin-categories'); // New
+        const categoryForm = document.getElementById('category-form');
+        const categoryFormTitle = document.getElementById('category-form-title');
+        const categorySubmitBtn = document.getElementById('category-submit-btn');
+        const clearCategoryFormBtn = document.getElementById('clear-category-form-btn');
+        const cancelCategoryEditBtn = document.getElementById('cancel-category-edit-btn'); // New
+        const adminCategoryList = document.getElementById('admin-category-list');
+        const noAdminCategoriesMessage = document.getElementById('no-admin-categories');
+
+        let editingVideoId = null; // To store the ID of the video being edited
+        let editingCategoryId = null; // To store the ID of the category being edited
 
         // Function to show custom messages
         function showMessage(message, type = 'success') {
@@ -493,49 +519,254 @@
             });
         }
 
-        // Handle category form submission (NEW)
+        // --- Video Form Logic ---
+        function resetVideoForm() {
+            videoForm.reset();
+            editingVideoId = null;
+            videoFormTitle.textContent = 'Add New Video Content';
+            videoSubmitBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Add Video';
+            cancelVideoEditBtn.style.display = 'none';
+        }
+
+        videoForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const videoTitle = document.getElementById('videoTitle').value;
+            const thumbnailUrl = document.getElementById('thumbnailUrl').value;
+            const videoUrl = document.getElementById('videoUrl').value;
+            const videoDuration = document.getElementById('videoDuration').value;
+            const videoCategory = videoCategorySelect.value;
+            
+            const initialViews = "0";
+            const initialLikes = "0";
+            const initialDescription = "No description available.";
+
+            const videoData = {
+                title: videoTitle,
+                thumbnail: thumbnailUrl,
+                url: videoUrl,
+                duration: videoDuration,
+                description: initialDescription, // Only set if adding new
+                category: videoCategory,
+            };
+
+            if (editingVideoId) {
+                // Update existing video
+                try {
+                    // When updating, we don't change views/likes/createdAt unless specifically edited
+                    await updateDoc(doc(db, "public_videos", editingVideoId), {
+                        title: videoData.title,
+                        thumbnail: videoData.thumbnail,
+                        url: videoData.url,
+                        duration: videoData.duration,
+                        category: videoData.category
+                    });
+                    showMessage("Video updated successfully!");
+                    console.log("Document updated with ID: ", editingVideoId);
+                } catch (e) {
+                    console.error("Error updating document: ", e);
+                    showMessage("Error updating video: " + e.message, 'error');
+                }
+            } else {
+                // Add new video
+                try {
+                    const docRef = await addDoc(collection(db, "public_videos"), {
+                        ...videoData,
+                        views: initialViews,
+                        likes: initialLikes,
+                        createdAt: new Date()
+                    });
+                    showMessage("Video added successfully!");
+                    console.log("Document written with ID: ", docRef.id);
+                } catch (e) {
+                    console.error("Error adding document: ", e);
+                    showMessage("Error adding video: " + e.message, 'error');
+                }
+            }
+            resetVideoForm();
+            fetchAndDisplayAdminVideos();
+        });
+
+        clearVideoFormBtn.addEventListener('click', () => {
+            resetVideoForm();
+            showMessage("Video form cleared.");
+        });
+
+        cancelVideoEditBtn.addEventListener('click', () => {
+            resetVideoForm();
+            showMessage("Video edit cancelled.");
+        });
+
+        async function fetchAndDisplayAdminVideos() {
+            adminVideoList.innerHTML = '';
+            noAdminVideosMessage.style.display = 'none';
+
+            try {
+                const publicVideosRef = collection(db, 'public_videos');
+                const querySnapshot = await getDocs(publicVideosRef);
+
+                if (querySnapshot.empty) {
+                    noAdminVideosMessage.style.display = 'block';
+                    return;
+                }
+
+                let videos = [];
+                querySnapshot.forEach((doc) => {
+                    videos.push({ id: doc.id, ...doc.data() });
+                });
+
+                videos.sort((a, b) => {
+                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0);
+                    const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
+                    return dateB - dateA;
+                });
+
+                videos.forEach((video) => {
+                    const videoItem = document.createElement('div');
+                    videoItem.classList.add('video-item');
+                    videoItem.setAttribute('data-video-id', video.id);
+
+                    videoItem.innerHTML = `
+                        <img src="${video.thumbnail}" alt="Thumbnail" onerror="this.onerror=null; this.src='https://placehold.co/80x50/0f0c1d/ffffff?text=No+Image'">
+                        <div class="video-details">
+                            <h3>${video.title}</h3>
+                            <p>Category: ${video.category || 'N/A'}</p>
+                            <p>Duration: ${video.duration} | Views: ${video.views} | Likes: ${video.likes}</p>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="edit-btn" data-id="${video.id}" data-title="${video.title}" 
+                                data-thumbnail="${video.thumbnail}" data-url="${video.url}" 
+                                data-duration="${video.duration}" data-category="${video.category}">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="delete-btn" data-id="${video.id}"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                    `;
+                    adminVideoList.appendChild(videoItem);
+                });
+
+                adminVideoList.querySelectorAll('.delete-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const videoIdToDelete = e.currentTarget.getAttribute('data-id');
+                        showCustomPrompt(`Are you sure you want to delete "${e.currentTarget.closest('.video-item').querySelector('h3').textContent}"? This action cannot be undone.`, (response) => {
+                            if (response) {
+                                deleteVideo(videoIdToDelete);
+                            }
+                        });
+                    });
+                });
+
+                // Event listeners for new Edit buttons
+                adminVideoList.querySelectorAll('.edit-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        editingVideoId = e.currentTarget.getAttribute('data-id');
+                        document.getElementById('videoTitle').value = e.currentTarget.getAttribute('data-title');
+                        document.getElementById('thumbnailUrl').value = e.currentTarget.getAttribute('data-thumbnail');
+                        document.getElementById('videoUrl').value = e.currentTarget.getAttribute('data-url');
+                        document.getElementById('videoDuration').value = e.currentTarget.getAttribute('data-duration');
+                        videoCategorySelect.value = e.currentTarget.getAttribute('data-category').toLowerCase();
+                        
+                        videoFormTitle.textContent = 'Edit Video Content';
+                        videoSubmitBtn.innerHTML = '<i class="fas fa-save"></i> Update Video';
+                        cancelVideoEditBtn.style.display = 'inline-block';
+                        showMessage("Editing video: " + e.currentTarget.getAttribute('data-title'));
+                        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+                    });
+                });
+
+            } catch (error) {
+                console.error("Error fetching admin videos: ", error);
+                adminVideoList.innerHTML = `
+                    <div class="no-videos-message" style="color: #dc3545;">
+                        <i class="fas fa-exclamation-circle"></i> Error loading videos.
+                    </div>
+                `;
+            }
+        }
+
+        async function deleteVideo(videoId) {
+            try {
+                await deleteDoc(doc(db, "public_videos", videoId));
+                showMessage("Video deleted successfully!");
+                console.log("Document successfully deleted with ID:", videoId);
+                fetchAndDisplayAdminVideos();
+            } catch (error) {
+                console.error("Error deleting document: ", error);
+                showMessage("Error deleting video: " + error.message, 'error');
+            }
+        }
+
+        // --- Category Form Logic ---
+        function resetCategoryForm() {
+            categoryForm.reset();
+            editingCategoryId = null;
+            categoryFormTitle.textContent = 'Add New Category';
+            categorySubmitBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Add Category';
+            cancelCategoryEditBtn.style.display = 'none';
+        }
+
         categoryForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const categoryName = document.getElementById('categoryName').value.trim();
-            const categoryThumbnailUrl = document.getElementById('categoryThumbnailUrl').value.trim(); // NEW
+            const categoryThumbnailUrl = document.getElementById('categoryThumbnailUrl').value.trim();
 
             if (!categoryName || !categoryThumbnailUrl) {
                 showMessage("Category name and thumbnail URL cannot be empty.", 'error');
                 return;
             }
 
-            try {
-                // Check if category already exists (case-insensitive)
-                const categoriesRef = collection(db, "categories");
-                const querySnapshot = await getDocs(categoriesRef);
-                const existingCategories = querySnapshot.docs.map(doc => doc.data().name.toLowerCase());
-
-                if (existingCategories.includes(categoryName.toLowerCase())) {
-                    showMessage("Category already exists!", 'error');
-                    return;
+            if (editingCategoryId) {
+                // Update existing category
+                try {
+                    await updateDoc(doc(db, "categories", editingCategoryId), {
+                        name: categoryName,
+                        thumbnail: categoryThumbnailUrl
+                    });
+                    showMessage("Category updated successfully!");
+                    console.log("Category updated with ID: ", editingCategoryId);
+                } catch (e) {
+                    console.error("Error updating category: ", e);
+                    showMessage("Error updating category: " + e.message, 'error');
                 }
+            } else {
+                // Add new category
+                try {
+                    const categoriesRef = collection(db, "categories");
+                    const querySnapshot = await getDocs(categoriesRef);
+                    const existingCategories = querySnapshot.docs.map(doc => doc.data().name.toLowerCase());
 
-                await addDoc(categoriesRef, { 
-                    name: categoryName, 
-                    thumbnail: categoryThumbnailUrl, // Store thumbnail
-                    createdAt: new Date() 
-                });
-                showMessage("Category added successfully!");
-                categoryForm.reset();
-                fetchAndDisplayAdminCategories(); // Refresh categories list
-                populateCategoryDropdown(); // Refresh dropdown
-            } catch (e) {
-                console.error("Error adding category: ", e);
-                showMessage("Error adding category: " + e.message, 'error');
+                    if (existingCategories.includes(categoryName.toLowerCase())) {
+                        showMessage("Category already exists!", 'error');
+                        return;
+                    }
+
+                    await addDoc(categoriesRef, { 
+                        name: categoryName, 
+                        thumbnail: categoryThumbnailUrl,
+                        createdAt: new Date() 
+                    });
+                    showMessage("Category added successfully!");
+                    console.log("Category added with name: ", categoryName);
+                } catch (e) {
+                    console.error("Error adding category: ", e);
+                    showMessage("Error adding category: " + e.message, 'error');
+                }
             }
+            resetCategoryForm();
+            fetchAndDisplayAdminCategories();
+            populateCategoryDropdown();
         });
 
-        // Handle clear category form button (NEW)
         clearCategoryFormBtn.addEventListener('click', () => {
-            categoryForm.reset();
+            resetCategoryForm();
+            showMessage("Category form cleared.");
         });
 
-        // Function to fetch and display categories in the admin panel (NEW)
+        cancelCategoryEditBtn.addEventListener('click', () => {
+            resetCategoryForm();
+            showMessage("Category edit cancelled.");
+        });
+
         async function fetchAndDisplayAdminCategories() {
             adminCategoryList.innerHTML = '';
             noAdminCategoriesMessage.style.display = 'none';
@@ -554,7 +785,7 @@
                     categories.push({ id: doc.id, ...doc.data() });
                 });
 
-                categories.sort((a, b) => a.name.localeCompare(b.name)); // Sort alphabetically
+                categories.sort((a, b) => a.name.localeCompare(b.name));
 
                 categories.forEach((category) => {
                     const categoryItem = document.createElement('div');
@@ -566,7 +797,13 @@
                         <div class="category-details">
                             <h3>${category.name}</h3>
                         </div>
-                        <button class="delete-btn" data-id="${category.id}"><i class="fas fa-trash"></i> Delete</button>
+                        <div class="action-buttons">
+                            <button class="edit-btn" data-id="${category.id}" data-name="${category.name}" 
+                                data-thumbnail="${category.thumbnail}">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="delete-btn" data-id="${category.id}"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
                     `;
                     adminCategoryList.appendChild(categoryItem);
                 });
@@ -574,11 +811,26 @@
                 adminCategoryList.querySelectorAll('.delete-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
                         const categoryIdToDelete = e.currentTarget.getAttribute('data-id');
-                        showCustomPrompt(`Are you sure you want to delete category "${e.currentTarget.previousElementSibling.querySelector('h3').textContent}"? All videos associated ONLY with this category will become uncategorized.`, (response) => {
+                        showCustomPrompt(`Are you sure you want to delete category "${e.currentTarget.closest('.category-item').querySelector('h3').textContent}"? This will not delete associated videos, but they will become uncategorized.`, (response) => {
                             if (response) {
                                 deleteCategory(categoryIdToDelete);
                             }
                         });
+                    });
+                });
+
+                // Event listeners for new Category Edit buttons
+                adminCategoryList.querySelectorAll('.edit-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        editingCategoryId = e.currentTarget.getAttribute('data-id');
+                        document.getElementById('categoryName').value = e.currentTarget.getAttribute('data-name');
+                        document.getElementById('categoryThumbnailUrl').value = e.currentTarget.getAttribute('data-thumbnail');
+                        
+                        categoryFormTitle.textContent = 'Edit Category';
+                        categorySubmitBtn.innerHTML = '<i class="fas fa-save"></i> Update Category';
+                        cancelCategoryEditBtn.style.display = 'inline-block';
+                        showMessage("Editing category: " + e.currentTarget.getAttribute('data-name'));
+                        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
                     });
                 });
 
@@ -592,23 +844,21 @@
             }
         }
 
-        // Function to delete a category (NEW)
         async function deleteCategory(categoryId) {
             try {
                 await deleteDoc(doc(db, "categories", categoryId));
                 showMessage("Category deleted successfully!");
                 console.log("Category successfully deleted with ID:", categoryId);
-                fetchAndDisplayAdminCategories(); // Refresh the list after deletion
-                populateCategoryDropdown(); // Refresh dropdown
+                fetchAndDisplayAdminCategories();
+                populateCategoryDropdown();
             } catch (error) {
                 console.error("Error deleting category: ", error);
                 showMessage("Error deleting category: " + error.message, 'error');
             }
         }
 
-        // Function to populate the video category dropdown (NEW)
         async function populateCategoryDropdown() {
-            videoCategorySelect.innerHTML = '<option value="">-- Select a Category --</option>'; // Clear existing options
+            videoCategorySelect.innerHTML = '<option value="">-- Select a Category --</option>';
             try {
                 const categoriesRef = collection(db, 'categories');
                 const querySnapshot = await getDocs(categoriesRef);
@@ -621,7 +871,7 @@
 
                 categories.forEach(category => {
                     const option = document.createElement('option');
-                    option.value = category.name.toLowerCase(); // Use lowercase for consistency
+                    option.value = category.name.toLowerCase();
                     option.textContent = category.name;
                     videoCategorySelect.appendChild(option);
                 });
@@ -631,134 +881,6 @@
             }
         }
 
-        // Handle video form submission (MODIFIED to include category)
-        videoForm.addEventListener('submit', async (e) => {
-            e.preventDefault(); // Prevent default form submission
-
-            // Get form values
-            const videoTitle = document.getElementById('videoTitle').value;
-            const thumbnailUrl = document.getElementById('thumbnailUrl').value;
-            const videoUrl = document.getElementById('videoUrl').value;
-            const videoDuration = document.getElementById('videoDuration').value;
-            const videoCategory = videoCategorySelect.value; // Get selected category
-            
-            // Initial values for views and likes
-            const initialViews = "0"; // Stored as string to match existing format
-            const initialLikes = "0"; // Stored as string to match existing format
-            const initialDescription = "No description available."; // Default description
-
-            // Create a video object
-            const videoData = {
-                title: videoTitle,
-                thumbnail: thumbnailUrl,
-                url: videoUrl, // This will be the direct play URL
-                duration: videoDuration,
-                views: initialViews,
-                likes: initialLikes,
-                description: initialDescription,
-                category: videoCategory, // Add category to video data
-                createdAt: new Date() // Timestamp for ordering
-            };
-
-            try {
-                // Add document to 'public_videos' collection
-                const docRef = await addDoc(collection(db, "public_videos"), videoData);
-                console.log("Document written with ID: ", docRef.id);
-                showMessage("Video added successfully!");
-                videoForm.reset(); // Clear form after successful submission
-                fetchAndDisplayAdminVideos(); // Refresh the list of videos
-            } catch (e) {
-                console.error("Error adding document: ", e);
-                showMessage("Error adding video: " + e.message, 'error');
-            }
-        });
-
-        // Handle clear video form button
-        clearVideoFormBtn.addEventListener('click', () => {
-            videoForm.reset();
-        });
-
-        // Function to fetch and display videos in the admin panel (MODIFIED for category display)
-        async function fetchAndDisplayAdminVideos() {
-            adminVideoList.innerHTML = ''; // Clear existing list
-            noAdminVideosMessage.style.display = 'none'; // Hide no videos message initially
-
-            try {
-                const publicVideosRef = collection(db, 'public_videos');
-                const querySnapshot = await getDocs(publicVideosRef);
-
-                if (querySnapshot.empty) {
-                    noAdminVideosMessage.style.display = 'block'; // Show no videos message
-                    return;
-                }
-
-                let videos = [];
-                querySnapshot.forEach((doc) => {
-                    videos.push({ id: doc.id, ...doc.data() });
-                });
-
-                // Sort videos by createdAt in JavaScript after fetching
-                videos.sort((a, b) => {
-                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0);
-                    const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
-                    return dateB - dateA; // Descending order (newest first)
-                });
-
-                videos.forEach((video) => {
-                    const videoItem = document.createElement('div');
-                    videoItem.classList.add('video-item');
-                    videoItem.setAttribute('data-video-id', video.id);
-
-                    videoItem.innerHTML = `
-                        <img src="${video.thumbnail}" alt="Thumbnail" onerror="this.onerror=null; this.src='https://placehold.co/80x50/0f0c1d/ffffff?text=No+Image'">
-                        <div class="video-details">
-                            <h3>${video.title}</h3>
-                            <p>Category: ${video.category || 'N/A'}</p> <!-- Display category -->
-                            <p>Duration: ${video.duration} | Views: ${video.views} | Likes: ${video.likes}</p>
-                        </div>
-                        <button class="delete-btn" data-id="${video.id}"><i class="fas fa-trash"></i> Delete</button>
-                    `;
-                    adminVideoList.appendChild(videoItem);
-                });
-
-                // Add event listeners to delete buttons
-                adminVideoList.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const videoIdToDelete = e.currentTarget.getAttribute('data-id');
-                        showCustomPrompt(`Are you sure you want to delete "${e.currentTarget.previousElementSibling.querySelector('h3').textContent}"? This action cannot be undone.`, (response) => {
-                            if (response) {
-                                deleteVideo(videoIdToDelete);
-                            }
-                        });
-                    });
-                });
-
-            } catch (error) {
-                console.error("Error fetching admin videos: ", error);
-                adminVideoList.innerHTML = `
-                    <div class="no-videos-message" style="color: #dc3545;">
-                        <i class="fas fa-exclamation-circle"></i> Error loading videos.
-                    </div>
-                `;
-            }
-        }
-
-        // Function to delete a video
-        async function deleteVideo(videoId) {
-            try {
-                await deleteDoc(doc(db, "public_videos", videoId));
-                showMessage("Video deleted successfully!");
-                console.log("Document successfully deleted with ID:", videoId);
-                fetchAndDisplayAdminVideos(); // Refresh the list after deletion
-            } catch (error) {
-                console.error("Error deleting document: ", error);
-                showMessage("Error deleting video: " + error.message, 'error');
-            }
-        }
-
-        // Initial fetch of videos and categories when the admin page loads
-        // (already called after auth in the IIFE)
-        // document.addEventListener('DOMContentLoaded', populateCategoryDropdown); // Populate dropdown on load - This is now handled by the IIFE after auth.
     </script>
 </body>
 </html>

@@ -162,6 +162,7 @@
             padding: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             justify-content: space-between;
+            flex-wrap: wrap; /* Allow wrapping for smaller screens */
         }
 
         .video-item:last-child, .category-item:last-child {
@@ -173,10 +174,12 @@
             height: 50px;
             object-fit: cover;
             border-radius: 5px;
+            flex-shrink: 0;
         }
 
         .video-details, .category-details {
             flex-grow: 1;
+            min-width: 150px; /* Ensure details take some space */
         }
 
         .video-details h3, .category-details h3 {
@@ -192,21 +195,34 @@
 
         .action-buttons {
             display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap */
             gap: 10px;
+            margin-top: 5px; /* Add some space if wrapping */
+            justify-content: flex-end; /* Align buttons to the right */
         }
 
-        .delete-btn, .edit-btn { /* Added edit-btn */
+        .delete-btn, .edit-btn, .reset-views-btn, .reset-likes-btn { /* Added new buttons */
             background-color: #dc3545; /* Red */
             color: white;
             padding: 8px 15px;
             border-radius: 20px;
             font-size: 0.9rem;
             font-weight: 500;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
+            flex-shrink: 0; /* Prevent shrinking of buttons */
         }
 
         .edit-btn {
             background-color: #007bff; /* Blue for edit */
+        }
+
+        .reset-views-btn {
+            background-color: #ffc107; /* Orange for reset views */
+            color: #333; /* Darker text for contrast */
+        }
+
+        .reset-likes-btn {
+            background-color: #17a2b8; /* Cyan for reset likes */
         }
 
         .delete-btn:hover {
@@ -216,6 +232,16 @@
 
         .edit-btn:hover {
             background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .reset-views-btn:hover {
+            background-color: #e0a800;
+            transform: translateY(-2px);
+        }
+
+        .reset-likes-btn:hover {
+            background-color: #138496;
             transform: translateY(-2px);
         }
 
@@ -295,6 +321,85 @@
             background-color: #777;
         }
 
+        /* Login Section Styles */
+        #login-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #login-section h1 {
+            margin-bottom: 20px;
+        }
+
+        #login-section button {
+            background-color: #4285F4; /* Google Blue */
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        #login-section button:hover {
+            background-color: #357ae8;
+            transform: translateY(-2px);
+        }
+
+        #login-section .google-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        #admin-content {
+            display: none; /* Hidden by default */
+            width: 100%;
+            max-width: 700px;
+            margin-top: 50px;
+        }
+
+        #auth-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background-color: rgba(26, 22, 41, 0.8);
+            padding: 10px 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #b0b3c5;
+            z-index: 1001;
+        }
+
+        #auth-status .user-email {
+            font-weight: 600;
+            color: #ff26b2;
+        }
+
+        #auth-status button {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            border-radius: 20px;
+            background-color: #dc3545;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #auth-status button:hover {
+            background-color: #c82333;
+        }
+
+
         /* Responsive adjustments */
         @media (max-width: 600px) {
             .container, .video-list-container, .category-list-container {
@@ -323,7 +428,7 @@
                 flex-direction: column;
                 width: 100%;
             }
-            .delete-btn, .edit-btn {
+            .delete-btn, .edit-btn, .reset-views-btn, .reset-likes-btn { /* Apply to new buttons as well */
                 width: 100%;
                 margin-top: 5px;
             }
@@ -331,72 +436,92 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 id="video-form-title">Add New Video Content</h1>
-        <form id="video-form">
-            <div class="form-group">
-                <label for="videoTitle">Video Title:</label>
-                <input type="text" id="videoTitle" required placeholder="e.g., Passionate Encounter - Late Night Session">
-            </div>
-            <div class="form-group">
-                <label for="thumbnailUrl">Thumbnail Image URL:</label>
-                <input type="text" id="thumbnailUrl" required placeholder="e.g., https://example.com/thumb.jpg">
-            </div>
-            <div class="form-group">
-                <label for="videoUrl">Video Play URL (e.g., YouTube video link):</label>
-                <input type="text" id="videoUrl" required placeholder="e.e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ">
-            </div>
-            <div class="form-group">
-                <label for="videoDuration">Duration (e.g., 22:15):</label>
-                <input type="text" id="videoDuration" required placeholder="e.g., 22:15">
-            </div>
-            <div class="form-group">
-                <label for="videoCategory">Category:</label>
-                <select id="videoCategory" required>
-                    <option value="">-- Select a Category --</option>
-                    </select>
-            </div>
-            <div class="button-group">
-                <button type="submit" class="submit-btn" id="video-submit-btn"><i class="fas fa-plus-circle"></i> Add Video</button>
-                <button type="button" class="clear-btn" id="clear-video-form-btn"><i class="fas fa-eraser"></i> Clear Form</button>
-                <button type="button" class="cancel-edit-btn" id="cancel-video-edit-btn" style="display:none;"><i class="fas fa-times-circle"></i> Cancel Edit</button>
-            </div>
-        </form>
+    <!-- Authentication Status Display -->
+    <div id="auth-status" style="display:none;">
+        Logged in as: <span class="user-email" id="user-email"></span>
+        <button id="sign-out-btn">Sign Out</button>
     </div>
 
-    <div class="container">
-        <h1 id="category-form-title">Add New Category</h1>
-        <form id="category-form">
-            <div class="form-group">
-                <label for="categoryName">Category Name:</label>
-                <input type="text" id="categoryName" required placeholder="e.g., Anal, Asian, Blowjob">
-            </div>
-            <div class="form-group">
-                <label for="categoryThumbnailUrl">Category Thumbnail URL:</label>
-                <input type="text" id="categoryThumbnailUrl" required placeholder="e.g., https://example.com/category_thumb.jpg">
-            </div>
-            <div class="button-group">
-                <button type="submit" class="submit-btn" id="category-submit-btn"><i class="fas fa-plus-circle"></i> Add Category</button>
-                <button type="button" class="clear-btn" id="clear-category-form-btn"><i class="fas fa-eraser"></i> Clear Form</button>
-                <button type="button" class="cancel-edit-btn" id="cancel-category-edit-btn" style="display:none;"><i class="fas fa-times-circle"></i> Cancel Edit</button>
-            </div>
-        </form>
+    <!-- Login Section -->
+    <div id="login-section">
+        <h1>Admin Access Required</h1>
+        <p>Please sign in with your authorized Google account to access the administration panel.</p>
+        <button id="sign-in-google-btn">
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google icon" class="google-icon">
+            Sign In with Google
+        </button>
+        <p id="auth-error-message" style="color: #dc3545; margin-top: 20px; display: none;"></p>
     </div>
 
-    <div class="category-list-container">
-        <h2>Manage Existing Categories</h2>
-        <div id="admin-category-list">
-            <div class="no-categories-message" id="no-admin-categories">
-                <i class="fas fa-info-circle"></i> No categories added yet.
+    <!-- Main Admin Content (hidden by default) -->
+    <div id="admin-content">
+        <div class="container">
+            <h1 id="video-form-title">Add New Video Content</h1>
+            <form id="video-form">
+                <div class="form-group">
+                    <label for="videoTitle">Video Title:</label>
+                    <input type="text" id="videoTitle" required placeholder="e.g., Passionate Encounter - Late Night Session">
+                </div>
+                <div class="form-group">
+                    <label for="thumbnailUrl">Thumbnail Image URL:</label>
+                    <input type="text" id="thumbnailUrl" required placeholder="e.g., https://example.com/thumb.jpg">
+                </div>
+                <div class="form-group">
+                    <label for="videoUrl">Video Play URL (e.g., YouTube video link):</label>
+                    <input type="text" id="videoUrl" required placeholder="e.e.g., https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+                </div>
+                <div class="form-group">
+                    <label for="videoDuration">Duration (e.g., 22:15):</label>
+                    <input type="text" id="videoDuration" required placeholder="e.g., 22:15">
+                </div>
+                <div class="form-group">
+                    <label for="videoCategory">Category:</label>
+                    <select id="videoCategory" required>
+                        <option value="">-- Select a Category --</option>
+                        </select>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="submit-btn" id="video-submit-btn"><i class="fas fa-plus-circle"></i> Add Video</button>
+                    <button type="button" class="clear-btn" id="clear-video-form-btn"><i class="fas fa-eraser"></i> Clear Form</button>
+                    <button type="button" class="cancel-edit-btn" id="cancel-video-edit-btn" style="display:none;"><i class="fas fa-times-circle"></i> Cancel Edit</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="container">
+            <h1 id="category-form-title">Add New Category</h1>
+            <form id="category-form">
+                <div class="form-group">
+                    <label for="categoryName">Category Name:</label>
+                    <input type="text" id="categoryName" required placeholder="e.g., Anal, Asian, Blowjob">
+                </div>
+                <div class="form-group">
+                    <label for="categoryThumbnailUrl">Category Thumbnail URL:</label>
+                    <input type="text" id="categoryThumbnailUrl" required placeholder="e.g., https://example.com/category_thumb.jpg">
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="submit-btn" id="category-submit-btn"><i class="fas fa-plus-circle"></i> Add Category</button>
+                    <button type="button" class="clear-btn" id="clear-category-form-btn"><i class="fas fa-eraser"></i> Clear Form</button>
+                    <button type="button" class="cancel-edit-btn" id="cancel-category-edit-btn" style="display:none;"><i class="fas fa-times-circle"></i> Cancel Edit</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="category-list-container">
+            <h2>Manage Existing Categories</h2>
+            <div id="admin-category-list">
+                <div class="no-categories-message" id="no-admin-categories">
+                    <i class="fas fa-info-circle"></i> No categories added yet.
+                </div>
             </div>
         </div>
-    </div>
 
-    <div class="video-list-container">
-        <h2>Manage Existing Videos</h2>
-        <div id="admin-video-list">
-            <div class="no-videos-message" id="no-admin-videos">
-                <i class="fas fa-info-circle"></i> No videos added yet.
+        <div class="video-list-container">
+            <h2>Manage Existing Videos</h2>
+            <div id="admin-video-list">
+                <div class="no-videos-message" id="no-admin-videos">
+                    <i class="fas fa-info-circle"></i> No videos added yet.
+                </div>
             </div>
         </div>
     </div>
@@ -407,7 +532,7 @@
         // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
         // Your Firebase configuration (use your actual project config)
         const firebaseConfig = {
@@ -424,21 +549,86 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        const provider = new GoogleAuthProvider();
 
-        // Sign in anonymously for admin access (for simplicity in this example)
-        // In a real application, you'd implement proper admin authentication (e.g., email/password, custom claims)
-        (async () => {
-            try {
-                await signInAnonymously(auth);
-                console.log("Admin: Signed in anonymously.");
-                fetchAndDisplayAdminVideos(); // Fetch videos after auth
-                fetchAndDisplayAdminCategories(); // Fetch categories after auth
-                populateCategoryDropdown(); // Populate dropdown after auth and initial category fetch
-            } catch (error) {
-                console.error("Admin: Failed to sign in anonymously:", error);
-                showMessage("Failed to initialize admin access. Check console.", 'error');
+        // --- ADMIN UID CONFIGURATION ---
+        // IMPORTANT: Replace 'YOUR_ADMIN_UID_HERE' with your actual Firebase User ID (UID).
+        // To find your UID:
+        // 1. Go to Firebase Console -> Authentication.
+        // 2. Sign in to this page with the Google account you want to use for admin.
+        // 3. Your UID will be listed next to your user entry.
+        const ADMIN_UID = 'YOUR_ADMIN_UID_HERE'; 
+        // Example: const ADMIN_UID = 'abcdef1234567890xyz';
+
+        // Get UI elements for authentication
+        const loginSection = document.getElementById('login-section');
+        const adminContent = document.getElementById('admin-content');
+        const signInGoogleBtn = document.getElementById('sign-in-google-btn');
+        const signOutBtn = document.getElementById('sign-out-btn');
+        const userEmailSpan = document.getElementById('user-email');
+        const authStatusDiv = document.getElementById('auth-status');
+        const authErrorMessage = document.getElementById('auth-error-message');
+
+
+        // --- Authentication State Listener ---
+        onAuthStateChanged(auth, (user) => {
+            if (user && user.uid === ADMIN_UID) {
+                // User is signed in and is the authorized admin
+                loginSection.style.display = 'none';
+                adminContent.style.display = 'block';
+                authStatusDiv.style.display = 'flex';
+                userEmailSpan.textContent = user.email;
+                authErrorMessage.style.display = 'none'; // Hide any previous error messages
+
+                // Fetch and display data only after successful admin authentication
+                fetchAndDisplayAdminVideos();
+                fetchAndDisplayAdminCategories();
+                populateCategoryDropdown();
+                showMessage("Admin access granted. Welcome!", 'success');
+            } else {
+                // User is not signed in, or is signed in but not the authorized admin
+                loginSection.style.display = 'flex';
+                adminContent.style.display = 'none';
+                authStatusDiv.style.display = 'none';
+                userEmailSpan.textContent = '';
+                if (user) {
+                    // User is signed in but not the admin
+                    authErrorMessage.textContent = "You are signed in, but not authorized to access this admin panel.";
+                    authErrorMessage.style.display = 'block';
+                    showMessage("Authorization failed. Please use an authorized account.", 'error');
+                } else {
+                    // No user signed in
+                    authErrorMessage.textContent = ""; // Clear message if no one is signed in
+                    authErrorMessage.style.display = 'none';
+                }
             }
-        })();
+        });
+
+        // --- Sign In with Google ---
+        signInGoogleBtn.addEventListener('click', async () => {
+            try {
+                await signInWithPopup(auth, provider);
+                // onAuthStateChanged will handle UI updates
+            } catch (error) {
+                console.error("Error during Google sign-in:", error);
+                authErrorMessage.textContent = `Sign-in failed: ${error.message}`;
+                authErrorMessage.style.display = 'block';
+                showMessage("Google sign-in failed. Please try again.", 'error');
+            }
+        });
+
+        // --- Sign Out ---
+        signOutBtn.addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                showMessage("Signed out successfully.", 'success');
+                // onAuthStateChanged will handle UI updates
+            } catch (error) {
+                console.error("Error during sign-out:", error);
+                showMessage("Error signing out: " + error.message, 'error');
+            }
+        });
+
 
         const videoForm = document.getElementById('video-form');
         const videoFormTitle = document.getElementById('video-form-title');
@@ -639,6 +829,8 @@
                                 data-duration="${video.duration}" data-category="${video.category}">
                                 <i class="fas fa-edit"></i> Edit
                             </button>
+                            <button class="reset-views-btn" data-id="${video.id}" data-title="${video.title}"><i class="fas fa-eye-slash"></i> Reset Views</button>
+                            <button class="reset-likes-btn" data-id="${video.id}" data-title="${video.title}"><i class="fas fa-thumbs-down"></i> Reset Likes</button>
                             <button class="delete-btn" data-id="${video.id}"><i class="fas fa-trash"></i> Delete</button>
                         </div>
                     `;
@@ -674,6 +866,32 @@
                     });
                 });
 
+                // Event listeners for new Reset Views button
+                adminVideoList.querySelectorAll('.reset-views-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const videoIdToResetViews = e.currentTarget.getAttribute('data-id');
+                        const videoTitle = e.currentTarget.getAttribute('data-title');
+                        showCustomPrompt(`Are you sure you want to reset views for "${videoTitle}" to 0?`, (response) => {
+                            if (response) {
+                                resetVideoViews(videoIdToResetViews, videoTitle);
+                            }
+                        });
+                    });
+                });
+
+                // Event listeners for new Reset Likes button
+                adminVideoList.querySelectorAll('.reset-likes-btn').forEach(button => {
+                    button.addEventListener('click', (e) => {
+                        const videoIdToResetLikes = e.currentTarget.getAttribute('data-id');
+                        const videoTitle = e.currentTarget.getAttribute('data-title');
+                        showCustomPrompt(`Are you sure you want to reset likes for "${videoTitle}" to 0?`, (response) => {
+                            if (response) {
+                                resetVideoLikes(videoIdToResetLikes, videoTitle);
+                            }
+                        });
+                    });
+                });
+
             } catch (error) {
                 console.error("Error fetching admin videos: ", error);
                 adminVideoList.innerHTML = `
@@ -693,6 +911,36 @@
             } catch (error) {
                 console.error("Error deleting document: ", error);
                 showMessage("Error deleting video: " + error.message, 'error');
+            }
+        }
+
+        // New function to reset video views
+        async function resetVideoViews(videoId, videoTitle) {
+            try {
+                await updateDoc(doc(db, "public_videos", videoId), {
+                    views: "0"
+                });
+                showMessage(`Views for "${videoTitle}" reset to 0!`);
+                console.log(`Views for video ID: ${videoId} reset to 0.`);
+                fetchAndDisplayAdminVideos(); // Refresh the list
+            } catch (error) {
+                console.error("Error resetting views: ", error);
+                showMessage(`Error resetting views for "${videoTitle}": ` + error.message, 'error');
+            }
+        }
+
+        // New function to reset video likes
+        async function resetVideoLikes(videoId, videoTitle) {
+            try {
+                await updateDoc(doc(db, "public_videos", videoId), {
+                    likes: "0"
+                });
+                showMessage(`Likes for "${videoTitle}" reset to 0!`);
+                console.log(`Likes for video ID: ${videoId} reset to 0.`);
+                fetchAndDisplayAdminVideos(); // Refresh the list
+            } catch (error) {
+                console.error("Error resetting likes: ", error);
+                showMessage(`Error resetting likes for "${videoTitle}": ` + error.message, 'error');
             }
         }
 

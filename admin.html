@@ -427,6 +427,7 @@
             .action-buttons {
                 flex-direction: column;
                 width: 100%;
+                margin-top: 10px; /* Adjusted for better spacing on small screens */
             }
             .delete-btn, .edit-btn, .reset-views-btn, .reset-likes-btn { /* Apply to new buttons as well */
                 width: 100%;
@@ -551,7 +552,7 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // --- ADMIN UID CONFIGURATION ---
+        // --- ADMIN CONFIGURATION ---
         // IMPORTANT: Replace 'YOUR_ADMIN_UID_HERE' with your actual Firebase User ID (UID).
         // To find your UID:
         // 1. Go to Firebase Console -> Authentication.
@@ -559,6 +560,12 @@
         // 3. Your UID will be listed next to your user entry.
         const ADMIN_UID = 'YOUR_ADMIN_UID_HERE'; 
         // Example: const ADMIN_UID = 'abcdef1234567890xyz';
+
+        // IMPORTANT: Replace 'YOUR_ADMIN_EMAIL_HERE' with your specific Gmail address.
+        // This email must match the one you use to sign in via Google.
+        const ADMIN_EMAIL = 'YOUR_ADMIN_EMAIL_HERE';
+        // Example: const ADMIN_EMAIL = 'your.email@gmail.com';
+
 
         // Get UI elements for authentication
         const loginSection = document.getElementById('login-section');
@@ -572,8 +579,8 @@
 
         // --- Authentication State Listener ---
         onAuthStateChanged(auth, (user) => {
-            if (user && user.uid === ADMIN_UID) {
-                // User is signed in and is the authorized admin
+            if (user && user.uid === ADMIN_UID && user.email === ADMIN_EMAIL) {
+                // User is signed in and is the authorized admin (both UID and email match)
                 loginSection.style.display = 'none';
                 adminContent.style.display = 'block';
                 authStatusDiv.style.display = 'flex';
@@ -592,8 +599,8 @@
                 authStatusDiv.style.display = 'none';
                 userEmailSpan.textContent = '';
                 if (user) {
-                    // User is signed in but not the admin
-                    authErrorMessage.textContent = "You are signed in, but not authorized to access this admin panel.";
+                    // User is signed in but not the admin (either UID or email mismatch)
+                    authErrorMessage.textContent = `You are signed in as ${user.email}, but not authorized to access this admin panel.`;
                     authErrorMessage.style.display = 'block';
                     showMessage("Authorization failed. Please use an authorized account.", 'error');
                 } else {

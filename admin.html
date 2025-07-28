@@ -6,7 +6,6 @@
     <title>XXX Git - Admin Host</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Basic styling for the admin page */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #0a0815, #0f0c1d);
@@ -14,23 +13,22 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center; /* Center content horizontally */
+            align-items: center;
             padding: 20px;
-            box-sizing: border-box; /* Include padding in element's total width/height */
+            box-sizing: border-box;
         }
 
-        /* Main content containers for forms and lists */
         .container, .video-list-container, .category-list-container {
             background-color: #1a1629;
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 0 30px rgba(176, 38, 255, 0.5);
-            width: 100%; /* Take full width on small screens */
-            max-width: 480px; /* Max width for mobile-first design */
-            margin-top: 30px; /* Adjusted margin-top for better spacing */
+            width: 100%;
+            max-width: 480px;
+            margin-top: 30px;
             border: 1px solid #ff26b2;
             margin-bottom: 30px;
-            box-sizing: border-box; /* Include padding in element's total width/height */
+            box-sizing: border-box;
         }
 
         h1, h2 {
@@ -62,7 +60,7 @@
         input[type="number"],
         textarea,
         select {
-            width: calc(100% - 20px); /* Account for padding */
+            width: calc(100% - 20px);
             padding: 12px 10px;
             border: 1px solid #b026ff;
             border-radius: 8px;
@@ -70,7 +68,7 @@
             color: #ffffff;
             font-size: 1rem;
             transition: border-color 0.3s, box-shadow 0.3s;
-            box-sizing: border-box; /* Ensure padding doesn't increase total width */
+            box-sizing: border-box;
         }
 
         input[type="text"]:focus,
@@ -89,8 +87,8 @@
 
         .button-group {
             display: flex;
-            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
-            justify-content: center; /* Center buttons within their group */
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 15px;
             margin-top: 30px;
         }
@@ -103,8 +101,8 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-            flex-grow: 1; /* Allow buttons to grow and fill space */
-            min-width: 120px; /* Minimum width for buttons */
+            flex-grow: 1;
+            min-width: 120px;
         }
 
         .submit-btn {
@@ -132,7 +130,7 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background-color: #28a745; /* Green for success */
+            background-color: #28a745;
             color: white;
             padding: 15px 25px;
             border-radius: 8px;
@@ -143,7 +141,7 @@
             transition: opacity 0.3s ease, visibility 0.3s ease;
         }
         .message-box.error {
-            background-color: #dc3545; /* Red for error */
+            background-color: #dc3545;
         }
         .message-box.show {
             opacity: 1;
@@ -157,7 +155,7 @@
             padding: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             justify-content: space-between;
-            flex-wrap: wrap; /* Allow wrapping for smaller screens */
+            flex-wrap: wrap;
         }
 
         .video-item:last-child, .category-item:last-child {
@@ -174,7 +172,7 @@
 
         .video-details, .category-details {
             flex-grow: 1;
-            min-width: 150px; /* Ensure details take some space */
+            min-width: 150px;
         }
 
         .video-details h3, .category-details h3 {
@@ -190,38 +188,38 @@
 
         .action-buttons {
             display: flex;
-            flex-wrap: wrap; /* Allow buttons to wrap */
+            flex-wrap: wrap;
             gap: 10px;
-            margin-top: 10px; /* Adjusted margin for better spacing on small screens */
-            justify-content: center; /* Center buttons within their group */
-            width: 100%; /* Take full width to allow wrapping */
+            margin-top: 10px;
+            justify-content: center;
+            width: 100%;
         }
 
         .delete-btn, .edit-btn, .reset-views-btn, .reset-likes-btn {
-            background-color: #dc3545; /* Red */
+            background-color: #dc3545;
             color: white;
             padding: 8px 15px;
             border-radius: 20px;
             font-size: 0.9rem;
             font-weight: 500;
             transition: background-color 0.3s, transform 0.3s;
-            flex-shrink: 0; /* Prevent shrinking of buttons */
-            flex-basis: calc(50% - 5px); /* Two buttons per row on small screens */
-            max-width: calc(50% - 5px); /* Ensure max width for two columns */
+            flex-shrink: 0;
+            flex-basis: calc(50% - 5px);
+            max-width: calc(50% - 5px);
             box-sizing: border-box;
         }
 
         .edit-btn {
-            background-color: #007bff; /* Blue for edit */
+            background-color: #007bff;
         }
 
         .reset-views-btn {
-            background-color: #ffc107; /* Orange for reset views */
-            color: #333; /* Darker text for contrast */
+            background-color: #ffc107;
+            color: #333;
         }
 
         .reset-likes-btn {
-            background-color: #17a2b8; /* Cyan for reset likes */
+            background-color: #17a2b8;
         }
 
         .delete-btn:hover {
@@ -251,7 +249,6 @@
             font-style: italic;
         }
 
-        /* Custom Message Box and Prompt Styles */
         .custom-overlay {
             position: fixed;
             top: 0;
@@ -321,7 +318,6 @@
             background-color: #777;
         }
 
-        /* Login Section Styles */
         #login-section {
             display: flex;
             flex-direction: column;
@@ -330,9 +326,9 @@
             text-align: center;
             padding: 20px;
             box-sizing: border-box;
-            width: 100%; /* Ensure login section takes full width for centering */
-            max-width: 480px; /* Apply max-width to login section as well */
-            margin: 0 auto; /* Center login section itself */
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
         }
 
         #login-section h1 {
@@ -340,23 +336,23 @@
         }
 
         #login-section button {
-            background: linear-gradient(45deg, #8a2be2, #ff00ff); /* Neon purple gradient */
+            background: linear-gradient(45deg, #8a2be2, #ff00ff);
             color: white;
-            padding: 8px 20px; /* Reduced vertical padding for smaller height */
-            border-radius: 8px;
+            padding: 8px 20px;
+            border-radius: 10px;
             font-size: 1.2rem;
             display: flex;
             align-items: center;
             gap: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
             height: 10vh;
-            width: 100%; /* Make button full width in login section */
-            justify-content: center; /* Center content within the button */
-            max-width: 250px; /* Adjusted max-width for a more "normal" button size */
+            width: 100%;
+            justify-content: center;
+            max-width: 250px;
         }
 
         #login-section button:hover {
-            background: linear-gradient(45deg, #9932cc, #ee00ee); /* Darker neon purple on hover */
+            background: linear-gradient(45deg, #9932cc, #ee00ee);
             transform: translateY(-2px);
         }
 
@@ -366,10 +362,10 @@
         }
 
         #admin-content {
-            display: none; /* Hidden by default */
+            display: none;
             width: 100%;
-            max-width: 480px; /* Apply max-width to the main admin content wrapper */
-            margin-top: 30px; /* Adjusted margin-top */
+            max-width: 480px;
+            margin-top: 30px;
             box-sizing: border-box;
         }
 
@@ -386,14 +382,13 @@
             font-size: 0.9rem;
             color: #b0b3c5;
             z-index: 1001;
-            /* Adjust for mobile: */
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100% - 40px); /* Account for padding */
-            max-width: 460px; /* Slightly less than 480px to fit inside container */
+            width: calc(100% - 40px);
+            max-width: 460px;
             justify-content: center;
-            flex-wrap: wrap; /* Allow elements to wrap */
-            top: 10px; /* Keep it at the top */
+            flex-wrap: wrap;
+            top: 10px;
             box-sizing: border-box;
         }
 
@@ -401,7 +396,7 @@
             font-weight: 600;
             color: #ff26b2;
             text-align: center;
-            flex-basis: 100%; /* Allow email to take full width if needed */
+            flex-basis: 100%;
             margin-bottom: 5px;
         }
 
@@ -413,69 +408,64 @@
             color: white;
             cursor: pointer;
             transition: background-color 0.3s;
-            flex-grow: 1; /* Allow button to grow */
-            max-width: 150px; /* Limit button width */
+            flex-grow: 1;
+            max-width: 150px;
         }
 
         #auth-status button:hover {
             background-color: #c82333;
         }
 
-
-        /* Responsive adjustments for smaller screens (less than 480px) */
         @media (max-width: 480px) {
             body {
-                padding-top: 25%; /* Reduce overall padding on very small screens */
+                padding-top: 30%;
             }
             .container, .video-list-container, .category-list-container {
-                padding: 20px; /* Reduce container padding */
+                padding: 10px;
                 margin-top: 20px;
                 margin-bottom: 20px;
             }
             h1, h2 {
-                font-size: 2rem; /* Slightly smaller headings */
+                font-size: 2rem;
             }
             .button-group button {
-                width: 100%; /* Full width buttons for forms */
-                min-width: unset; /* Remove min-width constraint */
+                width: 100%;
+                min-width: unset;
             }
             .video-item, .category-item {
                 flex-direction: column;
                 align-items: flex-start;
                 text-align: left;
-                padding: 10px; /* Reduce item padding */
+                padding: 10px;
             }
             .video-item img, .category-item img {
                 margin-bottom: 10px;
             }
             .action-buttons {
-                flex-direction: column; /* Stack action buttons vertically */
+                flex-direction: column;
                 width: 100%;
                 margin-top: 10px;
             }
             .delete-btn, .edit-btn, .reset-views-btn, .reset-likes-btn {
-                width: 100%; /* Full width for action buttons */
-                max-width: unset; /* Remove max-width constraint */
+                width: 100%;
+                max-width: unset;
                 margin-top: 5px;
             }
             .custom-box {
-                padding: 15px; /* Adjust custom box padding */
+                padding: 15px;
             }
             #auth-status {
-                width: calc(100% - 20px); /* More padding on very small screens */
+                width: calc(100% - 20px);
                 padding: 8px 10px;
             }
-        }
-    </style>
+        </style>
 </head>
 <body>
-    <!-- Authentication Status Display -->
     <div id="auth-status" style="display:none;">
         Logged in as: <span class="user-email" id="user-email"></span>
         <button id="sign-out-btn">Sign Out</button>
     </div>
 
-    <!-- Login Section -->
     <div id="login-section">
         <h1>Admin Access Required</h1>
         <p>Please sign in with your authorized Google account to access the administration panel.</p>
@@ -486,7 +476,6 @@
         <p id="auth-error-message" style="color: #dc3545; margin-top: 20px; display: none;"></p>
     </div>
 
-    <!-- Main Admin Content (hidden by default) -->
     <div id="admin-content">
         <div class="container">
             <h1 id="video-form-title">Add New Video Content</h1>
@@ -562,12 +551,10 @@
     <div id="message-box" class="message-box"></div>
 
     <script type="module">
-        // Import the functions you need from the SDKs you need
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
-        // Your Firebase configuration (use your actual project config)
         const firebaseConfig = {
             apiKey: "AIzaSyAsZ-nw5UgKRotI2_Kgb9V-BFXS3JoX7UU",
             authDomain: "xxx-git.firebaseapp.com",
@@ -578,28 +565,14 @@
             measurementId: "G-TFJW56LFKV"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // --- ADMIN CONFIGURATION ---
-        // IMPORTANT: Replace 'YOUR_ADMIN_UID_HERE' with your actual Firebase User ID (UID).
-        // To find your UID:
-        // 1. Go to Firebase Console -> Authentication.
-        // 2. Sign in to this page with the Google account you want to use for admin.
-        // 3. Your UID will be listed next to your user entry.
         const ADMIN_UID = 'aftLs2g87NUlfXTFBa0z2nFfQuu2'; 
-        // Example: const ADMIN_UID = 'abcdef1234567890xyz';
-
-        // IMPORTANT: Replace 'YOUR_ADMIN_EMAIL_HERE' with your specific Gmail address.
-        // This email must match the one you use to sign in via Google.
         const ADMIN_EMAIL = 'gitxnxx@gmail.com';
-        // Example: const ADMIN_EMAIL = 'your.email@gmail.com';
 
-
-        // Get UI elements for authentication
         const loginSection = document.getElementById('login-section');
         const adminContent = document.getElementById('admin-content');
         const signInGoogleBtn = document.getElementById('sign-in-google-btn');
@@ -608,46 +581,37 @@
         const authStatusDiv = document.getElementById('auth-status');
         const authErrorMessage = document.getElementById('auth-error-message');
 
-
-        // --- Authentication State Listener ---
         onAuthStateChanged(auth, (user) => {
             if (user && user.uid === ADMIN_UID && user.email === ADMIN_EMAIL) {
-                // User is signed in and is the authorized admin (both UID and email match)
                 loginSection.style.display = 'none';
                 adminContent.style.display = 'block';
                 authStatusDiv.style.display = 'flex';
                 userEmailSpan.textContent = user.email;
-                authErrorMessage.style.display = 'none'; // Hide any previous error messages
+                authErrorMessage.style.display = 'none';
 
-                // Fetch and display data only after successful admin authentication
                 fetchAndDisplayAdminVideos();
                 fetchAndDisplayAdminCategories();
                 populateCategoryDropdown();
                 showMessage("Admin access granted. Welcome!", 'success');
             } else {
-                // User is not signed in, or is signed in but not the authorized admin
                 loginSection.style.display = 'flex';
                 adminContent.style.display = 'none';
                 authStatusDiv.style.display = 'none';
                 userEmailSpan.textContent = '';
                 if (user) {
-                    // User is signed in but not the admin (either UID or email mismatch)
                     authErrorMessage.textContent = `You are signed in as ${user.email}, but not authorized to access this admin panel.`;
                     authErrorMessage.style.display = 'block';
                     showMessage("Authorization failed. Please use an authorized account.", 'error');
                 } else {
-                    // No user signed in
-                    authErrorMessage.textContent = ""; // Clear message if no one is signed in
+                    authErrorMessage.textContent = "";
                     authErrorMessage.style.display = 'none';
                 }
             }
         });
 
-        // --- Sign In with Google ---
         signInGoogleBtn.addEventListener('click', async () => {
             try {
                 await signInWithPopup(auth, provider);
-                // onAuthStateChanged will handle UI updates
             } catch (error) {
                 console.error("Error during Google sign-in:", error);
                 authErrorMessage.textContent = `Sign-in failed: ${error.message}`;
@@ -656,24 +620,21 @@
             }
         });
 
-        // --- Sign Out ---
         signOutBtn.addEventListener('click', async () => {
             try {
                 await signOut(auth);
                 showMessage("Signed out successfully.", 'success');
-                // onAuthStateChanged will handle UI updates
             } catch (error) {
                 console.error("Error during sign-out:", error);
                 showMessage("Error signing out: " + error.message, 'error');
             }
         });
 
-
         const videoForm = document.getElementById('video-form');
         const videoFormTitle = document.getElementById('video-form-title');
         const videoSubmitBtn = document.getElementById('video-submit-btn');
         const clearVideoFormBtn = document.getElementById('clear-video-form-btn');
-        const cancelVideoEditBtn = document.getElementById('cancel-video-edit-btn'); // New
+        const cancelVideoEditBtn = document.getElementById('cancel-video-edit-btn');
         const messageBox = document.getElementById('message-box');
         const adminVideoList = document.getElementById('admin-video-list');
         const noAdminVideosMessage = document.getElementById('no-admin-videos');
@@ -683,17 +644,16 @@
         const categoryFormTitle = document.getElementById('category-form-title');
         const categorySubmitBtn = document.getElementById('category-submit-btn');
         const clearCategoryFormBtn = document.getElementById('clear-category-form-btn');
-        const cancelCategoryEditBtn = document.getElementById('cancel-category-edit-btn'); // New
+        const cancelCategoryEditBtn = document.getElementById('cancel-category-edit-btn');
         const adminCategoryList = document.getElementById('admin-category-list');
         const noAdminCategoriesMessage = document.getElementById('no-admin-categories');
 
-        let editingVideoId = null; // To store the ID of the video being edited
-        let editingCategoryId = null; // To store the ID of the category being edited
+        let editingVideoId = null;
+        let editingCategoryId = null;
 
-        // Function to show custom messages
         function showMessage(message, type = 'success') {
             messageBox.textContent = message;
-            messageBox.className = 'message-box show'; // Reset classes and add 'show'
+            messageBox.className = 'message-box show';
             if (type === 'error') {
                 messageBox.classList.add('error');
             } else {
@@ -701,10 +661,9 @@
             }
             setTimeout(() => {
                 messageBox.classList.remove('show');
-            }, 3000); // Message disappears after 3 seconds
+            }, 3000);
         }
 
-        // Custom UI functions (message box and prompt)
         function showCustomMessage(message) {
             const overlay = document.createElement('div');
             overlay.classList.add('custom-overlay');
@@ -748,7 +707,6 @@
             });
         }
 
-        // --- Video Form Logic ---
         function resetVideoForm() {
             videoForm.reset();
             editingVideoId = null;
@@ -775,14 +733,12 @@
                 thumbnail: thumbnailUrl,
                 url: videoUrl,
                 duration: videoDuration,
-                description: initialDescription, // Only set if adding new
+                description: initialDescription,
                 category: videoCategory,
             };
 
             if (editingVideoId) {
-                // Update existing video
                 try {
-                    // When updating, we don't change views/likes/createdAt unless specifically edited
                     await updateDoc(doc(db, "public_videos", editingVideoId), {
                         title: videoData.title,
                         thumbnail: videoData.thumbnail,
@@ -797,7 +753,6 @@
                     showMessage("Error updating video: " + e.message, 'error');
                 }
             } else {
-                // Add new video
                 try {
                     const docRef = await addDoc(collection(db, "public_videos"), {
                         ...videoData,
@@ -887,7 +842,6 @@
                     });
                 });
 
-                // Event listeners for new Edit buttons
                 adminVideoList.querySelectorAll('.edit-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
                         editingVideoId = e.currentTarget.getAttribute('data-id');
@@ -901,11 +855,10 @@
                         videoSubmitBtn.innerHTML = '<i class="fas fa-save"></i> Update Video';
                         cancelVideoEditBtn.style.display = 'inline-block';
                         showMessage("Editing video: " + e.currentTarget.getAttribute('data-title'));
-                        window.scrollTo({ top: 0, behavior: 'smooth' }); // Scroll to top
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
                     });
                 });
 
-                // Event listeners for new Reset Views button
                 adminVideoList.querySelectorAll('.reset-views-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
                         const videoIdToResetViews = e.currentTarget.getAttribute('data-id');
@@ -918,7 +871,6 @@
                     });
                 });
 
-                // Event listeners for new Reset Likes button
                 adminVideoList.querySelectorAll('.reset-likes-btn').forEach(button => {
                     button.addEventListener('click', (e) => {
                         const videoIdToResetLikes = e.currentTarget.getAttribute('data-id');
@@ -953,7 +905,6 @@
             }
         }
 
-        // New function to reset video views
         async function resetVideoViews(videoId, videoTitle) {
             try {
                 await updateDoc(doc(db, "public_videos", videoId), {
@@ -961,14 +912,13 @@
                 });
                 showMessage(`Views for "${videoTitle}" reset to 0!`);
                 console.log(`Views for video ID: ${videoId} reset to 0.`);
-                fetchAndDisplayAdminVideos(); // Refresh the list
+                fetchAndDisplayAdminVideos();
             } catch (error) {
                 console.error("Error resetting views: ", error);
                 showMessage(`Error resetting views for "${videoTitle}": ` + error.message, 'error');
             }
         }
 
-        // New function to reset video likes
         async function resetVideoLikes(videoId, videoTitle) {
             try {
                 await updateDoc(doc(db, "public_videos", videoId), {
@@ -976,14 +926,13 @@
                 });
                 showMessage(`Likes for "${videoTitle}" reset to 0!`);
                 console.log(`Likes for video ID: ${videoId} reset to 0.`);
-                fetchAndDisplayAdminVideos(); // Refresh the list
+                fetchAndDisplayAdminVideos();
             } catch (error) {
                 console.error("Error resetting likes: ", error);
                 showMessage(`Error resetting likes for "${videoTitle}": ` + error.message, 'error');
             }
         }
 
-        // --- Category Form Logic ---
         function resetCategoryForm() {
             categoryForm.reset();
             editingCategoryId = null;
@@ -1003,7 +952,6 @@
             }
 
             if (editingCategoryId) {
-                // Update existing category
                 try {
                     await updateDoc(doc(db, "categories", editingCategoryId), {
                         name: categoryName,
@@ -1016,7 +964,6 @@
                     showMessage("Error updating category: " + e.message, 'error');
                 }
             } else {
-                // Add new category
                 try {
                     const categoriesRef = collection(db, "categories");
                     const querySnapshot = await getDocs(categoriesRef);
@@ -1121,7 +1068,6 @@
                 showMessage("Error loading categories for dropdown.", 'error');
             }
         }
-
     </script>
 </body>
 </html>

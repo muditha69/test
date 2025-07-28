@@ -327,7 +327,6 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
             text-align: center;
             padding: 20px;
             box-sizing: border-box;
@@ -343,16 +342,17 @@
         #login-section button {
             background: linear-gradient(45deg, #8a2be2, #ff00ff); /* Neon purple gradient */
             color: white;
-            padding: 10px 20px; /* Reduced height */
+            padding: 8px 20px; /* Reduced vertical padding for smaller height */
             border-radius: 8px;
             font-size: 1.2rem;
             display: flex;
             align-items: center;
             gap: 10px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            height: 10vh;
             width: 100%; /* Make button full width in login section */
             justify-content: center; /* Center content within the button */
-            max-width: 300px; /* Optional: limit button width slightly */
+            max-width: 250px; /* Adjusted max-width for a more "normal" button size */
         }
 
         #login-section button:hover {
@@ -425,7 +425,7 @@
         /* Responsive adjustments for smaller screens (less than 480px) */
         @media (max-width: 480px) {
             body {
-                padding: 10px; /* Reduce overall padding on very small screens */
+                padding-top: 25%; /* Reduce overall padding on very small screens */
             }
             .container, .video-list-container, .category-list-container {
                 padding: 20px; /* Reduce container padding */
@@ -590,12 +590,12 @@
         // 1. Go to Firebase Console -> Authentication.
         // 2. Sign in to this page with the Google account you want to use for admin.
         // 3. Your UID will be listed next to your user entry.
-        const ADMIN_UID = 'YOUR_ADMIN_UID_HERE'; 
+        const ADMIN_UID = 'aftLs2g87NUlfXTFBa0z2nFfQuu2'; 
         // Example: const ADMIN_UID = 'abcdef1234567890xyz';
 
         // IMPORTANT: Replace 'YOUR_ADMIN_EMAIL_HERE' with your specific Gmail address.
         // This email must match the one you use to sign in via Google.
-        const ADMIN_EMAIL = 'YOUR_ADMIN_EMAIL_HERE';
+        const ADMIN_EMAIL = 'gitxnxx@gmail.com';
         // Example: const ADMIN_EMAIL = 'your.email@gmail.com';
 
 
@@ -1069,7 +1069,7 @@
 
                 let categories = [];
                 querySnapshot.forEach((doc) => {
-                    categories.push({ id: doc.id, ...doc.data() });
+                    categories.push({ id: doc.id, name: doc.data().name });
                 });
                 categories.sort((a, b) => a.name.localeCompare(b.name));
 

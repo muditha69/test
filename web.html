@@ -3,7 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XXX Git - Adult Video Streaming</title>
+    <title>XXX GIT</title>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -826,7 +844,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, setDoc, updateDoc, getDocs, query, where, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, getDocs, query, where, increment, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyAsZ-nw5UgKRotI2_Kgb9V-BFXS3JoX7UU",
@@ -842,24 +860,18 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        console.log("Firebase Config:", firebaseConfig);
-
         (async () => {
             try {
                 await signInAnonymously(auth);
-                console.log("Signed in anonymously for user's app. Current user:", auth.currentUser); 
             } catch (error) {
                 console.error("Failed to sign in anonymously for user's app:", error);
             }
         })();
 
         const profileBtn = document.getElementById('profile-btn');
-        const profileIcon = document.getElementById('profile-icon');
         const dropdown = document.querySelector('.dropdown');
         
-        profileBtn.addEventListener('click', () => {
-            dropdown.classList.toggle('active');
-        });
+        profileBtn.addEventListener('click', () => dropdown.classList.toggle('active'));
         
         document.addEventListener('click', (e) => {
             if (!profileBtn.contains(e.target) && !dropdown.contains(e.target)) {
@@ -879,11 +891,7 @@
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 tabs.forEach(t => t.classList.remove('active'));
-                
-                Object.values(contents).forEach(content => {
-                    content.style.display = 'none';
-                });
-                
+                Object.values(contents).forEach(content => content.style.display = 'none');
                 tab.classList.add('active');
                 
                 const tabName = tab.getAttribute('data-tab');
@@ -910,42 +918,22 @@
         document.getElementById('google-login').addEventListener('click', () => {
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider)
-                .then((result) => {
-                    console.log("Google Login Successful:", result.user);
-                    showCustomMessage(`Logged in as: ${result.user.displayName || result.user.email}`);
-                    dropdown.classList.remove('active');
-                    localStorage.setItem('hasGoogleLoggedIn', 'true'); 
-                })
-                .catch((error) => {
-                    const errorMessage = error.message;
-                    console.error("Google Login Error:", errorMessage);
-                    showCustomMessage(`Google login failed: ${errorMessage}`);
-                });
+                .then((result) => showCustomMessage(`Logged in as: ${result.user.displayName || result.user.email}`))
+                .catch((error) => showCustomMessage(`Google login failed: ${error.message}`));
+            dropdown.classList.remove('active');
         });
         
         document.getElementById('guest-login').addEventListener('click', () => {
             signInAnonymously(auth)
-                .then(() => {
-                    console.log("Guest Login Successful:", auth.currentUser);
-                    showCustomMessage('Logged in as Guest');
-                    dropdown.classList.remove('active');
-                })
-                .catch((error) => {
-                    const errorMessage = error.message;
-                    console.error("Guest Login Error:", errorMessage);
-                    showCustomMessage(`Guest login failed: ${errorMessage}`);
-                });
+                .then(() => showCustomMessage('Logged in as Guest'))
+                .catch((error) => showCustomMessage(`Guest login failed: ${error.message}`));
+            dropdown.classList.remove('active');
         });
 
         document.getElementById('logout-button').addEventListener('click', () => {
-            auth.signOut().then(() => {
-                showCustomMessage("Logged out successfully.");
-                dropdown.classList.remove('active');
-                localStorage.removeItem('hasGoogleLoggedIn'); 
-            }).catch((error) => {
-                console.error("Logout Error:", error);
-                showCustomMessage("Logout failed. Please try again.");
-            });
+            auth.signOut().then(() => showCustomMessage("Logged out successfully."))
+               .catch((error) => showCustomMessage("Logout failed. Please try again."));
+            dropdown.classList.remove('active');
         });
         
         const searchToggleBtn = document.getElementById('search-toggle-btn');
@@ -960,25 +948,17 @@
             } else {
                 searchInput.value = ''; 
                 const currentActiveTab = document.querySelector('.tab.active').getAttribute('data-tab');
-                if (currentActiveTab === 'home') {
-                    fetchPublicVideos();
-                } else if (currentActiveTab === 'categories') {
-                    fetchCategories();
-                } else if (currentActiveTab === 'favourite') { 
+                if (currentActiveTab === 'home') fetchPublicVideos();
+                else if (currentActiveTab === 'categories') fetchCategories();
+                else if (currentActiveTab === 'favourite') {
                     const user = auth.currentUser;
-                    if (user) {
-                        fetchUserFavorites(user.uid);
-                    } else {
-                        displayNoFavoritesMessage("Please log in to see your favourites.");
-                    }
+                    if (user) fetchUserFavorites(user.uid);
+                    else displayNoFavoritesMessage("Please log in to see your favourites.");
                 }
             }
         });
 
-        searchInput.addEventListener('input', () => {
-            const query = searchInput.value.toLowerCase().trim();
-            filterContent(query);
-        });
+        searchInput.addEventListener('input', () => filterContent(searchInput.value.toLowerCase().trim()));
 
         function filterContent(query) {
             const currentActiveTab = document.querySelector('.tab.active').getAttribute('data-tab');
@@ -996,10 +976,7 @@
                         const favVideos = [];
                         querySnapshot.forEach(doc => favVideos.push({ id: doc.id, ...doc.data() }));
                         displayFilteredVideos(query, favouriteVideoGrid, favVideos, noFavouriteVideosMessage, "No favourites found for");
-                    }).catch(error => {
-                        console.error("Error fetching favorites for search:", error);
-                        displayNoFavoritesMessage("Error searching favourites.");
-                    });
+                    }).catch(error => displayNoFavoritesMessage("Error searching favourites."));
                 } else {
                     displayNoFavoritesMessage("Please log in to search your favourites.");
                 }
@@ -1023,17 +1000,12 @@
                 `;
             } else {
                 noResultMessageElement.style.display = 'none';
-                filteredVideos.forEach(video => {
-                    targetGrid.appendChild(createVideoCardElement(video));
-                });
+                filteredVideos.forEach(video => targetGrid.appendChild(createVideoCardElement(video)));
             }
         }
 
-
         function displayFilteredCategories(query) {
-            const filteredCategories = allCategories.filter(category => 
-                category.name.toLowerCase().includes(query)
-            );
+            const filteredCategories = allCategories.filter(category => category.name.toLowerCase().includes(query));
 
             dynamicCategoriesGrid.innerHTML = '';
             if (filteredCategories.length === 0) {
@@ -1045,64 +1017,23 @@
                 `;
             } else {
                 noCategoriesMessage.style.display = 'none';
-                filteredCategories.forEach(category => {
-                    const categoryCard = createCategoryCardElement(category); 
-                    dynamicCategoriesGrid.appendChild(categoryCard);
-                });
+                filteredCategories.forEach(category => dynamicCategoriesGrid.appendChild(createCategoryCardElement(category)));
             }
         }
 
         function showCustomMessage(message) {
             const overlay = document.createElement('div');
             overlay.classList.add('custom-overlay');
-            overlay.innerHTML = `
-                <div class="custom-box">
-                    <p>${message}</p>
-                    <button>OK</button>
-                </div>
-            `;
+            overlay.innerHTML = `<div class="custom-box"><p>${message}</p><button>OK</button></div>`;
             document.body.appendChild(overlay);
-            overlay.querySelector('button').addEventListener('click', () => {
-                document.body.removeChild(overlay);
-            });
-        }
-
-        function showCustomPrompt(message, callback) {
-            const overlay = document.createElement('div');
-            overlay.classList.add('custom-overlay');
-            overlay.innerHTML = `
-                <div class="custom-box">
-                    <p>${message}</p>
-                    <div class="custom-prompt-buttons">
-                        <button class="yes-btn">Yes</button>
-                        <button class="no-btn">No</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(overlay);
-
-            const yesBtn = overlay.querySelector('.yes-btn');
-            const noBtn = overlay.querySelector('.no-btn');
-
-            yesBtn.addEventListener('click', () => {
-                document.body.removeChild(overlay);
-                callback(true);
-            });
-
-            noBtn.addEventListener('click', () => {
-                document.body.removeChild(overlay);
-                callback(false);
-            });
+            overlay.querySelector('button').addEventListener('click', () => document.body.removeChild(overlay));
         }
 
         function parseMetricString(metricString) {
             if (typeof metricString !== 'string') return metricString;
             const value = parseFloat(metricString);
-            if (metricString.includes('K')) {
-                return value * 1000;
-            } else if (metricString.includes('M')) {
-                return value * 1000000;
-            }
+            if (metricString.includes('K')) return value * 1000;
+            if (metricString.includes('M')) return value * 1000000;
             return value;
         }
 
@@ -1111,22 +1042,14 @@
                 num = parseFloat(num);
                 if (isNaN(num)) return '0'; 
             }
-            if (num >= 1000000) {
-                return (num / 1000000).toFixed(1) + 'M';
-            }
-            if (num >= 1000) {
-                return (num / 1000).toFixed(1) + 'K';
-            }
+            if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+            if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return num.toString();
         }
 
         async function incrementVideoMetric(videoId, metricType) {
             try {
-                const videoRef = doc(db, "public_videos", videoId);
-                await updateDoc(videoRef, {
-                    [metricType]: increment(1)
-                });
-                console.log(`${metricType} incremented for video ${videoId}`);
+                await updateDoc(doc(db, "public_videos", videoId), { [metricType]: increment(1) });
                 
                 const updatedVideoIndex = allVideos.findIndex(v => v.id === videoId);
                 if (updatedVideoIndex !== -1) {
@@ -1134,73 +1057,33 @@
                     allVideos[updatedVideoIndex][metricType] = formatMetricNumber(currentMetricValue + 1);
                 }
 
-                const currentActiveTab = document.querySelector('.tab.active').getAttribute('data-tab');
-                if (currentActiveTab === 'home') {
+                // Refresh the currently viewed list to show updated metric
+                const activeTab = document.querySelector('.tab.active').dataset.tab;
+                if(activeTab === 'home' || activeTab === 'categories') {
                     const query = searchInput.value.toLowerCase().trim();
-                    if (query) {
-                        displayFilteredVideos(query, publicVideoGrid, allVideos, noPublicVideosMessage);
-                    } else {
-                        fetchPublicVideos(false); 
-                    }
-                } else if (currentActiveTab === 'categories') {
-                    const currentCategory = videoSectionTitle.textContent;
-                    if (currentCategory && currentCategory !== 'Featured Videos') {
-                         fetchVideosByCategory(currentCategory, false);
-                    } else {
-                        const query = searchInput.value.toLowerCase().trim();
-                        if (query) {
-                            displayFilteredVideos(query, publicVideoGrid, allVideos, noPublicVideosMessage); 
-                        } else {
-                            fetchPublicVideos(false); 
-                        }
-                    }
+                    displayFilteredVideos(query, publicVideoGrid, allVideos, noPublicVideosMessage);
                 }
+                
             } catch (error) {
                 console.error(`Error incrementing ${metricType}:`, error);
-                showCustomMessage(`Failed to update ${metricType}.`);
             }
         }
 
         async function addVideoToFavorites(videoDetails) {
             const user = auth.currentUser;
-            if (!user) {
-                showCustomMessage("Please log in to add favorites.");
-                return;
-            }
-
-            const userFavoritesRef = collection(db, 'users', user.uid, 'favorites');
-            const docId = videoDetails.id; 
+            if (!user) return showCustomMessage("Please log in to add favorites.");
+            if (user.isAnonymous) return showCustomMessage("Please log in with Google to save favorites.");
 
             try {
-                const favDocRef = doc(userFavoritesRef, docId);
-                const existingFavDoc = await getDocs(query(userFavoritesRef, where('id', '==', docId)));
-                if (!existingFavDoc.empty) {
-                    showCustomMessage("This video is already in your favorites!");
-                    return;
-                }
-
-                await setDoc(favDocRef, {
-                    id: videoDetails.id,
-                    title: videoDetails.title,
-                    thumbnail: videoDetails.thumbnail,
-                    duration: videoDetails.duration,
-                    views: videoDetails.views || "0", 
-                    likes: videoDetails.likes || "0", 
-                    url: videoDetails.url, 
-                    description: videoDetails.description,
-                    category: videoDetails.category || 'N/A', 
+                await setDoc(doc(db, 'users', user.uid, 'favorites', videoDetails.id), {
+                    ...videoDetails,
                     timestamp: serverTimestamp() 
                 });
                 showCustomMessage("Video added to favorites! ❤️");
-                console.log("Document successfully written!");
-
-                const favouriteTab = document.querySelector('.tab[data-tab="favourite"]');
-                if (favouriteTab.classList.contains('active') && user) {
+                if (document.querySelector('.tab[data-tab="favourite"]').classList.contains('active')) {
                     fetchUserFavorites(user.uid);
                 }
-
             } catch (error) {
-                console.error("Error writing document: ", error);
                 showCustomMessage("Failed to add to favorites. Please try again.");
             }
         }
@@ -1212,37 +1095,21 @@
             favouriteVideoGrid.innerHTML = ''; 
             noFavouriteVideosMessage.style.display = 'none'; 
 
-            if (!userId) {
-                displayNoFavoritesMessage("Please log in to see your favourites.");
-                return;
+            if (!userId || auth.currentUser.isAnonymous) {
+                return displayNoFavoritesMessage("Please log in with Google to see your favourites.");
             }
 
-            const userFavoritesRef = collection(db, 'users', userId, 'favorites');
             try {
-                const querySnapshot = await getDocs(userFavoritesRef); 
+                const q = query(collection(db, 'users', userId, 'favorites'), orderBy("timestamp", "desc"));
+                const querySnapshot = await getDocs(q);
 
-                if (querySnapshot.empty) {
-                    displayNoFavoritesMessage("No favourites yet");
-                    return;
-                }
-
-                let favVideos = [];
+                if (querySnapshot.empty) return displayNoFavoritesMessage("No favourites yet");
+                
                 querySnapshot.forEach((doc) => {
-                    favVideos.push({ id: doc.id, ...doc.data() }); 
+                    favouriteVideoGrid.appendChild(createVideoCardElement({ id: doc.id, ...doc.data() }));
                 });
 
-                favVideos.sort((a, b) => {
-                    const dateA = a.timestamp ? a.timestamp.toDate() : new Date(0);
-                    const dateB = b.timestamp ? b.timestamp.toDate() : new Date(0);
-                    return dateB - dateA; 
-                });
-
-                favVideos.forEach((favVideo) => {
-                    const videoCard = createVideoCardElement(favVideo); 
-                    favouriteVideoGrid.appendChild(videoCard);
-                });
             } catch (error) {
-                console.error("Error getting favorites: ", error);
                 displayNoFavoritesMessage("Error loading favorites.");
             }
         }
@@ -1251,132 +1118,56 @@
         const loadingPublicVideos = document.getElementById('loading-public-videos');
         const noPublicVideosMessage = document.getElementById('no-public-videos');
 
-        async function fetchPublicVideos(clearAndLoad = true) {
-            if (clearAndLoad) {
-                publicVideoGrid.innerHTML = '';
-                loadingPublicVideos.style.display = 'flex';
-                noPublicVideosMessage.style.display = 'none';
-            }
+        async function fetchPublicVideos() {
+            publicVideoGrid.innerHTML = '';
+            loadingPublicVideos.style.display = 'flex';
+            noPublicVideosMessage.style.display = 'none';
 
             try {
                 const publicVideosRef = collection(db, 'public_videos');
-                const q = query(publicVideosRef);
+                const q = query(publicVideosRef, orderBy("isPinned", "desc"), orderBy("createdAt", "desc"));
                 const querySnapshot = await getDocs(q); 
 
                 loadingPublicVideos.style.display = 'none';
+                if (querySnapshot.empty) return noPublicVideosMessage.style.display = 'block';
 
-                if (querySnapshot.empty) {
-                    noPublicVideosMessage.style.display = 'block'; 
-                    return;
-                }
-
-                let videos = [];
-                querySnapshot.forEach((doc) => {
-                    videos.push({ id: doc.id, ...doc.data() });
-                });
-
-                videos.sort((a, b) => {
-                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0); 
-                    const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
-                    return dateB - dateA;
-                });
-
-                allVideos = videos; 
-
-                if (clearAndLoad) {
-                    publicVideoGrid.innerHTML = ''; 
-                    videos.forEach((video) => {
-                        const videoCard = createVideoCardElement(video);
-                        publicVideoGrid.appendChild(videoCard);
-                    });
-                } else {
-                    const currentQuery = searchInput.value.toLowerCase().trim();
-                    if (!currentQuery) { 
-                        publicVideoGrid.innerHTML = '';
-                        videos.forEach((video) => {
-                            const videoCard = createVideoCardElement(video);
-                            publicVideoGrid.appendChild(videoCard);
-                        });
-                    }
-                }
-
+                allVideos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allVideos.forEach(video => publicVideoGrid.appendChild(createVideoCardElement(video)));
+                
             } catch (error) {
                 console.error("Error fetching public videos: ", error);
                 loadingPublicVideos.style.display = 'none';
                 noPublicVideosMessage.style.display = 'block';
-                noPublicVideosMessage.innerHTML = `
-                    <i class="fas fa-exclamation-circle" style="font-size: 4rem; color: var(--warning); margin-bottom: 1rem;"></i>
-                    <h3>Error loading videos</h3>
-                    <p>Please try again later.</p>
-                `;
+                noPublicVideosMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i><h3>Error loading videos</h3><p>Please try again later.</p>`;
             }
         }
 
-        async function fetchVideosByCategory(categoryName, clearAndLoad = true) {
-            if (clearAndLoad) {
-                publicVideoGrid.innerHTML = ''; 
-                loadingPublicVideos.style.display = 'flex';
-                noPublicVideosMessage.style.display = 'none';
-            }
+        async function fetchVideosByCategory(categoryName) {
+            publicVideoGrid.innerHTML = ''; 
+            loadingPublicVideos.style.display = 'flex';
+            noPublicVideosMessage.style.display = 'none';
             videoSectionTitle.textContent = categoryName;
 
             try {
                 const publicVideosRef = collection(db, 'public_videos');
-                const q = query(publicVideosRef, where('category', '==', categoryName.toLowerCase()));
+                const q = query(publicVideosRef, where('category', '==', categoryName.toLowerCase()), orderBy("isPinned", "desc"), orderBy("createdAt", "desc"));
                 const querySnapshot = await getDocs(q);
 
                 loadingPublicVideos.style.display = 'none';
-
                 if (querySnapshot.empty) {
                     noPublicVideosMessage.style.display = 'block';
-                    noPublicVideosMessage.innerHTML = `
-                        <i class="fas fa-video-slash" style="font-size: 4rem; color: var(--neon-pink); margin-bottom: 1rem;"></i>
-                        <h3>No videos found for "${categoryName}" category yet.</h3>
-                        <p>Check back later or add some in the admin panel.</p>
-                    `;
+                    noPublicVideosMessage.innerHTML = `<i class="fas fa-video-slash"></i><h3>No videos for "${categoryName}"</h3><p>Check back later.</p>`;
                     return;
                 }
-
-                let videos = [];
-                querySnapshot.forEach((doc) => {
-                    videos.push({ id: doc.id, ...doc.data() });
-                });
-
-                videos.sort((a, b) => {
-                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0);
-                    const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
-                    return dateB - dateA; 
-                });
-
-                allVideos = videos; 
-
-                if (clearAndLoad) {
-                    publicVideoGrid.innerHTML = ''; 
-                    videos.forEach((video) => {
-                        const videoCard = createVideoCardElement(video);
-                        publicVideoGrid.appendChild(videoCard);
-                    });
-                } else {
-                     const currentQuery = searchInput.value.toLowerCase().trim();
-                    if (!currentQuery) {
-                        publicVideoGrid.innerHTML = '';
-                        videos.forEach((video) => {
-                            const videoCard = createVideoCardElement(video);
-                            publicVideoGrid.appendChild(videoCard);
-                        });
-                    }
-                }
-
+                
+                allVideos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allVideos.forEach(video => publicVideoGrid.appendChild(createVideoCardElement(video)));
 
             } catch (error) {
                 console.error("Error fetching videos by category: ", error);
                 loadingPublicVideos.style.display = 'none';
                 noPublicVideosMessage.style.display = 'block';
-                noPublicVideosMessage.innerHTML = `
-                    <i class="fas fa-exclamation-circle" style="font-size: 4rem; color: var(--warning); margin-bottom: 1rem;"></i>
-                    <h3>Error loading videos for "${categoryName}".</h3>
-                    <p>Please try again later.</p>
-                `;
+                noPublicVideosMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i><h3>Error loading videos for "${categoryName}".</h3><p>Please try again later.</p>`;
             }
         }
 
@@ -1384,68 +1175,33 @@
         const loadingCategories = document.getElementById('loading-categories');
         const noCategoriesMessage = document.getElementById('no-categories');
 
-        async function fetchCategories(clearAndLoad = true) {
-            if (clearAndLoad) {
-                dynamicCategoriesGrid.innerHTML = '';
-                dynamicCategoriesGrid.appendChild(loadingCategories);
-                loadingCategories.style.display = 'flex';
-                noCategoriesMessage.style.display = 'none';
-            }
+        async function fetchCategories() {
+            dynamicCategoriesGrid.innerHTML = '';
+            loadingCategories.style.display = 'flex';
+            noCategoriesMessage.style.display = 'none';
 
             try {
                 const categoriesRef = collection(db, 'categories');
-                const querySnapshot = await getDocs(categoriesRef);
+                const q = query(categoriesRef, orderBy("isPinned", "desc"), orderBy("name", "asc"));
+                const querySnapshot = await getDocs(q);
 
                 loadingCategories.style.display = 'none';
+                if (querySnapshot.empty) return noCategoriesMessage.style.display = 'block';
 
-                if (querySnapshot.empty) {
-                    noCategoriesMessage.style.display = 'block';
-                    dynamicCategoriesGrid.appendChild(noCategoriesMessage);
-                    return;
-                }
-
-                let categories = [];
-                querySnapshot.forEach((doc) => {
-                    categories.push({ id: doc.id, ...doc.data() });
-                });
-
-                categories.sort((a, b) => a.name.localeCompare(b.name));
-
-                allCategories = categories; 
-
-                if (clearAndLoad) {
-                    dynamicCategoriesGrid.innerHTML = ''; 
-                    categories.forEach((category) => {
-                        dynamicCategoriesGrid.appendChild(createCategoryCardElement(category));
-                    });
-                } else {
-                    const currentQuery = searchInput.value.toLowerCase().trim();
-                    if (!currentQuery) {
-                        dynamicCategoriesGrid.innerHTML = '';
-                        categories.forEach((category) => {
-                            dynamicCategoriesGrid.appendChild(createCategoryCardElement(category));
-                        });
-                    }
-                }
-
+                allCategories = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allCategories.forEach(category => dynamicCategoriesGrid.appendChild(createCategoryCardElement(category)));
 
             } catch (error) {
                 console.error("Error fetching categories: ", error);
                 loadingCategories.style.display = 'none';
                 noCategoriesMessage.style.display = 'block';
-                noCategoriesMessage.innerHTML = `
-                    <i class="fas fa-exclamation-circle" style="font-size: 4rem; color: var(--warning); margin-bottom: 1rem;"></i>
-                    <h3>Error loading categories.</h3>
-                    <p>Please try again later.</p>
-                `;
+                noCategoriesMessage.innerHTML = `<i class="fas fa-exclamation-circle"></i><h3>Error loading categories.</h3><p>Please try again later.</p>`;
             }
         }
 
         function createCategoryCardElement(category) {
             const categoryCard = document.createElement('div');
             categoryCard.classList.add('category-card');
-            categoryCard.setAttribute('data-category-name', category.name);
-
             categoryCard.innerHTML = `
                 <img src="${category.thumbnail}" alt="${category.name} Thumbnail" class="category-image" onerror="this.onerror=null; this.src='https://placehold.co/220x160/0f0c1d/ffffff?text=No+Image'">
                 <div class="category-name">${category.name}</div>
@@ -1453,9 +1209,7 @@
             categoryCard.addEventListener('click', () => {
                 tabs.forEach(t => t.classList.remove('active'));
                 document.querySelector('.tab[data-tab="home"]').classList.add('active');
-                Object.values(contents).forEach(content => {
-                    content.style.display = 'none';
-                });
+                Object.values(contents).forEach(content => content.style.display = 'none');
                 contents['home'].style.display = 'block';
                 fetchVideosByCategory(category.name);
                 searchInput.value = '';
@@ -1467,9 +1221,6 @@
         function createVideoCardElement(videoData) {
             const videoCard = document.createElement('div');
             videoCard.classList.add('video-card');
-            videoCard.setAttribute('data-video-id', videoData.id);
-            videoCard.setAttribute('data-video-url', videoData.url); 
-
             const displayViews = formatMetricNumber(videoData.views || "0"); 
             const displayLikes = formatMetricNumber(videoData.likes || "0"); 
 
@@ -1477,19 +1228,13 @@
                 <div class="video-thumb">
                     <img src="${videoData.thumbnail}" alt="Video Thumbnail" onerror="this.onerror=null; this.src='https://placehold.co/1260x750/0f0c1d/ffffff?text=No+Image'">
                     <div class="video-duration">${videoData.duration}</div>
-                    <div class="play-btn">
-                        <i class="fas fa-play"></i>
-                    </div>
+                    <div class="play-btn"><i class="fas fa-play"></i></div>
                 </div>
                 <div class="video-info">
                     <h3>${videoData.title}</h3>
                     <div class="video-meta">
-                        <div class="video-views">
-                            <i class="fas fa-eye"></i> ${displayViews}
-                        </div>
-                        <div class="video-likes">
-                            <i class="fas fa-heart"></i> ${displayLikes}
-                        </div>
+                        <div class="video-views"><i class="fas fa-eye"></i> ${displayViews}</div>
+                        <div class="video-likes"><i class="fas fa-heart"></i> ${displayLikes}</div>
                     </div>
                 </div>
                 <div class="heart-animation-container">
@@ -1499,14 +1244,10 @@
 
             let clickTimer = null;
             let lastClickTime = 0;
+            const DOUBLE_CLICK_TIME_THRESHOLD = 300;
+            
             videoCard.addEventListener('click', (event) => {
-                if (event.target.closest('.video-card') !== videoCard && !event.target.closest('.animated-heart')) {
-                    return;
-                }
-
                 const currentTime = new Date().getTime();
-                const DOUBLE_CLICK_TIME_THRESHOLD = 300;
-
                 if (currentTime - lastClickTime < DOUBLE_CLICK_TIME_THRESHOLD) {
                     clearTimeout(clickTimer);
                     clickTimer = null;
@@ -1517,11 +1258,7 @@
                     animatedHeart.classList.remove('animate-heart');
                     void animatedHeart.offsetWidth; 
                     animatedHeart.classList.add('animate-heart');
-
-                    animatedHeart.addEventListener('animationend', () => {
-                        heartContainer.style.display = 'none';
-                        animatedHeart.classList.remove('animate-heart');
-                    }, { once: true });
+                    animatedHeart.addEventListener('animationend', () => heartContainer.style.display = 'none', { once: true });
 
                     incrementVideoMetric(videoData.id, 'likes'); 
                     addVideoToFavorites(videoData); 
@@ -1535,14 +1272,11 @@
                 }
                 lastClickTime = currentTime;
             });
-
             return videoCard;
         }
 
         function displayNoFavoritesMessage(message = "No favourites yet") {
-            const favouriteVideoGrid = document.getElementById('favourite-video-grid');
             favouriteVideoGrid.innerHTML = '';
-            const noFavouriteVideosMessage = document.getElementById('no-favourite-videos');
             noFavouriteVideosMessage.style.display = 'block';
             noFavouriteVideosMessage.querySelector('h3').textContent = message;
         }
@@ -1562,8 +1296,6 @@
             const profileIconElement = document.getElementById('profile-icon');
 
             if (user) {
-                console.log("User is signed in:", user.uid);
-                
                 if (user.photoURL) {
                     profileBtnElement.style.backgroundImage = `url('${user.photoURL}')`;
                     profileIconElement.style.display = 'none';
@@ -1573,7 +1305,7 @@
                 }
 
                 if (user.isAnonymous) {
-                    currentUserNameSpan.textContent = `Guest User (${user.uid.substring(0, 8)}...)`;
+                    currentUserNameSpan.textContent = `Guest User`;
                     googleLoginBtn.style.display = 'flex';
                     guestLoginBtn.style.display = 'none';
                 } else {
@@ -1588,13 +1320,10 @@
                     fetchUserFavorites(user.uid);
                 }
             } else {
-                console.log("User is signed out.");
-
                 profileBtnElement.style.backgroundImage = 'none';
                 profileIconElement.style.display = 'block';
                 currentUserNameSpan.textContent = '';
                 userDisplayInfo.style.display = 'none';
-
                 googleLoginBtn.style.display = 'flex';
                 guestLoginBtn.style.display = 'flex';
                 logoutBtn.style.display = 'none';

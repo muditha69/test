@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>XXX Git - Admin Host</title>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192"  href="favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
+    <link rel="manifest" href="favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
@@ -195,7 +213,7 @@
             width: 100%;
         }
 
-        .delete-btn, .edit-btn, .reset-views-btn, .reset-likes-btn {
+        .delete-btn, .edit-btn, .reset-views-btn, .reset-likes-btn, .pin-btn {
             background-color: #dc3545;
             color: white;
             padding: 8px 15px;
@@ -207,6 +225,15 @@
             flex-basis: calc(50% - 5px);
             max-width: calc(50% - 5px);
             box-sizing: border-box;
+        }
+        
+        .pin-btn {
+            background-color: #28a745;
+        }
+
+        .pin-btn.unpin {
+            background-color: #ffc107;
+            color: #212529;
         }
 
         .edit-btn {
@@ -225,6 +252,16 @@
         .delete-btn:hover {
             background-color: #c82333;
             transform: translateY(-2px);
+        }
+        
+        .pin-btn:hover {
+            background-color: #218838;
+             transform: translateY(-2px);
+        }
+        
+        .pin-btn.unpin:hover {
+            background-color: #e0a800;
+             transform: translateY(-2px);
         }
 
         .edit-btn:hover {
@@ -446,7 +483,7 @@
                 width: 100%;
                 margin-top: 10px;
             }
-            .delete-btn, .edit-btn, .reset-views-btn, .reset-likes-btn {
+            .delete-btn, .edit-btn, .reset-views-btn, .reset-likes-btn, .pin-btn {
                 width: 100%;
                 max-width: unset;
                 margin-top: 5px;
@@ -458,7 +495,8 @@
                 width: calc(100% - 20px);
                 padding: 8px 10px;
             }
-        </style>
+        }
+    </style>
 </head>
 <body>
     <div id="auth-status" style="display:none;">
@@ -552,7 +590,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, writeBatch, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -650,6 +688,7 @@
 
         let editingVideoId = null;
         let editingCategoryId = null;
+        let originalCategoryName = null;
 
         function showMessage(message, type = 'success') {
             messageBox.textContent = message;
@@ -662,21 +701,6 @@
             setTimeout(() => {
                 messageBox.classList.remove('show');
             }, 3000);
-        }
-
-        function showCustomMessage(message) {
-            const overlay = document.createElement('div');
-            overlay.classList.add('custom-overlay');
-            overlay.innerHTML = `
-                <div class="custom-box">
-                    <p>${message}</p>
-                    <button>OK</button>
-                </div>
-            `;
-            document.body.appendChild(overlay);
-            overlay.querySelector('button').addEventListener('click', () => {
-                document.body.removeChild(overlay);
-            });
         }
 
         function showCustomPrompt(message, callback) {
@@ -747,21 +771,20 @@
                         category: videoData.category
                     });
                     showMessage("Video updated successfully!");
-                    console.log("Document updated with ID: ", editingVideoId);
                 } catch (e) {
                     console.error("Error updating document: ", e);
                     showMessage("Error updating video: " + e.message, 'error');
                 }
             } else {
                 try {
-                    const docRef = await addDoc(collection(db, "public_videos"), {
+                    await addDoc(collection(db, "public_videos"), {
                         ...videoData,
                         views: initialViews,
                         likes: initialLikes,
+                        isPinned: false,
                         createdAt: new Date()
                     });
                     showMessage("Video added successfully!");
-                    console.log("Document written with ID: ", docRef.id);
                 } catch (e) {
                     console.error("Error adding document: ", e);
                     showMessage("Error adding video: " + e.message, 'error');
@@ -771,23 +794,15 @@
             fetchAndDisplayAdminVideos();
         });
 
-        clearVideoFormBtn.addEventListener('click', () => {
-            resetVideoForm();
-            showMessage("Video form cleared.");
-        });
-
-        cancelVideoEditBtn.addEventListener('click', () => {
-            resetVideoForm();
-            showMessage("Video edit cancelled.");
-        });
+        clearVideoFormBtn.addEventListener('click', () => resetVideoForm());
+        cancelVideoEditBtn.addEventListener('click', () => resetVideoForm());
 
         async function fetchAndDisplayAdminVideos() {
             adminVideoList.innerHTML = '';
             noAdminVideosMessage.style.display = 'none';
 
             try {
-                const publicVideosRef = collection(db, 'public_videos');
-                const querySnapshot = await getDocs(publicVideosRef);
+                const querySnapshot = await getDocs(collection(db, 'public_videos'));
 
                 if (querySnapshot.empty) {
                     noAdminVideosMessage.style.display = 'block';
@@ -795,159 +810,120 @@
                 }
 
                 let videos = [];
-                querySnapshot.forEach((doc) => {
-                    videos.push({ id: doc.id, ...doc.data() });
-                });
+                querySnapshot.forEach((doc) => videos.push({ id: doc.id, ...doc.data() }));
 
                 videos.sort((a, b) => {
+                    const pinA = a.isPinned ? 1 : 0;
+                    const pinB = b.isPinned ? 1 : 0;
+                    if (pinA !== pinB) return pinB - pinA;
+
                     const dateA = a.createdAt ? a.createdAt.toDate() : new Date(0);
                     const dateB = b.createdAt ? b.createdAt.toDate() : new Date(0);
                     return dateB - dateA;
                 });
 
-                videos.forEach((video) => {
-                    const videoItem = document.createElement('div');
-                    videoItem.classList.add('video-item');
-                    videoItem.setAttribute('data-video-id', video.id);
-
-                    videoItem.innerHTML = `
-                        <img src="${video.thumbnail}" alt="Thumbnail" onerror="this.onerror=null; this.src='https://placehold.co/80x50/0f0c1d/ffffff?text=No+Image'">
-                        <div class="video-details">
-                            <h3>${video.title}</h3>
-                            <p>Category: ${video.category || 'N/A'}</p>
-                            <p>Duration: ${video.duration} | Views: ${video.views} | Likes: ${video.likes}</p>
-                        </div>
-                        <div class="action-buttons">
-                            <button class="edit-btn" data-id="${video.id}" data-title="${video.title}" 
-                                data-thumbnail="${video.thumbnail}" data-url="${video.url}" 
-                                data-duration="${video.duration}" data-category="${video.category}">
-                                <i class="fas fa-edit"></i> Edit
-                            </button>
-                            <button class="reset-views-btn" data-id="${video.id}" data-title="${video.title}"><i class="fas fa-eye-slash"></i> Reset Views</button>
-                            <button class="reset-likes-btn" data-id="${video.id}" data-title="${video.title}"><i class="fas fa-thumbs-down"></i> Reset Likes</button>
-                            <button class="delete-btn" data-id="${video.id}"><i class="fas fa-trash"></i> Delete</button>
-                        </div>
-                    `;
-                    adminVideoList.appendChild(videoItem);
-                });
-
-                adminVideoList.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const videoIdToDelete = e.currentTarget.getAttribute('data-id');
-                        showCustomPrompt(`Are you sure you want to delete "${e.currentTarget.closest('.video-item').querySelector('h3').textContent}"? This action cannot be undone.`, (response) => {
-                            if (response) {
-                                deleteVideo(videoIdToDelete);
-                            }
-                        });
-                    });
-                });
-
-                adminVideoList.querySelectorAll('.edit-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        editingVideoId = e.currentTarget.getAttribute('data-id');
-                        document.getElementById('videoTitle').value = e.currentTarget.getAttribute('data-title');
-                        document.getElementById('thumbnailUrl').value = e.currentTarget.getAttribute('data-thumbnail');
-                        document.getElementById('videoUrl').value = e.currentTarget.getAttribute('data-url');
-                        document.getElementById('videoDuration').value = e.currentTarget.getAttribute('data-duration');
-                        videoCategorySelect.value = e.currentTarget.getAttribute('data-category').toLowerCase();
-                        
-                        videoFormTitle.textContent = 'Edit Video Content';
-                        videoSubmitBtn.innerHTML = '<i class="fas fa-save"></i> Update Video';
-                        cancelVideoEditBtn.style.display = 'inline-block';
-                        showMessage("Editing video: " + e.currentTarget.getAttribute('data-title'));
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    });
-                });
-
-                adminVideoList.querySelectorAll('.reset-views-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const videoIdToResetViews = e.currentTarget.getAttribute('data-id');
-                        const videoTitle = e.currentTarget.getAttribute('data-title');
-                        showCustomPrompt(`Are you sure you want to reset views for "${videoTitle}" to 0?`, (response) => {
-                            if (response) {
-                                resetVideoViews(videoIdToResetViews, videoTitle);
-                            }
-                        });
-                    });
-                });
-
-                adminVideoList.querySelectorAll('.reset-likes-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const videoIdToResetLikes = e.currentTarget.getAttribute('data-id');
-                        const videoTitle = e.currentTarget.getAttribute('data-title');
-                        showCustomPrompt(`Are you sure you want to reset likes for "${videoTitle}" to 0?`, (response) => {
-                            if (response) {
-                                resetVideoLikes(videoIdToResetLikes, videoTitle);
-                            }
-                        });
-                    });
-                });
+                videos.forEach(createVideoItem);
 
             } catch (error) {
                 console.error("Error fetching admin videos: ", error);
-                adminVideoList.innerHTML = `
-                    <div class="no-videos-message" style="color: #dc3545;">
-                        <i class="fas fa-exclamation-circle"></i> Error loading videos.
-                    </div>
-                `;
+                adminVideoList.innerHTML = `<div class="no-videos-message" style="color: #dc3545;"><i class="fas fa-exclamation-circle"></i> Error loading videos.</div>`;
             }
         }
 
+        function createVideoItem(video) {
+            const videoItem = document.createElement('div');
+            videoItem.classList.add('video-item');
+            videoItem.setAttribute('data-video-id', video.id);
+            const isPinned = video.isPinned || false;
+
+            videoItem.innerHTML = `
+                <img src="${video.thumbnail}" alt="Thumbnail" onerror="this.onerror=null; this.src='https://placehold.co/80x50/0f0c1d/ffffff?text=No+Image'">
+                <div class="video-details">
+                    <h3>${video.title} ${isPinned ? '<i class="fas fa-thumbtack" style="color: #ffc107; font-size: 0.9em;"></i>' : ''}</h3>
+                    <p>Category: ${video.category || 'N/A'}</p>
+                    <p>Duration: ${video.duration} | Views: ${video.views} | Likes: ${video.likes}</p>
+                </div>
+                <div class="action-buttons">
+                    <button class="pin-btn ${isPinned ? 'unpin' : ''}" data-id="${video.id}" data-pinned="${isPinned}">
+                        <i class="fas fa-thumbtack"></i> ${isPinned ? 'Unpin' : 'Pin'}
+                    </button>
+                    <button class="edit-btn" data-id="${video.id}" data-title="${video.title}" 
+                        data-thumbnail="${video.thumbnail}" data-url="${video.url}" 
+                        data-duration="${video.duration}" data-category="${video.category}">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="reset-views-btn" data-id="${video.id}" data-title="${video.title}"><i class="fas fa-eye-slash"></i> Reset Views</button>
+                    <button class="reset-likes-btn" data-id="${video.id}" data-title="${video.title}"><i class="fas fa-thumbs-down"></i> Reset Likes</button>
+                    <button class="delete-btn" data-id="${video.id}"><i class="fas fa-trash"></i> Delete</button>
+                </div>
+            `;
+            adminVideoList.appendChild(videoItem);
+            
+            videoItem.querySelector('.delete-btn').addEventListener('click', (e) => {
+                showCustomPrompt(`Delete "${video.title}"? This cannot be undone.`, (res) => res && deleteVideo(video.id));
+            });
+            videoItem.querySelector('.edit-btn').addEventListener('click', () => editVideo(video));
+            videoItem.querySelector('.reset-views-btn').addEventListener('click', (e) => {
+                showCustomPrompt(`Reset views for "${video.title}" to 0?`, (res) => res && resetVideoStats(video.id, video.title, 'views'));
+            });
+            videoItem.querySelector('.reset-likes-btn').addEventListener('click', (e) => {
+                showCustomPrompt(`Reset likes for "${video.title}" to 0?`, (res) => res && resetVideoStats(video.id, video.title, 'likes'));
+            });
+            videoItem.querySelector('.pin-btn').addEventListener('click', (e) => {
+                togglePinStatus('public_videos', video.id, isPinned, fetchAndDisplayAdminVideos);
+            });
+        }
+        
+        function editVideo(video) {
+            editingVideoId = video.id;
+            document.getElementById('videoTitle').value = video.title;
+            document.getElementById('thumbnailUrl').value = video.thumbnail;
+            document.getElementById('videoUrl').value = video.url;
+            document.getElementById('videoDuration').value = video.duration;
+            videoCategorySelect.value = video.category.toLowerCase();
+            
+            videoFormTitle.textContent = 'Edit Video Content';
+            videoSubmitBtn.innerHTML = '<i class="fas fa-save"></i> Update Video';
+            cancelVideoEditBtn.style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
         async function deleteVideo(videoId) {
             try {
                 await deleteDoc(doc(db, "public_videos", videoId));
                 showMessage("Video deleted successfully!");
-                console.log("Document successfully deleted with ID:", videoId);
                 fetchAndDisplayAdminVideos();
             } catch (error) {
-                console.error("Error deleting document: ", error);
                 showMessage("Error deleting video: " + error.message, 'error');
             }
         }
-
-        async function resetVideoViews(videoId, videoTitle) {
+        
+        async function resetVideoStats(videoId, videoTitle, statType) {
             try {
-                await updateDoc(doc(db, "public_videos", videoId), {
-                    views: "0"
-                });
-                showMessage(`Views for "${videoTitle}" reset to 0!`);
-                console.log(`Views for video ID: ${videoId} reset to 0.`);
+                await updateDoc(doc(db, "public_videos", videoId), { [statType]: "0" });
+                showMessage(`${statType.charAt(0).toUpperCase() + statType.slice(1)} for "${videoTitle}" reset to 0!`);
                 fetchAndDisplayAdminVideos();
             } catch (error) {
-                console.error("Error resetting views: ", error);
-                showMessage(`Error resetting views for "${videoTitle}": ` + error.message, 'error');
+                showMessage(`Error resetting ${statType}: ` + error.message, 'error');
             }
         }
-
-        async function resetVideoLikes(videoId, videoTitle) {
-            try {
-                await updateDoc(doc(db, "public_videos", videoId), {
-                    likes: "0"
-                });
-                showMessage(`Likes for "${videoTitle}" reset to 0!`);
-                console.log(`Likes for video ID: ${videoId} reset to 0.`);
-                fetchAndDisplayAdminVideos();
-            } catch (error) {
-                console.error("Error resetting likes: ", error);
-                showMessage(`Error resetting likes for "${videoTitle}": ` + error.message, 'error');
-            }
-        }
-
+        
         function resetCategoryForm() {
             categoryForm.reset();
             editingCategoryId = null;
+            originalCategoryName = null;
             categoryFormTitle.textContent = 'Add New Category';
             categorySubmitBtn.innerHTML = '<i class="fas fa-plus-circle"></i> Add Category';
             cancelCategoryEditBtn.style.display = 'none';
         }
-
+        
         categoryForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const categoryName = document.getElementById('categoryName').value.trim();
             const categoryThumbnailUrl = document.getElementById('categoryThumbnailUrl').value.trim();
 
             if (!categoryName || !categoryThumbnailUrl) {
-                showMessage("Category name and thumbnail URL cannot be empty.", 'error');
+                showMessage("Category name and thumbnail URL are required.", 'error');
                 return;
             }
 
@@ -958,31 +934,23 @@
                         thumbnail: categoryThumbnailUrl
                     });
                     showMessage("Category updated successfully!");
-                    console.log("Category updated with ID: ", editingCategoryId);
+
+                    if (originalCategoryName && originalCategoryName.toLowerCase() !== categoryName.toLowerCase()) {
+                        await updateVideosCategory(originalCategoryName, categoryName);
+                    }
                 } catch (e) {
-                    console.error("Error updating category: ", e);
                     showMessage("Error updating category: " + e.message, 'error');
                 }
             } else {
                 try {
-                    const categoriesRef = collection(db, "categories");
-                    const querySnapshot = await getDocs(categoriesRef);
-                    const existingCategories = querySnapshot.docs.map(doc => doc.data().name.toLowerCase());
-
-                    if (existingCategories.includes(categoryName.toLowerCase())) {
-                        showMessage("Category already exists!", 'error');
-                        return;
-                    }
-
-                    await addDoc(categoriesRef, { 
+                    await addDoc(collection(db, "categories"), { 
                         name: categoryName, 
                         thumbnail: categoryThumbnailUrl,
+                        isPinned: false,
                         createdAt: new Date() 
                     });
                     showMessage("Category added successfully!");
-                    console.log("Category added with name: ", categoryName);
                 } catch (e) {
-                    console.error("Error adding category: ", e);
                     showMessage("Error adding category: " + e.message, 'error');
                 }
             }
@@ -990,24 +958,32 @@
             fetchAndDisplayAdminCategories();
             populateCategoryDropdown();
         });
-
-        clearCategoryFormBtn.addEventListener('click', () => {
-            resetCategoryForm();
-            showMessage("Category form cleared.");
-        });
-
-        cancelCategoryEditBtn.addEventListener('click', () => {
-            resetCategoryForm();
-            showMessage("Category edit cancelled.");
-        });
+        
+        async function updateVideosCategory(oldCategory, newCategory) {
+            showMessage(`Updating videos from "${oldCategory}" to "${newCategory}"...`);
+            const videosToUpdateQuery = query(collection(db, "public_videos"), where("category", "==", oldCategory.toLowerCase()));
+            try {
+                const querySnapshot = await getDocs(videosToUpdateQuery);
+                const batch = writeBatch(db);
+                querySnapshot.forEach(videoDoc => {
+                    batch.update(doc(db, "public_videos", videoDoc.id), { category: newCategory.toLowerCase() });
+                });
+                await batch.commit();
+                showMessage("Video categories updated successfully.", "success");
+                fetchAndDisplayAdminVideos();
+            } catch (error) {
+                 showMessage("Error updating video categories: " + error.message, "error");
+            }
+        }
+        
+        clearCategoryFormBtn.addEventListener('click', () => resetCategoryForm());
+        cancelCategoryEditBtn.addEventListener('click', () => resetCategoryForm());
 
         async function fetchAndDisplayAdminCategories() {
             adminCategoryList.innerHTML = '';
             noAdminCategoriesMessage.style.display = 'none';
-
             try {
-                const categoriesRef = collection(db, 'categories');
-                const querySnapshot = await getDocs(categoriesRef);
+                const querySnapshot = await getDocs(collection(db, 'categories'));
                 
                 if (querySnapshot.empty) {
                     noAdminCategoriesMessage.style.display = 'block';
@@ -1015,90 +991,94 @@
                 }
 
                 let categories = [];
-                querySnapshot.forEach((doc) => {
-                    categories.push({ id: doc.id, ...doc.data() }); // Include full data for potential future use
+                querySnapshot.forEach((doc) => categories.push({ id: doc.id, ...doc.data() }));
+
+                categories.sort((a, b) => {
+                    const pinA = a.isPinned ? 1 : 0;
+                    const pinB = b.isPinned ? 1 : 0;
+                    if (pinA !== pinB) return pinB - pinA;
+                    return a.name.localeCompare(b.name);
                 });
 
-                categories.sort((a, b) => a.name.localeCompare(b.name));
-
-                // Display categories in the "Manage Existing Categories" section
-                categories.forEach((category) => {
-                    const categoryItem = document.createElement('div');
-                    categoryItem.classList.add('category-item');
-                    categoryItem.setAttribute('data-category-id', category.id);
-                    categoryItem.innerHTML = `
-                        <img src="${category.thumbnail}" alt="Category Thumbnail" onerror="this.onerror=null; this.src='https://placehold.co/80x50/0f0c1d/ffffff?text=No+Image'">
-                        <div class="category-details">
-                            <h3>${category.name}</h3>
-                        </div>
-                        <div class="action-buttons">
-                            <button class="edit-btn" data-id="${category.id}" data-name="${category.name}" data-thumbnail="${category.thumbnail}"><i class="fas fa-edit"></i> Edit</button>
-                            <button class="delete-btn" data-id="${category.id}"><i class="fas fa-trash"></i> Delete</button>
-                        </div>
-                    `;
-                    adminCategoryList.appendChild(categoryItem);
-                });
-
-                adminCategoryList.querySelectorAll('.delete-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        const categoryIdToDelete = e.currentTarget.getAttribute('data-id');
-                        showCustomPrompt(`Are you sure you want to delete "${e.currentTarget.closest('.category-item').querySelector('h3').textContent}"? This action cannot be undone.`, (response) => {
-                            if (response) {
-                                deleteCategory(categoryIdToDelete);
-                            }
-                        });
-                    });
-                });
-
-                adminCategoryList.querySelectorAll('.edit-btn').forEach(button => {
-                    button.addEventListener('click', (e) => {
-                        editingCategoryId = e.currentTarget.getAttribute('data-id');
-                        document.getElementById('categoryName').value = e.currentTarget.getAttribute('data-name');
-                        document.getElementById('categoryThumbnailUrl').value = e.currentTarget.getAttribute('data-thumbnail');
-                        
-                        categoryFormTitle.textContent = 'Edit Category';
-                        categorySubmitBtn.innerHTML = '<i class="fas fa-save"></i> Update Category';
-                        cancelCategoryEditBtn.style.display = 'inline-block';
-                        showMessage("Editing category: " + e.currentTarget.getAttribute('data-name'));
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                    });
-                });
+                categories.forEach(createCategoryItem);
 
             } catch (error) {
                 console.error("Error fetching admin categories: ", error);
-                adminCategoryList.innerHTML = `
-                    <div class="no-categories-message" style="color: #dc3545;">
-                        <i class="fas fa-exclamation-circle"></i> Error loading categories.
-                    </div>
-                `;
+                adminCategoryList.innerHTML = `<div class="no-categories-message" style="color: #dc3545;"><i class="fas fa-exclamation-circle"></i> Error loading categories.</div>`;
             }
         }
 
+        function createCategoryItem(category) {
+            const categoryItem = document.createElement('div');
+            categoryItem.classList.add('category-item');
+            categoryItem.setAttribute('data-category-id', category.id);
+            const isPinned = category.isPinned || false;
+
+            categoryItem.innerHTML = `
+                <img src="${category.thumbnail}" alt="Category Thumbnail" onerror="this.onerror=null; this.src='https://placehold.co/80x50/0f0c1d/ffffff?text=No+Image'">
+                <div class="category-details">
+                    <h3>${category.name} ${isPinned ? '<i class="fas fa-thumbtack" style="color: #ffc107; font-size: 0.9em;"></i>' : ''}</h3>
+                </div>
+                <div class="action-buttons">
+                    <button class="pin-btn ${isPinned ? 'unpin' : ''}" data-id="${category.id}" data-pinned="${isPinned}">
+                         <i class="fas fa-thumbtack"></i> ${isPinned ? 'Unpin' : 'Pin'}
+                    </button>
+                    <button class="edit-btn" data-id="${category.id}" data-name="${category.name}" data-thumbnail="${category.thumbnail}"><i class="fas fa-edit"></i> Edit</button>
+                    <button class="delete-btn" data-id="${category.id}" data-name="${category.name}"><i class="fas fa-trash"></i> Delete</button>
+                </div>
+            `;
+            adminCategoryList.appendChild(categoryItem);
+            
+            categoryItem.querySelector('.delete-btn').addEventListener('click', (e) => {
+                showCustomPrompt(`Delete category "${category.name}"? This cannot be undone.`, (res) => res && deleteCategory(category.id));
+            });
+            categoryItem.querySelector('.edit-btn').addEventListener('click', () => editCategory(category));
+            categoryItem.querySelector('.pin-btn').addEventListener('click', (e) => {
+                togglePinStatus('categories', category.id, isPinned, fetchAndDisplayAdminCategories);
+            });
+        }
+        
+        function editCategory(category) {
+            editingCategoryId = category.id;
+            originalCategoryName = category.name;
+            document.getElementById('categoryName').value = category.name;
+            document.getElementById('categoryThumbnailUrl').value = category.thumbnail;
+            
+            categoryFormTitle.textContent = 'Edit Category';
+            categorySubmitBtn.innerHTML = '<i class="fas fa-save"></i> Update Category';
+            cancelCategoryEditBtn.style.display = 'inline-block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
         async function deleteCategory(categoryId) {
             try {
                 await deleteDoc(doc(db, "categories", categoryId));
                 showMessage("Category deleted successfully!");
-                console.log("Category successfully deleted with ID:", categoryId);
                 fetchAndDisplayAdminCategories();
-                populateCategoryDropdown(); // Re-populate dropdown after deletion
+                populateCategoryDropdown();
             } catch (error) {
-                console.error("Error deleting category: ", error);
                 showMessage("Error deleting category: " + error.message, 'error');
             }
         }
-
-        async function populateCategoryDropdown() {
-            videoCategorySelect.innerHTML = '<option value="">-- Select a Category --</option>'; // Clear existing options
+        
+        async function togglePinStatus(collectionName, docId, currentStatus, callback) {
+            const newStatus = !currentStatus;
             try {
-                const categoriesRef = collection(db, 'categories');
-                const querySnapshot = await getDocs(categoriesRef);
-                
+                await updateDoc(doc(db, collectionName, docId), { isPinned: newStatus });
+                showMessage(`Item ${newStatus ? 'pinned' : 'unpinned'} successfully.`);
+                callback();
+            } catch (error) {
+                showMessage("Error updating pin status: " + error.message, 'error');
+            }
+        }
+        
+        async function populateCategoryDropdown() {
+            videoCategorySelect.innerHTML = '<option value="">-- Select a Category --</option>';
+            try {
+                const querySnapshot = await getDocs(collection(db, 'categories'));
                 let categories = [];
-                querySnapshot.forEach((doc) => {
-                    categories.push({ id: doc.id, name: doc.data().name });
-                });
+                querySnapshot.forEach((doc) => categories.push({ id: doc.id, name: doc.data().name }));
                 categories.sort((a, b) => a.name.localeCompare(b.name));
-
                 categories.forEach(category => {
                     const option = document.createElement('option');
                     option.value = category.name.toLowerCase();
@@ -1106,7 +1086,6 @@
                     videoCategorySelect.appendChild(option);
                 });
             } catch (error) {
-                console.error("Error populating categories dropdown: ", error);
                 showMessage("Error loading categories for dropdown.", 'error');
             }
         }
